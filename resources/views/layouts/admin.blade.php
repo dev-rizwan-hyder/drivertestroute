@@ -20,11 +20,13 @@
             };
         </script>
         <script src="https://cdn.tailwindcss.com"></script>
+        @stack('styles')
     </head>
     <body class="min-h-screen bg-stone-100 text-stone-950 antialiased">
         @php
             $navItems = [
                 ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'active' => ['admin.dashboard'], 'hint' => 'Overview'],
+                ['label' => 'Cities', 'route' => 'admin.cities.index', 'active' => ['admin.cities.*'], 'hint' => 'Locations'],
                 ['label' => 'Routes', 'route' => 'admin.driving-routes.index', 'active' => ['admin.driving-routes.index', 'admin.driving-routes.edit', 'admin.driving-routes.show'], 'hint' => 'Manage maps'],
                 ['label' => 'Add Route', 'route' => 'admin.driving-routes.create', 'active' => ['admin.driving-routes.create'], 'hint' => 'New map'],
                 ['label' => 'Purchases', 'route' => 'admin.purchases.index', 'active' => ['admin.purchases.*'], 'hint' => 'Checkout records'],
@@ -136,5 +138,6 @@
             adminSidebarToggle?.addEventListener('click', () => setAdminSidebar(true));
             adminSidebarBackdrop?.addEventListener('click', () => setAdminSidebar(false));
         </script>
+        @stack('scripts')
     </body>
 </html>

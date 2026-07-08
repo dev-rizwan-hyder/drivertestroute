@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\City;
 use App\Models\DrivingRoute;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,8 @@ class DrivingRouteSeeder extends Seeder
         foreach ($this->routes() as $routeData) {
             $points = $routeData['points'];
             unset($routeData['points']);
+
+            $routeData['city_id'] = City::where('name', $routeData['city'])->value('id');
 
             $route = DrivingRoute::updateOrCreate(
                 ['title' => $routeData['title']],

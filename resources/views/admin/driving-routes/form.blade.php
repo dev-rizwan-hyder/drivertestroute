@@ -12,6 +12,7 @@
     })->values()->all();
 
     $formPoints = old('points', $existingPoints);
+    $selectedCityId = old('city_id', $route->city_id ?: optional($cities->firstWhere('name', $route->city))->id);
 @endphp
 
 <form method="POST" action="{{ $action }}" enctype="multipart/form-data" class="space-y-6">
@@ -31,7 +32,12 @@
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">City</span>
-                <input type="text" name="city" value="{{ old('city', $route->city) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <select name="city_id" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                    <option value="">Choose a city</option>
+                    @foreach($cities as $city)
+                        <option value="{{ $city->id }}" @selected((string) $selectedCityId === (string) $city->id)>{{ $city->name }} - {{ $city->address }}</option>
+                    @endforeach
+                </select>
             </label>
 
             <label class="block">

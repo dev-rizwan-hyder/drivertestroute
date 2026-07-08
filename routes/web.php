@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DrivingRouteAdminController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [DrivingRouteController::class, 'home'])->name('home');
 Route::get('/routes', [DrivingRouteController::class, 'index'])->name('routes.index');
 Route::view('/about', 'pages.about')->name('about');
+Route::view('/blog', 'pages.blog')->name('blog');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::post('/contact', function (Request $request) {
     $request->validate([
@@ -50,6 +52,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', DashboardController::class)->name('dashboard');
         Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::resource('cities', CityController::class)->except(['create', 'show', 'edit']);
         Route::resource('driving-routes', DrivingRouteAdminController::class);
     });
 });

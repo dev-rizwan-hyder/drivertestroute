@@ -13,7 +13,7 @@
                 theme: {
                     extend: {
                         fontFamily: {
-                            sans: ['Instrument Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                            sans: ['Inter', 'Instrument Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
                         },
                     },
                 },
@@ -21,250 +21,790 @@
         </script>
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
-            @keyframes hero-panel-rise {
-                0% { opacity: 0; transform: translateY(18px) scale(.98); }
-                100% { opacity: 1; transform: translateY(0) scale(1); }
+            :root {
+                --public-bg: #0a0e1a;
+                --public-bg-soft: #0d1117;
+                --public-panel: rgba(17, 24, 39, .74);
+                --public-border: rgba(59, 130, 246, .22);
+                --public-muted: #94a3b8;
+                --public-blue-deep: #1e3a8a;
+                --public-blue: #2563eb;
+                --public-cyan: #06b6d4;
+                --public-sky: #38bdf8;
             }
 
-            @keyframes hero-float {
-                0%, 100% { transform: translate3d(0, 0, 0); }
-                50% { transform: translate3d(0, -12px, 0); }
+            .public-main-offset {
+                background: #0a0e1a;
+                padding-top: 5rem;
             }
 
-            @keyframes hero-meter {
-                0%, 100% { stroke-dashoffset: 138; }
-                45%, 70% { stroke-dashoffset: 38; }
+            .public-header-glass {
+                position: fixed;
+                inset: 0 0 auto;
+                z-index: 50;
+                border-bottom: 1px solid transparent;
+                background: rgba(10, 14, 26, .76);
+                box-shadow: 0 12px 34px rgba(2, 6, 23, .18);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+                transition:
+                    background 220ms cubic-bezier(.16, 1, .3, 1),
+                    border-color 220ms ease-out,
+                    box-shadow 220ms cubic-bezier(.16, 1, .3, 1);
             }
 
-            @keyframes hero-scan {
-                0% { transform: translateX(-100%); opacity: 0; }
-                12%, 82% { opacity: .28; }
-                100% { transform: translateX(100%); opacity: 0; }
-            }
-
-            @keyframes hero-progress {
-                0%, 100% { transform: scaleX(.38); }
-                50% { transform: scaleX(.92); }
-            }
-
-            @keyframes hero-status-pulse {
-                0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, .38); }
-                50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            }
-
-            @keyframes section-rise {
-                0% { opacity: 0; transform: translateY(18px); }
-                100% { opacity: 1; transform: translateY(0); }
-            }
-
-            @keyframes soft-sheen {
-                0% { transform: translateX(-120%) skewX(-16deg); }
-                60%, 100% { transform: translateX(220%) skewX(-16deg); }
-            }
-
-            .hero-panel-rise {
-                animation: hero-panel-rise .7s ease-out both;
-            }
-
-            .hero-float {
-                animation: hero-float 5.2s ease-in-out infinite;
-            }
-
-            .hero-meter-ring {
-                stroke-dasharray: 188;
-                stroke-dashoffset: 138;
-                animation: hero-meter 4.8s ease-in-out infinite;
-            }
-
-            .hero-progress-fill {
-                transform: scaleX(.4);
-                transform-origin: left center;
-                animation: hero-progress 4.6s ease-in-out infinite;
-            }
-
-            .hero-scan-line {
-                animation: hero-scan 5.5s ease-in-out infinite;
-            }
-
-            .hero-status-dot {
-                animation: hero-status-pulse 2.4s ease-in-out infinite;
-            }
-
-            .section-rise {
-                animation: section-rise .75s ease-out both;
-            }
-
-            .soft-sheen::after {
-                content: "";
-                position: absolute;
-                inset: 0;
-                width: 40%;
-                pointer-events: none;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
-                animation: soft-sheen 5.8s ease-in-out infinite;
-            }
-
-            .public-header-transparent {
-                background: transparent;
-                border-color: transparent;
+            .public-header-glass[data-transparent-header="true"]:not(.public-header-scrolled) {
+                background: rgba(10, 14, 26, .42);
                 box-shadow: none;
             }
 
-            .public-header-transparent .public-logo {
-                background: rgba(255,255,255,.14);
+            .public-header-glass::after {
+                content: "";
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                height: 1px;
+                pointer-events: none;
+                background: linear-gradient(90deg, transparent, rgba(37, 99, 235, .7), rgba(6, 182, 212, .76), transparent);
+                box-shadow: 0 0 18px rgba(6, 182, 212, .14);
+                opacity: .34;
+                transition: opacity 220ms ease-out, box-shadow 220ms ease-out;
+            }
+
+            .public-header-scrolled {
+                border-color: rgba(59, 130, 246, .18);
+                background: rgba(10, 14, 26, .92);
+                box-shadow: 0 22px 54px rgba(2, 6, 23, .38);
+            }
+
+            .public-header-scrolled::after {
+                opacity: 1;
+                box-shadow: 0 0 24px rgba(6, 182, 212, .24);
+            }
+
+            .public-header-nav {
+                position: relative;
+                z-index: 70;
+            }
+
+            .public-brand {
                 color: #fff;
-                box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+                text-decoration: none;
             }
 
-            .public-header-transparent .public-brand,
-            .public-header-transparent .public-nav-link,
-            .public-header-transparent .public-menu-button {
+            .public-logo {
+                background: linear-gradient(135deg, var(--public-blue-deep), var(--public-blue) 52%, var(--public-cyan));
+                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16), 0 14px 34px rgba(59, 130, 246, .18);
+                transition: transform 220ms cubic-bezier(.16, 1, .3, 1), box-shadow 220ms ease-out;
+            }
+
+            .public-wordmark {
+                display: block;
+                color: transparent;
+                background: linear-gradient(100deg, #bfdbfe, var(--public-sky) 48%, #cffafe);
+                -webkit-background-clip: text;
+                background-clip: text;
+                transition: filter 200ms ease-out;
+            }
+
+            .public-brand-subtitle {
+                color: var(--public-muted);
+            }
+
+            .public-brand:hover .public-logo {
+                transform: translateY(-1px);
+                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2), 0 0 22px rgba(6, 182, 212, .24), 0 18px 40px rgba(59, 130, 246, .2);
+            }
+
+            .public-brand:hover .public-wordmark {
+                filter: drop-shadow(0 0 12px rgba(56, 189, 248, .3));
+            }
+
+            .public-nav-list {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 2rem;
+            }
+
+            .public-nav-link {
+                position: relative;
+                display: inline-flex;
+                height: 2.7rem;
+                align-items: center;
+                color: var(--public-muted);
+                font-size: .875rem;
+                font-weight: 800;
+                line-height: 1;
+                text-decoration: none;
+                white-space: nowrap;
+                transition: color 200ms ease-out;
+            }
+
+            .public-nav-link:hover,
+            .public-nav-link:focus-visible,
+            .public-nav-active {
                 color: #fff;
             }
 
-            .public-header-transparent .public-brand-subtitle {
-                color: rgba(244,244,245,.72);
+            .public-nav-link:focus-visible,
+            .public-auth-link:focus-visible,
+            .public-auth-cta:focus-visible,
+            .public-avatar:focus-visible,
+            .public-menu-button:focus-visible,
+            .public-dropdown-link:focus-visible,
+            .public-mobile-link:focus-visible {
+                outline: 2px solid rgba(103, 232, 249, .8);
+                outline-offset: 3px;
             }
 
-            .public-header-transparent .public-nav-link:hover,
-            .public-header-transparent .public-nav-active {
-                background: rgba(255,255,255,.14);
+            .public-nav-indicator {
+                position: absolute;
+                bottom: .35rem;
+                left: 0;
+                width: 0;
+                height: 2px;
+                border-radius: 999px;
+                background: linear-gradient(90deg, var(--public-blue), var(--public-cyan), var(--public-sky));
+                box-shadow: 0 0 16px rgba(6, 182, 212, .42);
+                opacity: 0;
+                transform: translate3d(0, 0, 0);
+                transition:
+                    transform 220ms cubic-bezier(.16, 1, .3, 1),
+                    width 220ms cubic-bezier(.16, 1, .3, 1),
+                    opacity 180ms ease-out;
+            }
+
+            .public-nav-indicator.is-visible {
+                opacity: 1;
+            }
+
+            .public-auth-link,
+            .public-auth-cta {
+                display: inline-flex;
+                min-height: 2.55rem;
+                align-items: center;
+                justify-content: center;
+                border-radius: .5rem;
+                padding: 0 .95rem;
+                font-size: .875rem;
+                font-weight: 800;
+                line-height: 1;
+                text-decoration: none;
+                transition:
+                    transform 200ms cubic-bezier(.16, 1, .3, 1),
+                    border-color 200ms ease-out,
+                    background 200ms ease-out,
+                    box-shadow 200ms ease-out,
+                    color 200ms ease-out;
+            }
+
+            .public-auth-link {
+                border: 1px solid rgba(59, 130, 246, .42);
+                color: #bfdbfe;
+                background: rgba(15, 23, 42, .46);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+            }
+
+            .public-auth-link:hover {
+                border-color: rgba(56, 189, 248, .55);
+                color: #fff;
+                background: rgba(37, 99, 235, .16);
+                box-shadow: 0 14px 30px rgba(37, 99, 235, .16), inset 0 1px 0 rgba(255, 255, 255, .12);
+            }
+
+            .public-auth-cta {
+                color: #fff;
+                background: linear-gradient(135deg, var(--public-blue-deep), var(--public-blue) 52%, var(--public-cyan));
+                box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+            }
+
+            .public-auth-cta:hover {
+                transform: translateY(-1px) scale(1.03);
+                box-shadow: 0 0 22px rgba(6, 182, 212, .32), 0 20px 42px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .18);
+            }
+
+            .public-user-menu {
+                position: relative;
+            }
+
+            .public-user-menu::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                right: 0;
+                width: 100%;
+                height: .8rem;
+            }
+
+            .public-avatar,
+            .public-mobile-avatar {
+                display: grid;
+                height: 2.55rem;
+                width: 2.55rem;
+                place-items: center;
+                border: 1px solid transparent;
+                border-radius: 999px;
+                color: #fff;
+                background:
+                    linear-gradient(135deg, rgba(15, 23, 42, .94), rgba(10, 14, 26, .94)) padding-box,
+                    linear-gradient(135deg, var(--public-blue), var(--public-cyan)) border-box;
+                box-shadow: 0 12px 30px rgba(2, 6, 23, .28), inset 0 1px 0 rgba(255, 255, 255, .12);
+                font-size: .8rem;
+                font-weight: 900;
+                line-height: 1;
+                text-decoration: none;
+                transition: transform 180ms cubic-bezier(.16, 1, .3, 1), box-shadow 180ms ease-out;
+            }
+
+            .public-avatar:hover,
+            .public-mobile-avatar:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 0 18px rgba(6, 182, 212, .3), 0 16px 34px rgba(2, 6, 23, .32), inset 0 1px 0 rgba(255, 255, 255, .14);
+            }
+
+            .public-user-dropdown {
+                position: absolute;
+                top: calc(100% + .7rem);
+                right: 0;
+                width: 17rem;
+                border: 1px solid transparent;
+                border-radius: .5rem;
+                background:
+                    linear-gradient(180deg, rgba(56, 189, 248, .08), rgba(15, 23, 42, .12)) padding-box,
+                    linear-gradient(135deg, rgba(56, 189, 248, .38), rgba(37, 99, 235, .22), rgba(255, 255, 255, .08)) border-box,
+                    rgba(10, 14, 26, .94);
+                box-shadow: 0 26px 70px rgba(2, 6, 23, .5), inset 0 1px 0 rgba(255, 255, 255, .1);
+                opacity: 0;
+                pointer-events: none;
+                transform: translate3d(0, -6px, 0);
+                transition: opacity 170ms ease-out, transform 170ms cubic-bezier(.16, 1, .3, 1);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+            }
+
+            .public-user-menu:hover .public-user-dropdown,
+            .public-user-menu:focus-within .public-user-dropdown {
+                opacity: 1;
+                pointer-events: auto;
+                transform: translate3d(0, 0, 0);
+            }
+
+            .public-dropdown-divider {
+                height: 1px;
+                background: linear-gradient(90deg, transparent, rgba(59, 130, 246, .44), rgba(6, 182, 212, .34), transparent);
+            }
+
+            .public-dropdown-link {
+                display: flex;
+                width: 100%;
+                align-items: center;
+                gap: .65rem;
+                border-radius: .375rem;
+                padding: .72rem .78rem;
+                color: #e2e8f0;
+                font-size: .875rem;
+                font-weight: 800;
+                text-align: left;
+                text-decoration: none;
+                transition: background 180ms ease-out, color 180ms ease-out, transform 180ms cubic-bezier(.16, 1, .3, 1);
+            }
+
+            .public-dropdown-link svg {
+                height: 1rem;
+                width: 1rem;
+                color: var(--public-sky);
+                transition: color 180ms ease-out;
+            }
+
+            .public-dropdown-link:hover {
+                color: #fff;
+                background: rgba(37, 99, 235, .16);
+                transform: translateX(2px);
+            }
+
+            .public-dropdown-link:is(button),
+            .public-mobile-link:is(button) {
+                border: 0;
+                background: transparent;
+                cursor: pointer;
+                font-family: inherit;
+            }
+
+            .public-dropdown-link-danger:hover {
+                background: rgba(148, 163, 184, .1);
+            }
+
+            .public-dropdown-link-danger:hover svg {
+                color: #bfdbfe;
+            }
+
+            .public-menu-button {
+                display: grid;
+                height: 2.55rem;
+                width: 2.55rem;
+                place-items: center;
+                border: 1px solid rgba(59, 130, 246, .36);
+                border-radius: .5rem;
+                color: #e2e8f0;
+                background: rgba(15, 23, 42, .58);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+                transition: border-color 180ms ease-out, background 180ms ease-out, color 180ms ease-out, box-shadow 180ms ease-out;
+            }
+
+            .public-menu-button:hover,
+            .public-menu-button.is-open {
+                border-color: rgba(56, 189, 248, .56);
+                color: #fff;
+                background: rgba(37, 99, 235, .18);
+                box-shadow: 0 12px 28px rgba(37, 99, 235, .16), inset 0 1px 0 rgba(255, 255, 255, .12);
+            }
+
+            .public-menu-icon span {
+                display: block;
+                height: 2px;
+                width: 1.25rem;
+                border-radius: 999px;
+                background: currentColor;
+                transition: transform 180ms cubic-bezier(.16, 1, .3, 1), opacity 180ms ease-out;
+            }
+
+            .public-menu-icon span + span {
+                margin-top: .32rem;
+            }
+
+            .public-menu-button.is-open .public-menu-icon span:nth-child(1) {
+                transform: translateY(.44rem) rotate(45deg);
+            }
+
+            .public-menu-button.is-open .public-menu-icon span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .public-menu-button.is-open .public-menu-icon span:nth-child(3) {
+                transform: translateY(-.44rem) rotate(-45deg);
+            }
+
+            .public-mobile-scrim {
+                position: fixed;
+                inset: 0;
+                z-index: 55;
+                pointer-events: none;
+                background: rgba(2, 6, 23, .44);
+                opacity: 0;
+                transition: opacity 200ms ease-out;
+            }
+
+            .public-mobile-scrim.is-open {
+                pointer-events: auto;
+                opacity: 1;
+            }
+
+            .public-mobile-panel {
+                position: fixed;
+                top: 0;
+                right: 0;
+                z-index: 60;
+                height: 100svh;
+                width: min(88vw, 24rem);
+                overflow-y: auto;
+                border-left: 1px solid rgba(59, 130, 246, .22);
+                background:
+                    linear-gradient(180deg, rgba(56, 189, 248, .08), rgba(15, 23, 42, .16)),
+                    rgba(10, 14, 26, .96);
+                box-shadow: -28px 0 70px rgba(2, 6, 23, .54), inset 1px 0 0 rgba(255, 255, 255, .06);
+                transform: translate3d(104%, 0, 0);
+                transition: transform 240ms cubic-bezier(.16, 1, .3, 1);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+            }
+
+            .public-mobile-panel.is-open {
+                transform: translate3d(0, 0, 0);
+            }
+
+            .public-mobile-link {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-radius: .5rem;
+                padding: .88rem .95rem;
+                color: var(--public-muted);
+                font-size: .95rem;
+                font-weight: 800;
+                text-decoration: none;
+                opacity: 0;
+                transform: translate3d(14px, 0, 0);
+                transition:
+                    opacity 200ms ease-out,
+                    transform 220ms cubic-bezier(.16, 1, .3, 1),
+                    background 180ms ease-out,
+                    color 180ms ease-out;
+            }
+
+            .public-mobile-panel.is-open .public-mobile-link {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+                transition-delay: calc(80ms + (var(--item-index, 0) * 45ms));
+            }
+
+            .public-mobile-link:hover,
+            .public-mobile-link.is-active {
+                color: #fff;
+                background: rgba(37, 99, 235, .16);
+            }
+
+            .public-mobile-link.public-auth-link,
+            .public-mobile-link.public-auth-cta {
+                justify-content: center;
+            }
+
+            body.public-mobile-open {
+                overflow: hidden;
+            }
+
+            .auth-shell {
+                position: relative;
+                isolation: isolate;
+                display: grid;
+                min-height: calc(100vh - 5rem);
+                place-items: center;
+                overflow: hidden;
+                background:
+                    radial-gradient(circle at 16% 18%, rgba(37, 99, 235, .2), transparent 34%),
+                    radial-gradient(circle at 84% 14%, rgba(6, 182, 212, .13), transparent 30%),
+                    linear-gradient(180deg, #0a0e1a, #0d1117 54%, #0a0e1a);
+                padding: 4rem 1rem;
+                color: #f8fafc;
+            }
+
+            .auth-shell::before {
+                content: "";
+                position: absolute;
+                inset: -18% -12% -10%;
+                z-index: -1;
+                opacity: .38;
+                filter: blur(24px) saturate(1.08);
+                background:
+                    conic-gradient(from 130deg at 48% 44%, rgba(30, 58, 138, .24), rgba(37, 99, 235, .2), rgba(6, 182, 212, .18), rgba(15, 23, 42, .22), rgba(30, 58, 138, .24));
+                animation: auth-aurora 24s cubic-bezier(.45, 0, .2, 1) infinite alternate;
+            }
+
+            .auth-card {
+                width: min(100%, 28rem);
+                border: 1px solid rgba(59, 130, 246, .24);
+                border-radius: .5rem;
+                background:
+                    linear-gradient(180deg, rgba(56, 189, 248, .075), rgba(15, 23, 42, .18)),
+                    rgba(17, 24, 39, .76);
+                box-shadow: 0 28px 74px rgba(2, 6, 23, .46), inset 0 1px 0 rgba(255, 255, 255, .1);
+                padding: 1.5rem;
+                backdrop-filter: blur(18px);
+            }
+
+            .auth-field {
+                position: relative;
+            }
+
+            .auth-icon {
+                position: absolute;
+                left: .9rem;
+                top: 50%;
+                height: 1rem;
+                width: 1rem;
+                color: #38bdf8;
+                transform: translateY(-50%);
+                pointer-events: none;
+            }
+
+            .auth-input {
+                width: 100%;
+                border: 1px solid rgba(59, 130, 246, .28);
+                border-radius: .5rem;
+                background: rgba(15, 23, 42, .76);
+                padding: .82rem .9rem .82rem 2.55rem;
+                color: #f8fafc;
+                transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
+            }
+
+            .auth-input:focus {
+                border-color: rgba(56, 189, 248, .68);
+                box-shadow: 0 0 0 3px rgba(6, 182, 212, .16);
+                outline: 0;
+            }
+
+            .auth-button {
+                display: inline-flex;
+                min-height: 3rem;
+                width: 100%;
+                align-items: center;
+                justify-content: center;
+                border-radius: .5rem;
+                background: linear-gradient(135deg, #1e3a8a, #2563eb 52%, #06b6d4);
+                padding: .85rem 1.2rem;
+                color: #fff;
+                font-weight: 900;
+                box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+                transition: transform 200ms cubic-bezier(.16, 1, .3, 1), box-shadow 200ms ease-out;
+            }
+
+            .auth-button:hover {
+                transform: translateY(-1px) scale(1.02);
+                box-shadow: 0 0 22px rgba(6, 182, 212, .32), 0 20px 42px rgba(37, 99, 235, .24);
+            }
+
+            .auth-outline-button {
+                display: inline-flex;
+                min-height: 2.8rem;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid rgba(59, 130, 246, .34);
+                border-radius: .5rem;
+                background: rgba(15, 23, 42, .52);
+                padding: .75rem 1rem;
+                color: #bfdbfe;
+                font-weight: 800;
+                transition: background 200ms ease-out, color 200ms ease-out, border-color 200ms ease-out;
+            }
+
+            .auth-outline-button:hover {
+                border-color: rgba(56, 189, 248, .5);
+                background: rgba(37, 99, 235, .16);
                 color: #fff;
             }
 
-            .public-header-transparent .public-menu-button {
-                border-color: rgba(255,255,255,.24);
-                background: rgba(255,255,255,.08);
+            @keyframes auth-aurora {
+                0% { transform: translate3d(-2%, -1%, 0) scale(1.02) rotate(0deg); }
+                100% { transform: translate3d(2%, 2%, 0) scale(1.08) rotate(5deg); }
+            }
+
+            @media (min-width: 1280px) {
+                .public-nav-list {
+                    gap: 2.35rem;
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .public-mobile-avatar.lg\:hidden,
+                .public-menu-button.lg\:hidden {
+                    display: none;
+                }
+            }
+
+            @media (max-width: 420px) {
+                .public-brand-subtitle {
+                    display: none;
+                }
+
+                .public-wordmark {
+                    font-size: .95rem;
+                }
             }
 
             @media (prefers-reduced-motion: reduce) {
-                .hero-panel-rise,
-                .hero-float,
-                .hero-meter-ring,
-                .hero-progress-fill,
-                .hero-scan-line,
-                .hero-status-dot,
-                .section-rise,
-                .soft-sheen::after {
-                    animation: none;
+                .public-header-glass,
+                .public-header-glass::after,
+                .public-logo,
+                .public-wordmark,
+                .public-nav-link,
+                .public-nav-indicator,
+                .public-auth-link,
+                .public-auth-cta,
+                .public-avatar,
+                .public-mobile-avatar,
+                .public-user-dropdown,
+                .public-dropdown-link,
+                .public-menu-button,
+                .public-menu-icon span,
+                .public-mobile-scrim,
+                .public-mobile-panel,
+                .public-mobile-link,
+                .auth-shell::before,
+                .auth-button,
+                .auth-outline-button,
+                .auth-input {
+                    animation: none !important;
+                    transition: none !important;
                 }
             }
         </style>
+        @stack('styles')
     </head>
     <body class="min-h-screen bg-zinc-50 text-zinc-950 antialiased">
         @php
-            $transparentHeader = request()->routeIs('home');
+            $headerOverlaysContent = request()->routeIs('home');
+            $currentUser = auth()->user();
+            $dashboardUrl = null;
+            $userInitials = 'U';
+
+            if ($currentUser) {
+                $dashboardUrl = $currentUser->is_admin ? route('admin.dashboard') : route('driving-routes.my');
+                $nameParts = collect(preg_split('/\s+/', trim($currentUser->name ?? '')))->filter();
+                $userInitials = $nameParts
+                    ->take(2)
+                    ->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))
+                    ->join('');
+                $userInitials = \Illuminate\Support\Str::upper($userInitials ?: \Illuminate\Support\Str::substr($currentUser->email ?? 'U', 0, 1));
+            }
+
             $publicNavItems = [
                 ['label' => 'Home', 'route' => 'home', 'active' => ['home']],
-                ['label' => 'Routes', 'route' => 'driving-routes.index', 'active' => ['routes.index', 'driving-routes.index']],
                 ['label' => 'About', 'route' => 'about', 'active' => ['about']],
-                ['label' => 'Contact', 'route' => 'contact', 'active' => ['contact']],
+                ['label' => 'Routes', 'route' => 'driving-routes.index', 'active' => ['routes.index', 'driving-routes.index']],
+                ['label' => 'Blog', 'route' => 'blog', 'active' => ['blog']],
+                ['label' => 'Contact Us', 'route' => 'contact', 'active' => ['contact']],
             ];
         @endphp
 
         <header
             id="public-header"
-            data-transparent-header="{{ $transparentHeader ? 'true' : 'false' }}"
-            class="{{ $transparentHeader ? 'public-header-transparent fixed inset-x-0 border-transparent' : 'sticky border-zinc-200 bg-white/95' }} top-0 z-30 border-b backdrop-blur transition-all duration-300"
+            data-transparent-header="true"
+            class="public-header-glass"
         >
-            <nav class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-                <a href="{{ route('home') }}" class="public-brand flex items-center gap-3 text-zinc-950 transition-colors">
-                    <span class="public-logo grid h-10 w-10 place-items-center rounded-md bg-zinc-950 text-sm font-black text-white transition">DTR</span>
+            <nav class="public-header-nav mx-auto flex min-h-[4.75rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+                <a href="{{ route('home') }}" class="public-brand flex shrink-0 items-center gap-3">
+                    <span class="public-logo grid h-10 w-10 place-items-center rounded-md text-sm font-black text-white">DTR</span>
                     <span class="leading-tight">
-                        <span class="block text-base font-bold tracking-normal">Driver Test Routes</span>
-                        <span class="public-brand-subtitle block text-xs font-medium text-zinc-500 transition-colors">Practice maps for test day</span>
+                        <span class="public-wordmark text-base font-black">Driver Test Routes</span>
+                        <span class="public-brand-subtitle block text-xs font-medium">Practice maps for test day</span>
                     </span>
                 </a>
 
-                <div class="hidden items-center gap-1 text-sm lg:flex">
-                    @foreach($publicNavItems as $item)
-                        @php($isActive = collect($item['active'])->contains(fn ($pattern) => request()->routeIs($pattern)))
-                        <a href="{{ route($item['route']) }}" class="public-nav-link {{ $isActive ? 'public-nav-active bg-zinc-950 text-white' : 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950' }} rounded-md px-3 py-2 font-semibold transition">
-                            {{ $item['label'] }}
-                        </a>
-                    @endforeach
-
-                    @auth
-                        <a href="{{ route('driving-routes.my') }}" class="public-nav-link rounded-md px-3 py-2 font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950">
-                            My Routes
-                        </a>
-
-                        @if(auth()->user()->is_admin)
-                            <a href="{{ route('admin.dashboard') }}" class="public-nav-link rounded-md px-3 py-2 font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950">
-                                Dashboard
+                <div class="hidden flex-1 items-center justify-center lg:flex">
+                    <div class="public-nav-list" data-public-nav>
+                        @foreach($publicNavItems as $item)
+                            @php($isActive = collect($item['active'])->contains(fn ($pattern) => request()->routeIs($pattern)))
+                            <a
+                                href="{{ route($item['route']) }}"
+                                class="public-nav-link {{ $isActive ? 'public-nav-active' : '' }}"
+                                data-public-nav-link
+                                @if($isActive) aria-current="page" @endif
+                            >
+                                {{ $item['label'] }}
                             </a>
-                        @endif
+                        @endforeach
 
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="public-nav-link rounded-md border border-zinc-300 px-3 py-2 font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950">
-                                Logout
-                            </button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="public-nav-link rounded-md px-3 py-2 font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950">
-                            Login
-                        </a>
-                        <a href="{{ route('register') }}" class="rounded-md bg-emerald-700 px-3 py-2 font-semibold text-white shadow-sm transition hover:bg-emerald-800">
-                            Create Account
-                        </a>
-                    @endauth
+                        <span class="public-nav-indicator" data-public-nav-indicator aria-hidden="true"></span>
+                    </div>
                 </div>
 
-                <button id="public-menu-toggle" type="button" class="public-menu-button grid h-10 w-10 place-items-center rounded-md border border-zinc-300 text-zinc-800 transition hover:bg-zinc-100 lg:hidden" aria-controls="public-mobile-menu" aria-expanded="false" aria-label="Open navigation">
-                    <span class="space-y-1.5">
-                        <span class="block h-0.5 w-5 rounded-full bg-current"></span>
-                        <span class="block h-0.5 w-5 rounded-full bg-current"></span>
-                        <span class="block h-0.5 w-5 rounded-full bg-current"></span>
-                    </span>
-                </button>
+                <div class="flex shrink-0 items-center justify-end gap-2">
+                    @auth
+                        <div class="public-user-menu hidden lg:block">
+                            <button type="button" class="public-avatar" aria-label="Open user menu">
+                                {{ $userInitials }}
+                            </button>
+
+                            <div class="public-user-dropdown p-3">
+                                <div class="px-2 pb-3 pt-1">
+                                    <p class="truncate text-sm font-black text-white">{{ $currentUser->name }}</p>
+                                    <p class="mt-1 truncate text-xs font-medium text-slate-400">{{ $currentUser->email }}</p>
+                                </div>
+
+                                <div class="public-dropdown-divider mb-2"></div>
+
+                                <a href="{{ $dashboardUrl }}" class="public-dropdown-link">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                                        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                                        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                                        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                                    </svg>
+                                    Dashboard
+                                </a>
+
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="public-dropdown-link public-dropdown-link-danger">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                            <path d="M16 17l5-5-5-5" />
+                                            <path d="M21 12H9" />
+                                        </svg>
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <a href="{{ $dashboardUrl }}" class="public-mobile-avatar lg:hidden" aria-label="Open dashboard">
+                            {{ $userInitials }}
+                        </a>
+                    @else
+                        <div class="hidden items-center gap-2 lg:flex">
+                            <a href="{{ route('login') }}" class="public-auth-link">Log In</a>
+                            <a href="{{ route('register') }}" class="public-auth-cta">Sign Up</a>
+                        </div>
+                    @endauth
+
+                    <button id="public-menu-toggle" type="button" class="public-menu-button lg:hidden" aria-controls="public-mobile-menu" aria-expanded="false" aria-label="Open navigation">
+                        <span class="public-menu-icon" aria-hidden="true">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </span>
+                    </button>
+                </div>
             </nav>
 
-            <div id="public-mobile-menu" class="hidden border-t border-zinc-200 bg-white lg:hidden">
-                <div class="mx-auto max-w-7xl space-y-2 px-4 py-4 sm:px-6">
+            <div id="public-mobile-scrim" class="public-mobile-scrim lg:hidden" aria-hidden="true"></div>
+
+            <aside id="public-mobile-menu" class="public-mobile-panel lg:hidden" aria-hidden="true">
+                <div class="px-5 pb-8 pt-24">
+                    <div class="border-b border-white/10 pb-5">
+                        <p class="text-sm font-black text-white">Driver Test Routes</p>
+                        <p class="mt-1 text-xs font-medium text-slate-400">Practice maps for test day</p>
+                    </div>
+
+                    <nav class="mt-5 space-y-2" aria-label="Mobile navigation">
                     @foreach($publicNavItems as $item)
                         @php($isActive = collect($item['active'])->contains(fn ($pattern) => request()->routeIs($pattern)))
-                        <a href="{{ route($item['route']) }}" class="block rounded-md px-3 py-2 text-sm font-semibold transition {{ $isActive ? 'bg-zinc-950 text-white' : 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950' }}">
+                        <a
+                            href="{{ route($item['route']) }}"
+                            class="public-mobile-link {{ $isActive ? 'is-active' : '' }}"
+                            style="--item-index: {{ $loop->index }};"
+                            @if($isActive) aria-current="page" @endif
+                        >
                             {{ $item['label'] }}
                         </a>
                     @endforeach
+                    </nav>
 
-                    <div class="border-t border-zinc-200 pt-3">
+                    <div class="mt-6 border-t border-white/10 pt-5">
                         @auth
-                            <a href="{{ route('driving-routes.my') }}" class="block rounded-md px-3 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950">
-                                My Routes
-                            </a>
-                            @if(auth()->user()->is_admin)
-                                <a href="{{ route('admin.dashboard') }}" class="block rounded-md px-3 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950">
-                                    Dashboard
-                                </a>
-                            @endif
-                            <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                            <div class="public-mobile-link mb-2 justify-start gap-3" style="--item-index: {{ count($publicNavItems) }};">
+                                <span class="public-avatar h-10 w-10">{{ $userInitials }}</span>
+                                <span class="min-w-0">
+                                    <span class="block truncate text-sm font-black text-white">{{ $currentUser->name }}</span>
+                                    <span class="mt-1 block truncate text-xs font-medium text-slate-400">{{ $currentUser->email }}</span>
+                                </span>
+                            </div>
+
+                            <a href="{{ $dashboardUrl }}" class="public-mobile-link" style="--item-index: {{ count($publicNavItems) + 1 }};">Dashboard</a>
+
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="w-full rounded-md border border-zinc-300 px-3 py-2 text-left text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950">
+                                <button type="submit" class="public-mobile-link w-full" style="--item-index: {{ count($publicNavItems) + 2 }};">
                                     Logout
                                 </button>
                             </form>
                         @else
-                            <div class="grid gap-2 sm:grid-cols-2">
-                                <a href="{{ route('login') }}" class="rounded-md border border-zinc-300 px-3 py-2 text-center text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950">
-                                    Login
-                                </a>
-                                <a href="{{ route('register') }}" class="rounded-md bg-emerald-700 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800">
-                                    Create Account
-                                </a>
+                            <div class="grid gap-3">
+                                <a href="{{ route('login') }}" class="public-mobile-link public-auth-link" style="--item-index: {{ count($publicNavItems) }};">Log In</a>
+                                <a href="{{ route('register') }}" class="public-mobile-link public-auth-cta" style="--item-index: {{ count($publicNavItems) + 1 }};">Sign Up</a>
                             </div>
                         @endauth
                     </div>
                 </div>
-            </div>
+            </aside>
         </header>
 
-        <main>
+        <main class="{{ $headerOverlaysContent ? '' : 'public-main-offset' }}">
             @if(session('success') || session('error') || $errors->any())
                 <div class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8">
                     @if(session('success'))
-                        <div class="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+                        <div class="rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-800">
                             {{ session('success') }}
                         </div>
                     @endif
@@ -291,68 +831,141 @@
             @yield('content')
         </main>
 
-        <footer class="border-t border-zinc-200 bg-white">
+        <footer class="border-t border-white/10 bg-[#0a0a0f] text-white">
             <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr] lg:px-8">
                 <div>
-                    <a href="{{ route('home') }}" class="flex items-center gap-3 text-zinc-950">
-                        <span class="grid h-10 w-10 place-items-center rounded-md bg-zinc-950 text-sm font-black text-white">DTR</span>
+                    <a href="{{ route('home') }}" class="flex items-center gap-3 text-white">
+                        <span class="grid h-10 w-10 place-items-center rounded-md bg-gradient-to-br from-blue-950 via-blue-700 to-cyan-400 text-sm font-black text-white">DTR</span>
                         <span class="font-bold">Driver Test Routes</span>
                     </a>
-                    <p class="mt-4 max-w-md text-sm leading-6 text-zinc-600">
+                    <p class="mt-4 max-w-md text-sm leading-6 text-zinc-400">
                         Paid driving test route maps built for focused practice, clear route planning, and confident test-day preparation.
                     </p>
                 </div>
 
                 <div>
-                    <h2 class="text-sm font-bold text-zinc-950">Pages</h2>
+                    <h2 class="text-sm font-bold text-white">Pages</h2>
                     <div class="mt-3 space-y-2 text-sm">
-                        <a href="{{ route('driving-routes.index') }}" class="block text-zinc-600 hover:text-emerald-700">Routes</a>
-                        <a href="{{ route('about') }}" class="block text-zinc-600 hover:text-emerald-700">About</a>
-                        <a href="{{ route('contact') }}" class="block text-zinc-600 hover:text-emerald-700">Contact</a>
+                        <a href="{{ route('home') }}" class="block text-zinc-400 transition hover:text-cyan-300">Home</a>
+                        <a href="{{ route('about') }}" class="block text-zinc-400 transition hover:text-cyan-300">About</a>
+                        <a href="{{ route('driving-routes.index') }}" class="block text-zinc-400 transition hover:text-cyan-300">Routes</a>
+                        <a href="{{ route('blog') }}" class="block text-zinc-400 transition hover:text-cyan-300">Blog</a>
+                        <a href="{{ route('contact') }}" class="block text-zinc-400 transition hover:text-cyan-300">Contact Us</a>
                     </div>
                 </div>
 
                 <div>
-                    <h2 class="text-sm font-bold text-zinc-950">Account</h2>
+                    <h2 class="text-sm font-bold text-white">Account</h2>
                     <div class="mt-3 space-y-2 text-sm">
                         @auth
-                            <a href="{{ route('driving-routes.my') }}" class="block text-zinc-600 hover:text-emerald-700">My Routes</a>
+                            <a href="{{ route('driving-routes.my') }}" class="block text-zinc-400 transition hover:text-cyan-300">My Routes</a>
                         @else
-                            <a href="{{ route('login') }}" class="block text-zinc-600 hover:text-emerald-700">Login</a>
-                            <a href="{{ route('register') }}" class="block text-zinc-600 hover:text-emerald-700">Create Account</a>
+                            <a href="{{ route('login') }}" class="block text-zinc-400 transition hover:text-cyan-300">Login</a>
+                            <a href="{{ route('register') }}" class="block text-zinc-400 transition hover:text-cyan-300">Create Account</a>
                         @endauth
                     </div>
                 </div>
             </div>
         </footer>
         <script>
-            const publicHeader = document.getElementById('public-header');
-            const publicMenuToggle = document.getElementById('public-menu-toggle');
-            const publicMobileMenu = document.getElementById('public-mobile-menu');
+            (() => {
+                const publicHeader = document.getElementById('public-header');
+                const publicMenuToggle = document.getElementById('public-menu-toggle');
+                const publicMobileMenu = document.getElementById('public-mobile-menu');
+                const publicMobileScrim = document.getElementById('public-mobile-scrim');
+                const publicNav = document.querySelector('[data-public-nav]');
+                const publicNavIndicator = document.querySelector('[data-public-nav-indicator]');
+                const publicNavLinks = Array.from(document.querySelectorAll('[data-public-nav-link]'));
+                const activePublicNavLink = publicNavLinks.find((link) => link.getAttribute('aria-current') === 'page');
 
-            function syncPublicHeader() {
-                if (!publicHeader || publicHeader.dataset.transparentHeader !== 'true') {
-                    return;
+                function isPublicMobileMenuOpen() {
+                    return Boolean(publicMobileMenu?.classList.contains('is-open'));
                 }
 
-                const menuOpen = publicMobileMenu && !publicMobileMenu.classList.contains('hidden');
-                const transparent = window.scrollY < 12 && !menuOpen;
+                function syncPublicHeader() {
+                    if (!publicHeader) {
+                        return;
+                    }
 
-                publicHeader.classList.toggle('public-header-transparent', transparent);
-                publicHeader.classList.toggle('bg-white/95', !transparent);
-                publicHeader.classList.toggle('border-zinc-200', !transparent);
-                publicHeader.classList.toggle('shadow-sm', !transparent);
-            }
+                    publicHeader.classList.toggle('public-header-scrolled', window.scrollY > 12 || isPublicMobileMenuOpen());
+                }
 
-            publicMenuToggle?.addEventListener('click', () => {
-                const isOpen = !publicMobileMenu.classList.contains('hidden');
-                publicMobileMenu.classList.toggle('hidden', isOpen);
-                publicMenuToggle.setAttribute('aria-expanded', String(!isOpen));
-                syncPublicHeader();
-            });
+                function movePublicNavIndicator(link) {
+                    if (!publicNav || !publicNavIndicator || !link || publicNav.offsetParent === null) {
+                        return;
+                    }
 
-            window.addEventListener('scroll', syncPublicHeader, { passive: true });
-            syncPublicHeader();
+                    const navRect = publicNav.getBoundingClientRect();
+                    const linkRect = link.getBoundingClientRect();
+
+                    publicNavIndicator.style.width = `${linkRect.width}px`;
+                    publicNavIndicator.style.transform = `translate3d(${linkRect.left - navRect.left}px, 0, 0)`;
+                    publicNavIndicator.classList.add('is-visible');
+                }
+
+                function resetPublicNavIndicator() {
+                    if (activePublicNavLink) {
+                        movePublicNavIndicator(activePublicNavLink);
+                        return;
+                    }
+
+                    publicNavIndicator?.classList.remove('is-visible');
+                }
+
+                publicNavLinks.forEach((link) => {
+                    link.addEventListener('mouseenter', () => movePublicNavIndicator(link));
+                    link.addEventListener('focus', () => movePublicNavIndicator(link));
+                });
+
+                publicNav?.addEventListener('mouseleave', resetPublicNavIndicator);
+                publicNav?.addEventListener('focusout', (event) => {
+                    if (!publicNav.contains(event.relatedTarget)) {
+                        resetPublicNavIndicator();
+                    }
+                });
+
+                function setPublicMobileMenu(open) {
+                    publicMobileMenu?.classList.toggle('is-open', open);
+                    publicMobileScrim?.classList.toggle('is-open', open);
+                    publicMenuToggle?.classList.toggle('is-open', open);
+                    publicMenuToggle?.setAttribute('aria-expanded', String(open));
+                    publicMobileMenu?.setAttribute('aria-hidden', String(!open));
+                    document.body.classList.toggle('public-mobile-open', open);
+                    syncPublicHeader();
+                }
+
+                publicMenuToggle?.addEventListener('click', () => {
+                    setPublicMobileMenu(!isPublicMobileMenuOpen());
+                });
+
+                publicMobileScrim?.addEventListener('click', () => setPublicMobileMenu(false));
+
+                publicMobileMenu?.querySelectorAll('a').forEach((link) => {
+                    link.addEventListener('click', () => setPublicMobileMenu(false));
+                });
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        setPublicMobileMenu(false);
+                    }
+                });
+
+                window.addEventListener('scroll', syncPublicHeader, { passive: true });
+                window.addEventListener('resize', () => {
+                    resetPublicNavIndicator();
+
+                    if (window.innerWidth >= 1024 && isPublicMobileMenuOpen()) {
+                        setPublicMobileMenu(false);
+                    }
+                }, { passive: true });
+
+                document.fonts?.ready.then(resetPublicNavIndicator);
+                requestAnimationFrame(() => {
+                    resetPublicNavIndicator();
+                    syncPublicHeader();
+                });
+            })();
         </script>
+        @stack('scripts')
     </body>
 </html>

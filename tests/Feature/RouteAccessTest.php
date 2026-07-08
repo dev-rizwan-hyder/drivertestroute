@@ -39,6 +39,10 @@ class RouteAccessTest extends TestCase
             ->assertOk()
             ->assertSee('About us');
 
+        $this->get('/blog')
+            ->assertOk()
+            ->assertSee('Route practice notes');
+
         $this->get('/contact')
             ->assertOk()
             ->assertSee('Contact');

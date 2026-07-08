@@ -2,16 +2,86 @@
 
 @section('title', $route->title)
 
+@push('styles')
+    <style>
+        .route-detail-page {
+            background:
+                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .18), transparent 32%),
+                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .12), transparent 30%),
+                linear-gradient(180deg, #0a0e1a, #0d1117 48%, #0a0e1a);
+            color: #f8fafc;
+        }
+
+        .route-detail-glass {
+            border: 1px solid rgba(59, 130, 246, .22);
+            border-radius: .5rem;
+            background:
+                linear-gradient(180deg, rgba(56, 189, 248, .075), rgba(15, 23, 42, .18)),
+                rgba(17, 24, 39, .68);
+            box-shadow: 0 22px 58px rgba(2, 6, 23, .34), inset 0 1px 0 rgba(255, 255, 255, .1);
+            backdrop-filter: blur(16px);
+        }
+
+        .route-detail-gradient-text {
+            color: transparent;
+            background: linear-gradient(100deg, #fff 0%, #bfdbfe 26%, #38bdf8 56%, #cffafe 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .route-detail-button {
+            display: inline-flex;
+            min-height: 2.75rem;
+            align-items: center;
+            justify-content: center;
+            border-radius: .5rem;
+            padding: .75rem 1rem;
+            font-weight: 900;
+            transition: transform 200ms cubic-bezier(.16, 1, .3, 1), box-shadow 200ms ease-out, border-color 200ms ease-out, background 200ms ease-out;
+        }
+
+        .route-detail-button:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .route-detail-button-primary {
+            color: #fff;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb 52%, #06b6d4);
+            box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+        }
+
+        .route-detail-button-secondary {
+            border: 1px solid rgba(59, 130, 246, .34);
+            color: #bfdbfe;
+            background: rgba(15, 23, 42, .52);
+        }
+
+        .route-detail-page #active-instruction {
+            border-color: rgba(255, 255, 255, .1) !important;
+            background: rgba(10, 14, 26, .94) !important;
+        }
+
+        .route-detail-page #active-instruction-title,
+        .route-detail-page #directions-list p,
+        .route-detail-page #directions-list div {
+            color: inherit;
+        }
+    </style>
+@endpush
+
 @section('content')
     @php
+        $routeCity = $route->relationLoaded('cityModel') ? $route->cityModel : null;
+        $cityName = $routeCity?->name ?? $route->city;
+        $cityAddress = $routeCity?->address;
         $startQuery = trim(implode(', ', array_filter([
             $route->start_label,
-            $route->city,
+            $cityName,
             $route->province,
         ])));
         $destinationQuery = trim(implode(', ', array_filter([
             $route->destination_label,
-            $route->city,
+            $cityName,
             $route->province,
         ])));
         $hasStart = ($route->start_lat !== null && $route->start_lng !== null) || $startQuery !== '';
@@ -19,123 +89,179 @@
         $hasRouteStops = $hasStart && $hasDestination;
     @endphp
 
-    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <a href="{{ route('driving-routes.my') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">Back to my routes</a>
-                <h1 class="mt-3 text-3xl font-bold text-stone-950">{{ $route->title }}</h1>
-                <p class="mt-2 text-stone-600">{{ $route->city }}, {{ $route->province }}</p>
-                <div class="mt-4 flex flex-wrap gap-3 text-sm">
-                    @if($route->route_duration_minutes)
-                        <span class="rounded-md bg-white px-3 py-2 font-semibold text-stone-800 shadow-sm ring-1 ring-stone-200">
-                            {{ $route->route_duration_minutes }} mins
+    <div class="route-detail-page">
+        <section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+            <nav class="mb-6 flex flex-wrap items-center gap-2 text-sm font-bold text-slate-400" aria-label="Breadcrumb">
+                <a href="{{ route('home') }}" class="transition hover:text-cyan-200">Home</a>
+                <span>/</span>
+                <a href="{{ route('driving-routes.index') }}" class="transition hover:text-cyan-200">Routes</a>
+                @if($route->city_id)
+                    <span>/</span>
+                    <a href="{{ route('driving-routes.index', ['city' => $route->city_id]) }}" class="transition hover:text-cyan-200">{{ $cityName }}</a>
+                @elseif($cityName)
+                    <span>/</span>
+                    <span>{{ $cityName }}</span>
+                @endif
+                <span>/</span>
+                <span class="text-white">{{ $route->title }}</span>
+            </nav>
+
+            <div class="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                    <a href="{{ route('driving-routes.index', $route->city_id ? ['city' => $route->city_id] : []) }}" class="route-detail-button route-detail-button-secondary">
+                        Back to routes
+                    </a>
+                    <h1 class="mt-5 text-4xl font-black text-white sm:text-5xl">{{ $route->title }}</h1>
+                    <p class="route-detail-gradient-text mt-3 text-xl font-black">{{ $cityName }}, {{ $route->province }}</p>
+                    @if($cityAddress)
+                        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">{{ $cityAddress }}</p>
+                    @endif
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    @if(auth()->user()->is_admin)
+                        <span class="rounded-md border border-blue-500/20 bg-white/[.06] px-3 py-2 text-sm font-black text-cyan-100">Admin preview</span>
+                    @else
+                        <span class="rounded-md border border-blue-500/20 bg-white/[.06] px-3 py-2 text-sm font-black text-cyan-100">
+                            {{ $remainingStarts }} map {{ \Illuminate\Support\Str::plural('start', $remainingStarts) }} left
                         </span>
                     @endif
-                    @if($route->route_length_km)
-                        <span class="rounded-md bg-white px-3 py-2 font-semibold text-stone-800 shadow-sm ring-1 ring-stone-200">
-                            {{ $route->route_length_km }} km
-                        </span>
+
+                    @if($route->preview_pdf_path)
+                        <a href="{{ \Illuminate\Support\Facades\Storage::url($route->preview_pdf_path) }}" target="_blank" class="route-detail-button route-detail-button-secondary">
+                            Preview PDF
+                        </a>
                     @endif
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-                @if(auth()->user()->is_admin)
-                    <span class="rounded-md bg-stone-900 px-3 py-2 text-sm font-semibold text-white">Admin preview</span>
-                @else
-                    <span class="rounded-md bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
-                        {{ $remainingStarts }} map {{ \Illuminate\Support\Str::plural('start', $remainingStarts) }} left
-                    </span>
-                @endif
-
-                @if($route->preview_pdf_path)
-                    <a href="{{ \Illuminate\Support\Facades\Storage::url($route->preview_pdf_path) }}" target="_blank" class="inline-flex items-center justify-center rounded-md border border-stone-300 px-4 py-2 font-semibold text-stone-700 hover:bg-stone-100">
-                        Preview PDF
-                    </a>
-                @endif
-            </div>
-        </div>
-
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-            <div class="overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+            <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
+                <div class="route-detail-glass overflow-hidden">
                 @if(config('services.google.maps_key') && $hasRouteStops)
                     <div id="map" class="h-[68vh] min-h-[460px] w-full"></div>
-                    <div id="active-instruction" class="border-t border-stone-200 bg-white px-5 py-4">
-                        <div class="text-xs font-semibold uppercase tracking-normal text-stone-500">Drive Guidance</div>
-                        <div id="active-instruction-title" class="mt-1 text-xl font-bold text-stone-950">Route loading...</div>
-                        <div id="active-instruction-detail" class="mt-1 text-sm text-stone-600">Google will calculate the best path from start to midpoint and back to start.</div>
+                    <div id="active-instruction" class="border-t border-white/10 px-5 py-4">
+                        <div class="text-xs font-black uppercase text-slate-500">Drive Guidance</div>
+                        <div id="active-instruction-title" class="mt-1 text-xl font-black text-white">Route loading...</div>
+                        <div id="active-instruction-detail" class="mt-1 text-sm text-slate-400">Google will calculate the best path from start to midpoint and back to start.</div>
                     </div>
                 @elseif(! $hasRouteStops)
-                    <div class="grid h-[70vh] min-h-[460px] place-items-center bg-stone-100 p-6 text-center">
+                    <div class="grid h-[70vh] min-h-[460px] place-items-center bg-[#0a0e1a] p-6 text-center">
                         <div>
-                            <h2 class="text-lg font-semibold text-stone-950">Start and midpoint needed</h2>
-                            <p class="mt-2 max-w-md text-sm text-stone-600">Add a start point and midpoint/end point in the admin panel. Google will calculate the return route automatically.</p>
+                            <h2 class="text-lg font-black text-white">Start and midpoint needed</h2>
+                            <p class="mt-2 max-w-md text-sm text-slate-400">Add a start point and midpoint/end point in the admin panel. Google will calculate the return route automatically.</p>
                         </div>
                     </div>
                 @else
-                    <div class="grid h-[70vh] min-h-[460px] place-items-center bg-stone-100 p-6 text-center">
-                        <div>
-                            <h2 class="text-lg font-semibold text-stone-950">Google Maps key needed</h2>
-                            <p class="mt-2 max-w-md text-sm text-stone-600">Set GOOGLE_MAPS_KEY in the environment to render the live route map.</p>
+                    <div class="relative grid h-[70vh] min-h-[460px] place-items-center overflow-hidden bg-[#0a0e1a] p-6 text-center">
+                        <svg class="absolute inset-0 h-full w-full opacity-80" viewBox="0 0 720 520" fill="none" aria-hidden="true">
+                            <path d="M0 104H720M0 208H720M0 312H720M0 416H720M120 0V520M240 0V520M360 0V520M480 0V520M600 0V520" stroke="rgba(148,163,184,.14)" />
+                            <path d="M74 420 C166 240 260 326 350 174 C438 26 544 164 646 86" stroke="url(#routePlaceholder)" stroke-width="10" stroke-linecap="round" />
+                            <circle cx="74" cy="420" r="13" fill="#38bdf8" />
+                            <circle cx="646" cy="86" r="13" fill="#2563eb" />
+                            <defs>
+                                <linearGradient id="routePlaceholder" x1="74" x2="646" y1="420" y2="86">
+                                    <stop stop-color="#1e3a8a" />
+                                    <stop offset=".55" stop-color="#2563eb" />
+                                    <stop offset="1" stop-color="#06b6d4" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="relative">
+                            <h2 class="text-lg font-black text-white">Google Maps key needed</h2>
+                            <p class="mt-2 max-w-md text-sm text-slate-400">Set GOOGLE_MAPS_KEY in the environment to render the live route map.</p>
                         </div>
                     </div>
                 @endif
             </div>
 
-            <aside class="rounded-lg border border-stone-200 bg-white shadow-sm">
-                <div class="border-b border-stone-200 p-5">
-                    <h2 class="text-lg font-semibold text-stone-950">Map Access</h2>
+                <aside class="route-detail-glass overflow-hidden">
+                <div class="border-b border-white/10 p-5">
+                    <h2 class="text-lg font-black text-white">Details</h2>
                     <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
                         @if(auth()->user()->is_admin)
-                            <div class="rounded-md bg-stone-50 p-3">
-                                <dt class="font-medium text-stone-500">Mode</dt>
-                                <dd class="mt-1 font-semibold text-stone-900">Admin preview</dd>
+                            <div class="rounded-md bg-white/[.06] p-3">
+                                <dt class="font-bold text-slate-500">Mode</dt>
+                                <dd class="mt-1 font-black text-white">Admin preview</dd>
                             </div>
-                            <div class="rounded-md bg-stone-50 p-3">
-                                <dt class="font-medium text-stone-500">Starts Used</dt>
-                                <dd class="mt-1 font-semibold text-stone-900">Not counted</dd>
+                            <div class="rounded-md bg-white/[.06] p-3">
+                                <dt class="font-bold text-slate-500">Starts Used</dt>
+                                <dd class="mt-1 font-black text-white">Not counted</dd>
                             </div>
                         @else
-                            <div class="rounded-md bg-stone-50 p-3">
-                                <dt class="font-medium text-stone-500">Starts Left</dt>
-                                <dd id="remaining-starts" class="mt-1 font-semibold text-stone-900">{{ $remainingStarts }}</dd>
+                            <div class="rounded-md bg-white/[.06] p-3">
+                                <dt class="font-bold text-slate-500">Starts Left</dt>
+                                <dd id="remaining-starts" class="mt-1 font-black text-white">{{ $remainingStarts }}</dd>
                             </div>
-                            <div class="rounded-md bg-stone-50 p-3">
-                                <dt class="font-medium text-stone-500">Starts Used</dt>
-                                <dd class="mt-1 font-semibold text-stone-900">{{ $purchase->access_used }} / {{ $purchase->access_limit }}</dd>
+                            <div class="rounded-md bg-white/[.06] p-3">
+                                <dt class="font-bold text-slate-500">Starts Used</dt>
+                                <dd class="mt-1 font-black text-white">{{ $purchase->access_used }} / {{ $purchase->access_limit }}</dd>
                             </div>
                         @endif
+                        <div class="rounded-md bg-white/[.06] p-3">
+                            <dt class="font-bold text-slate-500">Schedule</dt>
+                            <dd class="mt-1 font-black text-white">{{ $route->route_duration_minutes ? $route->route_duration_minutes.' mins' : 'Ready' }}</dd>
+                        </div>
+                        <div class="rounded-md bg-white/[.06] p-3">
+                            <dt class="font-bold text-slate-500">Pricing</dt>
+                            <dd class="mt-1 font-black text-white">${{ number_format((float) $route->price, 2) }}</dd>
+                        </div>
                     </dl>
                 </div>
 
-                <div class="border-b border-stone-200 p-5">
-                    <h2 class="text-lg font-semibold text-stone-950">Google Directions</h2>
+                <div class="border-b border-white/10 p-5">
+                    <h2 class="text-lg font-black text-white">Stops</h2>
                     <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
-                        <div class="rounded-md bg-stone-50 p-3">
-                            <dt class="font-medium text-stone-500">Start</dt>
-                            <dd class="mt-1 font-semibold text-stone-900">{{ $route->start_label ?: 'Start point' }}</dd>
+                        <div class="rounded-md bg-white/[.06] p-3">
+                            <dt class="font-bold text-slate-500">Start</dt>
+                            <dd class="mt-1 font-black text-white">{{ $route->start_label ?: 'Start point' }}</dd>
                         </div>
-                        <div class="rounded-md bg-stone-50 p-3">
-                            <dt class="font-medium text-stone-500">Midpoint</dt>
-                            <dd class="mt-1 font-semibold text-stone-900">{{ $route->destination_label ?: 'Midpoint' }}</dd>
+                        <div class="rounded-md bg-white/[.06] p-3">
+                            <dt class="font-bold text-slate-500">Midpoint</dt>
+                            <dd class="mt-1 font-black text-white">{{ $route->destination_label ?: 'Midpoint' }}</dd>
                         </div>
-                        <div class="rounded-md bg-stone-50 p-3">
-                            <dt class="font-medium text-stone-500">Finish</dt>
-                            <dd class="mt-1 font-semibold text-stone-900">Back to start</dd>
+                        <div class="rounded-md bg-white/[.06] p-3">
+                            <dt class="font-bold text-slate-500">Finish</dt>
+                            <dd class="mt-1 font-black text-white">Back to start</dd>
                         </div>
-                        <div class="rounded-md bg-stone-50 p-3">
-                            <dt class="font-medium text-stone-500">Mode</dt>
-                            <dd class="mt-1 font-semibold text-stone-900">Driving</dd>
+                        <div class="rounded-md bg-white/[.06] p-3">
+                            <dt class="font-bold text-slate-500">Length</dt>
+                            <dd class="mt-1 font-black text-white">{{ $route->route_length_km ? $route->route_length_km.' km' : 'Route' }}</dd>
                         </div>
                     </dl>
+                    @if($route->description)
+                        <p class="mt-4 text-sm leading-6 text-slate-400">{{ $route->description }}</p>
+                    @endif
                 </div>
 
-                <ol id="directions-list" class="max-h-[60vh] divide-y divide-stone-200 overflow-y-auto">
-                    <li class="p-5 text-sm text-stone-600">Directions will appear after Google calculates the route.</li>
+                <ol id="directions-list" class="max-h-[60vh] divide-y divide-white/10 overflow-y-auto">
+                    <li class="p-5 text-sm text-slate-400">Directions will appear after Google calculates the route.</li>
                 </ol>
             </aside>
-        </div>
-    </section>
+            </div>
+
+            @if($relatedRoutes->isNotEmpty())
+                <section class="mt-12">
+                    <div class="mb-5 flex items-end justify-between gap-4">
+                        <div>
+                            <p class="text-sm font-black uppercase text-cyan-200">Related routes</p>
+                            <h2 class="mt-2 text-2xl font-black text-white">More in {{ $cityName }}</h2>
+                        </div>
+                        <a href="{{ route('driving-routes.index', $route->city_id ? ['city' => $route->city_id] : []) }}" class="route-detail-button route-detail-button-secondary">View all</a>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-3">
+                        @foreach($relatedRoutes as $relatedRoute)
+                            <a href="{{ route('driving-routes.show', $relatedRoute) }}" class="route-detail-glass p-5 transition hover:-translate-y-1 hover:border-cyan-300/40">
+                                <h3 class="font-black text-white">{{ $relatedRoute->title }}</h3>
+                                @php($relatedCity = $relatedRoute->relationLoaded('cityModel') ? $relatedRoute->cityModel : null)
+                                <p class="mt-2 text-sm text-slate-400">{{ $relatedCity?->name ?? $relatedRoute->city }}, {{ $relatedRoute->province }}</p>
+                                <p class="mt-4 text-sm font-black text-cyan-100">${{ number_format((float) $relatedRoute->price, 2) }}</p>
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+        </section>
+    </div>
 
     @if(config('services.google.maps_key') && $hasRouteStops)
         <script>

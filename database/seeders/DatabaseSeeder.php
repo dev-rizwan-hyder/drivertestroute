@@ -26,6 +26,9 @@ class DatabaseSeeder extends Seeder
             'is_admin' => true,
         ]);
 
-        $this->call(DrivingRouteSeeder::class);
+        $this->call([
+            CitySeeder::class,
+            DrivingRouteSeeder::class,
+        ]);
     }
 }

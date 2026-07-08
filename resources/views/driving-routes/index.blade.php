@@ -2,155 +2,434 @@
 
 @section('title', 'Routes')
 
+@push('styles')
+    <style>
+        .routes-page {
+            background:
+                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .18), transparent 32%),
+                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .12), transparent 30%),
+                linear-gradient(180deg, #0a0e1a, #0d1117 48%, #0a0e1a);
+            color: #f8fafc;
+        }
+
+        .routes-gradient-text {
+            color: transparent;
+            background: linear-gradient(100deg, #fff 0%, #bfdbfe 26%, #38bdf8 56%, #cffafe 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .routes-glass {
+            border: 1px solid rgba(59, 130, 246, .22);
+            border-radius: .5rem;
+            background:
+                linear-gradient(180deg, rgba(56, 189, 248, .075), rgba(15, 23, 42, .18)),
+                rgba(17, 24, 39, .68);
+            box-shadow: 0 22px 58px rgba(2, 6, 23, .34), inset 0 1px 0 rgba(255, 255, 255, .1);
+            backdrop-filter: blur(16px);
+        }
+
+        .routes-card {
+            transition: transform 240ms cubic-bezier(.16, 1, .3, 1), box-shadow 240ms ease-out, border-color 240ms ease-out;
+        }
+
+        .routes-card:hover {
+            border-color: rgba(56, 189, 248, .38);
+            box-shadow: 0 0 20px rgba(59, 130, 246, .34), 0 26px 64px rgba(2, 6, 23, .38);
+            transform: translateY(-4px);
+        }
+
+        .routes-filter {
+            border: 1px solid rgba(59, 130, 246, .34);
+            border-radius: .5rem;
+            background: rgba(15, 23, 42, .48);
+            padding: .62rem .85rem;
+            color: #bfdbfe;
+            font-size: .875rem;
+            font-weight: 800;
+            transition: transform 200ms cubic-bezier(.16, 1, .3, 1), background 200ms ease-out, box-shadow 200ms ease-out;
+        }
+
+        .routes-filter:hover,
+        .routes-filter.is-active {
+            color: #fff;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb 52%, #06b6d4);
+            box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+            transform: translateY(-1px);
+        }
+
+        .routes-city-combobox {
+            position: relative;
+            max-width: 44rem;
+        }
+
+        .routes-city-input-wrap {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: .75rem;
+            border: 1px solid rgba(59, 130, 246, .28);
+            border-radius: .5rem;
+            background:
+                linear-gradient(180deg, rgba(56, 189, 248, .07), rgba(15, 23, 42, .2)),
+                rgba(17, 24, 39, .68);
+            padding: .5rem;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 20px 50px rgba(2, 6, 23, .24);
+            backdrop-filter: blur(16px);
+            transition: border-color 220ms ease-out, box-shadow 220ms ease-out;
+        }
+
+        .routes-city-combobox.is-open .routes-city-input-wrap,
+        .routes-city-input-wrap:focus-within {
+            border-color: rgba(56, 189, 248, .58);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, .14), 0 22px 52px rgba(2, 6, 23, .3);
+        }
+
+        .routes-city-input {
+            min-width: 0;
+            border: 0;
+            background: transparent;
+            padding: .7rem .8rem;
+            color: #fff;
+            font-weight: 800;
+            outline: 0;
+        }
+
+        .routes-city-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .routes-city-panel {
+            position: absolute;
+            right: 0;
+            left: 0;
+            z-index: 20;
+            margin-top: .55rem;
+            max-height: 19rem;
+            overflow-y: auto;
+            border: 1px solid rgba(59, 130, 246, .28);
+            border-radius: .5rem;
+            background:
+                linear-gradient(180deg, rgba(56, 189, 248, .08), rgba(15, 23, 42, .16)),
+                rgba(10, 14, 26, .96);
+            box-shadow: 0 26px 70px rgba(2, 6, 23, .48), inset 0 1px 0 rgba(255, 255, 255, .1);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-6px);
+            transition: opacity 180ms ease-out, transform 180ms cubic-bezier(.16, 1, .3, 1);
+            backdrop-filter: blur(18px);
+        }
+
+        .routes-city-combobox.is-open .routes-city-panel {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .routes-city-option {
+            display: block;
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            background: transparent;
+            padding: .9rem 1rem;
+            text-align: left;
+            transition: background 180ms ease-out, transform 180ms cubic-bezier(.16, 1, .3, 1);
+        }
+
+        .routes-city-option:hover,
+        .routes-city-option:focus-visible {
+            background: rgba(37, 99, 235, .16);
+            outline: 0;
+            transform: translateX(2px);
+        }
+
+        .routes-city-option:last-child {
+            border-bottom: 0;
+        }
+
+        .routes-button {
+            display: inline-flex;
+            min-height: 2.75rem;
+            align-items: center;
+            justify-content: center;
+            border-radius: .5rem;
+            padding: .75rem 1rem;
+            font-weight: 900;
+            transition: transform 200ms cubic-bezier(.16, 1, .3, 1), box-shadow 200ms ease-out, border-color 200ms ease-out, background 200ms ease-out;
+        }
+
+        .routes-button:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .routes-button-primary {
+            color: #fff;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb 52%, #06b6d4);
+            box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+        }
+
+        .routes-button-secondary {
+            border: 1px solid rgba(59, 130, 246, .34);
+            color: #bfdbfe;
+            background: rgba(15, 23, 42, .52);
+        }
+    </style>
+@endpush
+
 @section('content')
-    <section class="border-b border-zinc-200 bg-white">
-        <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <p class="text-sm font-bold uppercase tracking-normal text-emerald-700">Route catalog</p>
-                    <h1 class="mt-2 text-4xl font-bold tracking-normal text-zinc-950">Driving Test Routes</h1>
-                    <p class="mt-3 max-w-2xl text-zinc-600">Browse paid route maps, compare pricing, and unlock limited map starts for your test area.</p>
+    <div class="routes-page">
+        <section class="border-b border-white/10">
+            <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+                <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <p class="text-sm font-black uppercase text-cyan-200">Route catalog</p>
+                        <h1 class="mt-3 text-5xl font-black tracking-normal text-white">
+                            Driving Test Routes
+                            @if($selectedCity)
+                                <span class="routes-gradient-text block">{{ $selectedCity->name }}</span>
+                            @endif
+                        </h1>
+                        <p class="mt-4 max-w-2xl text-base leading-7 text-slate-400">
+                            Browse paid route maps, compare pricing, and unlock limited map starts for your test area.
+                        </p>
+                    </div>
+
+                    @auth
+                        @if(auth()->user()->is_admin)
+                            <a href="{{ route('admin.driving-routes.create') }}" class="routes-button routes-button-primary">
+                                Add Route
+                            </a>
+                        @endif
+                    @endauth
                 </div>
 
-                @auth
-                    @if(auth()->user()->is_admin)
-                        <a href="{{ route('admin.driving-routes.create') }}" class="inline-flex items-center justify-center rounded-md bg-emerald-700 px-4 py-2 font-bold text-white transition hover:bg-emerald-800">
-                            Add Route
-                        </a>
-                    @endif
-                @endauth
-            </div>
-
-            @if($routes->isNotEmpty())
-                @php
-                    $cities = $routes->pluck('city')->filter()->unique()->take(6);
-                    $lowestPrice = $routes->min('price');
-                @endphp
-                <dl class="mt-8 grid gap-3 sm:grid-cols-3">
-                    <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
-                        <dt class="text-sm text-zinc-500">Available routes</dt>
-                        <dd class="mt-1 text-2xl font-bold text-zinc-950">{{ number_format($routes->count()) }}</dd>
-                    </div>
-                    <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
-                        <dt class="text-sm text-zinc-500">Cities</dt>
-                        <dd class="mt-1 text-2xl font-bold text-zinc-950">{{ number_format($routes->pluck('city')->filter()->unique()->count()) }}</dd>
-                    </div>
-                    <div class="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
-                        <dt class="text-sm text-zinc-500">Starting from</dt>
-                        <dd class="mt-1 text-2xl font-bold text-zinc-950">${{ number_format((float) $lowestPrice, 2) }}</dd>
-                    </div>
-                </dl>
-
                 @if($cities->isNotEmpty())
-                    <div class="mt-5 flex flex-wrap gap-2">
-                        @foreach($cities as $city)
-                            <span class="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-700">{{ $city }}</span>
-                        @endforeach
+                    <div class="routes-city-combobox mt-8" data-routes-city-combobox>
+                        <div class="routes-city-input-wrap">
+                            <input
+                                type="text"
+                                class="routes-city-input"
+                                value="{{ $selectedCity?->name }}"
+                                placeholder="Select your city"
+                                autocomplete="off"
+                                role="combobox"
+                                aria-expanded="false"
+                                aria-controls="routes-city-options"
+                                data-routes-city-input
+                            >
+                            <a href="{{ route('driving-routes.index') }}" class="routes-button {{ $selectedCity ? 'routes-button-secondary' : 'routes-button-primary' }}">
+                                All Cities
+                            </a>
+                        </div>
+
+                        <div id="routes-city-options" class="routes-city-panel" role="listbox" data-routes-city-panel>
+                            @foreach($cities as $city)
+                                <button
+                                    type="button"
+                                    class="routes-city-option"
+                                    role="option"
+                                    data-routes-city-option
+                                    data-city-name="{{ \Illuminate\Support\Str::lower($city->name) }}"
+                                    data-city-address="{{ \Illuminate\Support\Str::lower($city->address) }}"
+                                    data-city-url="{{ route('driving-routes.index', ['city' => $city->id]) }}"
+                                    @if($selectedCity?->id === $city->id) aria-selected="true" @endif
+                                >
+                                    <span class="flex items-start justify-between gap-4">
+                                        <span>
+                                            <span class="block font-black text-white">{{ $city->name }}</span>
+                                            <span class="mt-1 block text-sm leading-5 text-slate-400">{{ $city->address }}</span>
+                                        </span>
+                                        <span class="shrink-0 rounded-md border border-blue-500/20 bg-white/[.06] px-2 py-1 text-xs font-black text-cyan-100">
+                                            {{ $city->active_routes_count }}
+                                        </span>
+                                    </span>
+                                </button>
+                            @endforeach
+                            <p class="hidden px-4 py-5 text-sm font-semibold text-slate-400" data-routes-city-empty>No matching cities.</p>
+                        </div>
+
+                        @if($selectedCity)
+                            <div class="routes-glass mt-4 p-4">
+                                <p class="text-sm font-black text-white">{{ $selectedCity->name }}</p>
+                                <p class="mt-1 text-sm leading-6 text-slate-400">{{ $selectedCity->address }}</p>
+                            </div>
+                        @endif
                     </div>
                 @endif
-            @endif
-        </div>
-    </section>
-
-    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-zinc-950">All Routes</h2>
-                <p class="mt-2 max-w-2xl text-zinc-600">Open your purchased routes immediately, or sign in to unlock a new practice map.</p>
             </div>
-        </div>
+        </section>
 
-        @if($routes->isEmpty())
-            <div class="rounded-lg border border-dashed border-zinc-300 bg-white px-6 py-12 text-center">
-                <h2 class="text-lg font-bold text-zinc-950">No routes available</h2>
-                <p class="mt-2 text-sm text-zinc-600">An admin can add the first route from the admin panel.</p>
-            </div>
-        @else
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach($routes as $drivingRoute)
-                    @php
-                        $purchase = $purchases->get($drivingRoute->id);
-                        $remainingStarts = $purchase?->remainingStarts() ?? 0;
-                        $canOpenMap = auth()->user()?->is_admin || $remainingStarts > 0;
-                    @endphp
-                    <article class="flex min-h-72 flex-col justify-between rounded-lg border border-zinc-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                        <div>
-                            <div class="mb-4 flex items-start justify-between gap-3">
-                                <div>
-                                    <h3 class="text-xl font-bold text-zinc-950">{{ $drivingRoute->title }}</h3>
-                                    <p class="mt-1 text-sm text-zinc-600">{{ $drivingRoute->city }}, {{ $drivingRoute->province }}</p>
-                                </div>
-                                <div class="shrink-0 rounded-md bg-zinc-950 px-3 py-2 text-right text-white">
-                                    <div class="text-xs text-zinc-300">Price</div>
-                                    <div class="font-bold">${{ number_format((float) $drivingRoute->price, 2) }}</div>
-                                </div>
+        <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+            @if($routes->isEmpty())
+                <div class="routes-glass px-6 py-14 text-center">
+                    <h2 class="text-xl font-black text-white">No routes available</h2>
+                    <p class="mt-2 text-sm text-slate-400">Try another city or check back as new routes are added.</p>
+                </div>
+            @else
+                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach($routes as $drivingRoute)
+                        @php
+                            $purchase = $purchases->get($drivingRoute->id);
+                            $remainingStarts = $purchase?->remainingStarts() ?? 0;
+                            $canOpenMap = auth()->user()?->is_admin || $remainingStarts > 0;
+                            $routeCity = $drivingRoute->relationLoaded('cityModel') ? $drivingRoute->cityModel : null;
+                            $cityName = $routeCity?->name ?? $drivingRoute->city;
+                            $cityAddress = $routeCity?->address;
+                        @endphp
+                        <article class="routes-glass routes-card flex min-h-[25rem] flex-col justify-between overflow-hidden">
+                            <div class="relative h-36 bg-[#0a0e1a]">
+                                <svg class="h-full w-full" viewBox="0 0 420 180" fill="none" aria-hidden="true">
+                                    <path d="M0 44H420M0 96H420M0 148H420M70 0V180M154 0V180M238 0V180M322 0V180" stroke="rgba(148,163,184,.15)" />
+                                    <path d="M34 142 C96 68 156 110 210 54 C274 -12 322 62 386 30" stroke="url(#routeCard{{ $drivingRoute->id }})" stroke-width="7" stroke-linecap="round" />
+                                    <circle cx="34" cy="142" r="9" fill="#38bdf8" />
+                                    <circle cx="386" cy="30" r="9" fill="#2563eb" />
+                                    <defs>
+                                        <linearGradient id="routeCard{{ $drivingRoute->id }}" x1="34" x2="386" y1="142" y2="30">
+                                            <stop stop-color="#1e3a8a" />
+                                            <stop offset=".55" stop-color="#2563eb" />
+                                            <stop offset="1" stop-color="#06b6d4" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
                             </div>
 
-                            @if($drivingRoute->description)
-                                <p class="line-clamp-3 text-sm leading-6 text-zinc-600">{{ $drivingRoute->description }}</p>
-                            @endif
+                            <div class="flex flex-1 flex-col p-5">
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <h3 class="text-xl font-black text-white">{{ $drivingRoute->title }}</h3>
+                                        <p class="mt-1 text-sm text-slate-400">{{ $cityName }}, {{ $drivingRoute->province }}</p>
+                                        @if($cityAddress)
+                                            <p class="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{{ $cityAddress }}</p>
+                                        @endif
+                                    </div>
+                                    <div class="shrink-0 rounded-md border border-blue-500/20 bg-white/[.06] px-3 py-2 text-right text-white">
+                                        <div class="text-xs text-slate-400">Price</div>
+                                        <div class="font-black">${{ number_format((float) $drivingRoute->price, 2) }}</div>
+                                    </div>
+                                </div>
 
-                            <dl class="mt-5 grid grid-cols-2 gap-3 text-sm">
-                                <div class="rounded-md bg-zinc-50 p-3">
-                                    <dt class="font-medium text-zinc-500">Start</dt>
-                                    <dd class="mt-1 font-bold text-zinc-900">{{ $drivingRoute->start_label ?: 'Start point' }}</dd>
-                                </div>
-                                <div class="rounded-md bg-zinc-50 p-3">
-                                    <dt class="font-medium text-zinc-500">Destination</dt>
-                                    <dd class="mt-1 font-bold text-zinc-900">{{ $drivingRoute->destination_label ?: 'Destination' }}</dd>
-                                </div>
-                                <div class="rounded-md bg-zinc-50 p-3">
-                                    <dt class="font-medium text-zinc-500">Waypoints</dt>
-                                    <dd class="mt-1 font-bold text-zinc-900">{{ $drivingRoute->points_count }}</dd>
-                                </div>
-                                <div class="rounded-md bg-zinc-50 p-3">
-                                    <dt class="font-medium text-zinc-500">Starts Included</dt>
-                                    <dd class="mt-1 font-bold text-zinc-900">{{ $drivingRoute->access_limit ?? 1 }}</dd>
-                                </div>
-                                <div class="rounded-md bg-zinc-50 p-3">
-                                    <dt class="font-medium text-zinc-500">Duration</dt>
-                                    <dd class="mt-1 font-bold text-zinc-900">
-                                        {{ $drivingRoute->route_duration_minutes ? $drivingRoute->route_duration_minutes.' mins' : 'Ready' }}
-                                    </dd>
-                                </div>
-                                <div class="rounded-md bg-zinc-50 p-3">
-                                    <dt class="font-medium text-zinc-500">Length</dt>
-                                    <dd class="mt-1 font-bold text-zinc-900">
-                                        {{ $drivingRoute->route_length_km ? $drivingRoute->route_length_km.' km' : 'Route' }}
-                                    </dd>
-                                </div>
-                            </dl>
-                        </div>
-
-                        <div class="mt-5 flex flex-wrap items-center gap-2">
-                            @if($canOpenMap)
-                                <a href="{{ route('driving-routes.show', $drivingRoute) }}" class="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-700 px-4 py-2 font-bold text-white transition hover:bg-emerald-800">
-                                    Open Map
-                                </a>
-                                @if(! auth()->user()?->is_admin)
-                                    <span class="rounded-md bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-800">
-                                        {{ $remainingStarts }} left
-                                    </span>
+                                @if($drivingRoute->description)
+                                    <p class="mt-4 line-clamp-3 text-sm leading-6 text-slate-400">{{ $drivingRoute->description }}</p>
                                 @endif
-                            @elseif(auth()->check())
-                                <a href="{{ route('driving-routes.checkout', $drivingRoute) }}" class="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-700 px-4 py-2 font-bold text-white transition hover:bg-emerald-800">
-                                    {{ $purchase ? 'Buy More Starts' : 'Buy Route' }}
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}" class="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-700 px-4 py-2 font-bold text-white transition hover:bg-emerald-800">
-                                    Login to Buy
-                                </a>
-                            @endif
 
-                            @if($drivingRoute->preview_pdf_path)
-                                <a href="{{ \Illuminate\Support\Facades\Storage::url($drivingRoute->preview_pdf_path) }}" target="_blank" class="rounded-md border border-zinc-300 px-4 py-2 font-bold text-zinc-700 transition hover:bg-zinc-100">
-                                    PDF
-                                </a>
-                            @endif
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-        @endif
-    </section>
+                                <dl class="mt-5 grid grid-cols-2 gap-3 text-sm">
+                                    <div class="rounded-md bg-white/[.06] p-3">
+                                        <dt class="font-bold text-slate-500">Start</dt>
+                                        <dd class="mt-1 font-black text-white">{{ $drivingRoute->start_label ?: 'Start point' }}</dd>
+                                    </div>
+                                    <div class="rounded-md bg-white/[.06] p-3">
+                                        <dt class="font-bold text-slate-500">Destination</dt>
+                                        <dd class="mt-1 font-black text-white">{{ $drivingRoute->destination_label ?: 'Destination' }}</dd>
+                                    </div>
+                                    <div class="rounded-md bg-white/[.06] p-3">
+                                        <dt class="font-bold text-slate-500">Duration</dt>
+                                        <dd class="mt-1 font-black text-white">{{ $drivingRoute->route_duration_minutes ? $drivingRoute->route_duration_minutes.' mins' : 'Ready' }}</dd>
+                                    </div>
+                                    <div class="rounded-md bg-white/[.06] p-3">
+                                        <dt class="font-bold text-slate-500">Starts</dt>
+                                        <dd class="mt-1 font-black text-white">{{ $drivingRoute->access_limit ?? 1 }}</dd>
+                                    </div>
+                                </dl>
+
+                                <div class="mt-auto flex flex-wrap items-center gap-2 pt-5">
+                                    @if($canOpenMap)
+                                        <a href="{{ route('driving-routes.show', $drivingRoute) }}" class="routes-button routes-button-primary flex-1">
+                                            Open Map
+                                        </a>
+                                        @if(! auth()->user()?->is_admin)
+                                            <span class="rounded-md border border-blue-500/20 bg-white/[.06] px-3 py-2 text-sm font-black text-cyan-100">
+                                                {{ $remainingStarts }} left
+                                            </span>
+                                        @endif
+                                    @elseif(auth()->check())
+                                        <a href="{{ route('driving-routes.checkout', $drivingRoute) }}" class="routes-button routes-button-primary flex-1">
+                                            {{ $purchase ? 'Buy More Starts' : 'Buy Route' }}
+                                        </a>
+                                    @else
+                                        <a href="{{ route('login') }}" class="routes-button routes-button-primary flex-1">
+                                            Log In to Buy
+                                        </a>
+                                    @endif
+
+                                    @if($drivingRoute->preview_pdf_path)
+                                        <a href="{{ \Illuminate\Support\Facades\Storage::url($drivingRoute->preview_pdf_path) }}" target="_blank" class="routes-button routes-button-secondary">
+                                            PDF
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+    </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('[data-routes-city-combobox]').forEach((combobox) => {
+            const input = combobox.querySelector('[data-routes-city-input]');
+            const options = Array.from(combobox.querySelectorAll('[data-routes-city-option]'));
+            const empty = combobox.querySelector('[data-routes-city-empty]');
+
+            function openPanel() {
+                combobox.classList.add('is-open');
+                input?.setAttribute('aria-expanded', 'true');
+            }
+
+            function closePanel() {
+                combobox.classList.remove('is-open');
+                input?.setAttribute('aria-expanded', 'false');
+            }
+
+            function filterOptions() {
+                const query = (input?.value || '').trim().toLowerCase();
+                let visibleCount = 0;
+
+                options.forEach((option) => {
+                    const matches = !query
+                        || option.dataset.cityName.includes(query)
+                        || option.dataset.cityAddress.includes(query);
+
+                    option.hidden = !matches;
+                    visibleCount += matches ? 1 : 0;
+                });
+
+                empty?.classList.toggle('hidden', visibleCount > 0);
+                openPanel();
+            }
+
+            input?.addEventListener('focus', openPanel);
+            input?.addEventListener('click', openPanel);
+            input?.addEventListener('input', filterOptions);
+            input?.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closePanel();
+                }
+
+                if (event.key === 'Enter') {
+                    const firstVisibleOption = options.find((option) => !option.hidden);
+
+                    if (firstVisibleOption) {
+                        event.preventDefault();
+                        window.location.href = firstVisibleOption.dataset.cityUrl;
+                    }
+                }
+            });
+
+            options.forEach((option) => {
+                option.addEventListener('click', () => {
+                    window.location.href = option.dataset.cityUrl;
+                });
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!combobox.contains(event.target)) {
+                    closePanel();
+                }
+            });
+        });
+    </script>
+@endpush

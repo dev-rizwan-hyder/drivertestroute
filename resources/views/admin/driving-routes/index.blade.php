@@ -46,7 +46,12 @@
                                     <div class="font-semibold text-stone-950">{{ $drivingRoute->title }}</div>
                                     <div class="mt-1 text-xs text-stone-500">{{ $drivingRoute->start_label }} to {{ $drivingRoute->destination_label }}</div>
                                 </td>
-                                <td class="px-4 py-4 text-stone-700">{{ $drivingRoute->city }}, {{ $drivingRoute->province }}</td>
+                                <td class="px-4 py-4 text-stone-700">
+                                    <div>{{ $drivingRoute->cityModel?->name ?? $drivingRoute->city }}, {{ $drivingRoute->province }}</div>
+                                    @if($drivingRoute->cityModel?->address)
+                                        <div class="mt-1 max-w-xs text-xs text-stone-500">{{ $drivingRoute->cityModel->address }}</div>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-4 font-semibold text-stone-950">${{ number_format((float) $drivingRoute->price, 2) }}</td>
                                 <td class="px-4 py-4 text-stone-700">{{ $drivingRoute->access_limit ?? 1 }}</td>
                                 <td class="px-4 py-4 text-stone-700">

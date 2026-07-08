@@ -2,38 +2,83 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\DrivingRoute;
 use App\Models\RoutePurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class DrivingRouteController extends Controller
 {
     public function home()
     {
-        $featuredRoutes = DrivingRoute::where('is_active', true)
+        $citySchemaReady = $this->citySchemaReady();
+        $featuredRoutesQuery = DrivingRoute::where('is_active', true)
             ->withCount('points')
-            ->latest()
-            ->take(6)
-            ->get();
+            ->latest();
+
+        if ($citySchemaReady) {
+            $featuredRoutesQuery->with('cityModel');
+        }
+
+        $featuredRoutes = $featuredRoutesQuery->take(6)->get();
+
+        $cities = $citySchemaReady
+            ? City::withCount(['routes as active_routes_count' => function ($query) {
+                    $query->where('is_active', true);
+                }])
+                ->orderBy('name')
+                ->get()
+            : collect();
 
         $stats = [
             'routes' => DrivingRoute::where('is_active', true)->count(),
-            'cities' => DrivingRoute::where('is_active', true)->distinct('city')->count('city'),
+            'cities' => $citySchemaReady
+                ? City::whereHas('routes', fn ($query) => $query->where('is_active', true))->count()
+                : DrivingRoute::where('is_active', true)->whereNotNull('city')->distinct('city')->count('city'),
             'starts' => (int) RoutePurchase::where('payment_status', 'paid')->sum('access_used'),
         ];
 
-        return view('home', compact('featuredRoutes', 'stats'));
+        return view('home', compact('featuredRoutes', 'stats', 'cities'));
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $routes = DrivingRoute::where('is_active', true)
+        $citySchemaReady = $this->citySchemaReady();
+        $selectedCity = $citySchemaReady && $request->filled('city')
+            ? City::find($request->integer('city'))
+            : null;
+
+        $routesQuery = DrivingRoute::where('is_active', true)
             ->withCount('points')
-            ->latest()
-            ->get();
+            ->latest();
+
+        if ($citySchemaReady) {
+            $routesQuery->with('cityModel');
+        }
+
+        if ($selectedCity) {
+            $routesQuery->where(function ($query) use ($selectedCity) {
+                $query->where('city_id', $selectedCity->id)
+                    ->orWhere(function ($legacyQuery) use ($selectedCity) {
+                        $legacyQuery->whereNull('city_id')
+                            ->where('city', $selectedCity->name);
+                    });
+            });
+        }
+
+        $routes = $routesQuery->get();
+
+        $cities = $citySchemaReady
+            ? City::withCount(['routes as active_routes_count' => function ($query) {
+                    $query->where('is_active', true);
+                }])
+                ->orderBy('name')
+                ->get()
+            : collect();
 
         $purchases = auth()->check()
             ? RoutePurchase::where('user_id', auth()->id())
@@ -42,7 +87,7 @@ class DrivingRouteController extends Controller
                 ->keyBy('driving_route_id')
             : collect();
 
-        return view('driving-routes.index', compact('routes', 'purchases'));
+        return view('driving-routes.index', compact('routes', 'purchases', 'cities', 'selectedCity'));
     }
 
     public function myRoutes()
@@ -313,13 +358,42 @@ class DrivingRouteController extends Controller
             $remainingStarts = null;
         }
 
-        $drivingRoute->load('points');
+        $citySchemaReady = $this->citySchemaReady();
+        $relations = ['points'];
+
+        if ($citySchemaReady) {
+            $relations[] = 'cityModel';
+        }
+
+        $drivingRoute->load($relations);
+
+        $relatedRoutes = DrivingRoute::query()
+            ->where('is_active', true)
+            ->whereKeyNot($drivingRoute->id);
+
+        if ($citySchemaReady) {
+            $relatedRoutes->with('cityModel');
+        }
+
+        if ($citySchemaReady && $drivingRoute->city_id) {
+            $relatedRoutes->where('city_id', $drivingRoute->city_id);
+        } else {
+            $relatedRoutes->where('city', $drivingRoute->city);
+        }
+
+        $relatedRoutes = $relatedRoutes->latest()->take(3)->get();
 
         return view('driving-routes.show', [
             'route' => $drivingRoute,
             'points' => $drivingRoute->points,
             'purchase' => $purchase,
             'remainingStarts' => $remainingStarts,
+            'relatedRoutes' => $relatedRoutes,
         ]);
+    }
+
+    private function citySchemaReady(): bool
+    {
+        return Schema::hasTable('cities') && Schema::hasColumn('driving_routes', 'city_id');
     }
 }

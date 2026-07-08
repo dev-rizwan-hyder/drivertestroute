@@ -12,6 +12,7 @@ class ExampleTest extends TestCase
         $this->assertTrue(Route::has('home'));
         $this->assertTrue(Route::has('routes.index'));
         $this->assertTrue(Route::has('about'));
+        $this->assertTrue(Route::has('blog'));
         $this->assertTrue(Route::has('contact'));
         $this->assertTrue(Route::has('contact.submit'));
         $this->assertTrue(Route::has('driving-routes.index'));
@@ -22,6 +23,7 @@ class ExampleTest extends TestCase
         $this->assertTrue(Route::has('admin.dashboard'));
         $this->assertTrue(Route::has('admin.purchases.index'));
         $this->assertTrue(Route::has('admin.users.index'));
+        $this->assertTrue(Route::has('admin.cities.index'));
         $this->assertTrue(Route::has('admin.driving-routes.index'));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\City;
 use App\Models\DrivingRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,7 @@ class DrivingRouteAdminController extends Controller
         $this->authorizeAdmin();
 
         $routes = DrivingRoute::withCount(['points', 'purchases'])
+            ->with('cityModel')
             ->latest()
             ->paginate(12);
 
@@ -29,6 +31,7 @@ class DrivingRouteAdminController extends Controller
         return view('admin.driving-routes.create', [
             'route' => new DrivingRoute(['is_active' => true]),
             'points' => collect(),
+            'cities' => City::orderBy('name')->get(),
         ]);
     }
 
@@ -68,6 +71,7 @@ class DrivingRouteAdminController extends Controller
         return view('admin.driving-routes.edit', [
             'route' => $drivingRoute,
             'points' => $drivingRoute->points,
+            'cities' => City::orderBy('name')->get(),
         ]);
     }
 
@@ -124,7 +128,7 @@ class DrivingRouteAdminController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:255'],
+            'city_id' => ['required', 'integer', 'exists:cities,id'],
             'province' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'route_duration_minutes' => ['nullable', 'integer', 'min:1'],
@@ -149,9 +153,12 @@ class DrivingRouteAdminController extends Controller
             'points.*.duration' => ['nullable', 'string', 'max:50'],
         ]);
 
+        $city = City::findOrFail($validated['city_id']);
+
         return [
             'title' => $validated['title'],
-            'city' => $validated['city'],
+            'city_id' => $city->id,
+            'city' => $city->name,
             'province' => $validated['province'],
             'description' => $validated['description'] ?? null,
             'route_duration_minutes' => $validated['route_duration_minutes'] ?? null,

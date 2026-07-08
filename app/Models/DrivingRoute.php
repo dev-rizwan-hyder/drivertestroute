@@ -8,6 +8,7 @@ class DrivingRoute extends Model
 {
     protected $fillable = [
         'title',
+        'city_id',
         'city',
         'province',
         'description',
@@ -26,6 +27,7 @@ class DrivingRoute extends Model
     ];
 
     protected $casts = [
+        'city_id' => 'integer',
         'start_lat' => 'float',
         'start_lng' => 'float',
         'end_lat' => 'float',
@@ -40,6 +42,11 @@ class DrivingRoute extends Model
     public function points()
     {
         return $this->hasMany(DrivingRoutePoint::class)->orderBy('sort_order');
+    }
+
+    public function cityModel()
+    {
+        return $this->belongsTo(City::class, 'city_id');
     }
 
     public function purchases()
