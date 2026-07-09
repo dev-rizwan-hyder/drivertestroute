@@ -11,10 +11,12 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('admin.driving-routes.index') }}" class="inline-flex items-center justify-center rounded-md border border-stone-300 px-4 py-2 font-semibold text-stone-700 hover:bg-stone-100">
+                <a href="{{ route('admin.driving-routes.index') }}"
+                    class="inline-flex items-center justify-center rounded-md border border-stone-300 px-4 py-2 font-semibold text-stone-700 hover:bg-stone-100">
                     Manage Routes
                 </a>
-                <a href="{{ route('admin.driving-routes.create') }}" class="inline-flex items-center justify-center rounded-md bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800">
+                <a href="{{ route('admin.driving-routes.create') }}"
+                    class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#2F5BEA] to-[#12B6D9] px-5 py-3 text-base font-semibold text-white shadow-lg hover:opacity-90 transition">
                     Add Route
                 </a>
             </div>
@@ -54,12 +56,14 @@
                         <h2 class="text-lg font-semibold text-stone-950">Recent Purchases</h2>
                         <p class="mt-1 text-sm text-stone-600">Latest paid checkout records and remaining starts.</p>
                     </div>
-                    <a href="{{ route('admin.purchases.index') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">View all</a>
+                    <a href="{{ route('admin.purchases.index') }}"
+                        class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">View all</a>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-stone-200 text-sm">
-                        <thead class="bg-stone-100 text-left text-xs font-semibold uppercase tracking-normal text-stone-600">
+                        <thead
+                            class="bg-stone-100 text-left text-xs font-semibold uppercase tracking-normal text-stone-600">
                             <tr>
                                 <th class="px-4 py-3">Customer</th>
                                 <th class="px-4 py-3">Route</th>
@@ -72,17 +76,25 @@
                             @forelse($recentPurchases as $purchase)
                                 <tr>
                                     <td class="px-4 py-4">
-                                        <div class="font-semibold text-stone-950">{{ $purchase->student_name ?: ($purchase->user?->name ?? 'Deleted user') }}</div>
-                                        <div class="mt-1 text-xs text-stone-500">{{ $purchase->student_email ?: $purchase->user?->email }}</div>
+                                        <div class="font-semibold text-stone-950">
+                                            {{ $purchase->student_name ?: $purchase->user?->name ?? 'Deleted user' }}
+                                        </div>
+                                        <div class="mt-1 text-xs text-stone-500">
+                                            {{ $purchase->student_email ?: $purchase->user?->email }}</div>
                                     </td>
-                                    <td class="px-4 py-4 text-stone-700">{{ $purchase->route?->title ?? 'Deleted route' }}</td>
-                                    <td class="px-4 py-4 font-semibold text-stone-950">${{ number_format((float) $purchase->amount_paid, 2) }}</td>
-                                    <td class="px-4 py-4 text-stone-700">{{ $purchase->access_used }} / {{ $purchase->access_limit }}</td>
-                                    <td class="px-4 py-4 text-stone-700">{{ $purchase->purchased_at?->format('M j, Y') ?? '-' }}</td>
+                                    <td class="px-4 py-4 text-stone-700">{{ $purchase->route?->title ?? 'Deleted route' }}
+                                    </td>
+                                    <td class="px-4 py-4 font-semibold text-stone-950">
+                                        ${{ number_format((float) $purchase->amount_paid, 2) }}</td>
+                                    <td class="px-4 py-4 text-stone-700">{{ $purchase->access_used }} /
+                                        {{ $purchase->access_limit }}</td>
+                                    <td class="px-4 py-4 text-stone-700">
+                                        {{ $purchase->purchased_at?->format('M j, Y') ?? '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-12 text-center text-stone-600">No paid purchases yet.</td>
+                                    <td colspan="5" class="px-4 py-12 text-center text-stone-600">No paid purchases yet.
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -100,7 +112,8 @@
                                     <h3 class="font-semibold text-stone-950">{{ $route->title }}</h3>
                                     <p class="mt-1 text-sm text-stone-600">{{ $route->city }}, {{ $route->province }}</p>
                                 </div>
-                                <span class="rounded-md bg-emerald-50 px-2.5 py-1 text-sm font-semibold text-emerald-800">{{ $route->paid_purchases_count }}</span>
+                                <span
+                                    class="rounded-md bg-emerald-50 px-2.5 py-1 text-sm font-semibold text-emerald-800">{{ $route->paid_purchases_count }}</span>
                             </div>
                         </div>
                     @empty

@@ -17,7 +17,7 @@
                 <a href="{{ route('admin.purchases.index') }}" class="inline-flex items-center justify-center rounded-md border border-stone-300 px-4 py-2 font-semibold text-stone-700 hover:bg-stone-100">
                     Purchases
                 </a>
-                <a href="{{ route('admin.driving-routes.create') }}" class="inline-flex items-center justify-center rounded-md bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800">
+                <a href="{{ route('admin.driving-routes.create') }}" class="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-700 to-cyan-600 px-4 py-2 font-semibold text-white shadow-md shadow-blue-500/10 hover:from-blue-800 hover:to-cyan-700 transition">
                     Add Route
                 </a>
             </div>
@@ -67,7 +67,7 @@
                                 <td class="px-4 py-4 text-stone-700">{{ $drivingRoute->purchases_count }}</td>
                                 <td class="px-4 py-4">
                                     @if($drivingRoute->is_active)
-                                        <span class="rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-800">Active</span>
+                                        <span class="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">Active</span>
                                     @else
                                         <span class="rounded-md bg-stone-100 px-2 py-1 text-xs font-semibold text-stone-700">Hidden</span>
                                     @endif

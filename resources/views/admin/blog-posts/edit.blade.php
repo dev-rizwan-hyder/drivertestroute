@@ -214,12 +214,12 @@
 
                             @if($post->featured_image)
                                 <div class="admin-blog-image-preview mt-2 mb-3">
-                                    <img src="{{ asset('storage/' . $post->featured_image) }}" alt="Current featured image for {{ $post->title }}">
+                                    <img src="{{ asset($post->featured_image) }}" alt="Current featured image for {{ $post->title }}">
                                 </div>
                                 <p class="mb-2 text-xs text-slate-400">Current image shown above. Upload a new file to replace it.</p>
                             @endif
 
-                            <input type="file" name="featured_image" accept="image/*" class="admin-blog-input mt-1 @error('featured_image') is-invalid @enderror file:mr-3 file:rounded-md file:border-0 file:bg-blue-600/20 file:px-3 file:py-1 file:text-sm file:font-bold file:text-cyan-200">
+                            <input type="file" name="featured_image" accept="image/*" class="admin-blog-input mt-1 @error('featured_image') is-invalid @enderror file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3.5 file:py-1.5 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 transition">
                             @error('featured_image')
                                 <p class="admin-blog-error">{{ $message }}</p>
                             @enderror

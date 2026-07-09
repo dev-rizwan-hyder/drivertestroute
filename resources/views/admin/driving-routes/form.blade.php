@@ -27,12 +27,12 @@
         <div class="mt-5 grid gap-5 md:grid-cols-2">
             <label class="block md:col-span-2">
                 <span class="text-sm font-medium text-stone-700">Title</span>
-                <input type="text" name="title" value="{{ old('title', $route->title) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="text" name="title" value="{{ old('title', $route->title) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">City</span>
-                <select name="city_id" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <select name="city_id" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                     <option value="">Choose a city</option>
                     @foreach($cities as $city)
                         <option value="{{ $city->id }}" @selected((string) $selectedCityId === (string) $city->id)>{{ $city->name }} - {{ $city->address }}</option>
@@ -42,44 +42,44 @@
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Province</span>
-                <input type="text" name="province" value="{{ old('province', $route->province) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="text" name="province" value="{{ old('province', $route->province) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Price</span>
-                <input type="number" name="price" value="{{ old('price', $route->price ?? 0) }}" required min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="number" name="price" value="{{ old('price', $route->price ?? 0) }}" required min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Map Starts Included</span>
-                <input type="number" name="access_limit" value="{{ old('access_limit', $route->access_limit ?? 1) }}" required min="1" step="1" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="number" name="access_limit" value="{{ old('access_limit', $route->access_limit ?? 1) }}" required min="1" step="1" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Route Duration Minutes</span>
-                <input type="number" name="route_duration_minutes" value="{{ old('route_duration_minutes', $route->route_duration_minutes) }}" min="1" step="1" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="number" name="route_duration_minutes" value="{{ old('route_duration_minutes', $route->route_duration_minutes) }}" min="1" step="1" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Route Length km</span>
-                <input type="number" name="route_length_km" value="{{ old('route_length_km', $route->route_length_km) }}" min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="number" name="route_length_km" value="{{ old('route_length_km', $route->route_length_km) }}" min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Preview PDF</span>
-                <input type="file" name="preview_pdf" accept="application/pdf" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-md file:border-0 file:bg-stone-100 file:px-3 file:py-1.5 file:font-semibold file:text-stone-700 hover:file:bg-stone-200 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="file" name="preview_pdf" accept="application/pdf" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3.5 file:py-1.5 file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition">
                 @if($route->preview_pdf_path)
-                    <a href="{{ \Illuminate\Support\Facades\Storage::url($route->preview_pdf_path) }}" target="_blank" class="mt-2 inline-flex text-sm font-semibold text-emerald-700 hover:text-emerald-800">Open current PDF</a>
+                    <a href="{{ \Illuminate\Support\Facades\Storage::url($route->preview_pdf_path) }}" target="_blank" class="mt-2 inline-flex text-sm font-semibold text-blue-700 hover:text-blue-800">Open current PDF</a>
                 @endif
             </label>
 
             <label class="block md:col-span-2">
                 <span class="text-sm font-medium text-stone-700">Description</span>
-                <textarea name="description" rows="3" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">{{ old('description', $route->description) }}</textarea>
+                <textarea name="description" rows="3" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">{{ old('description', $route->description) }}</textarea>
             </label>
 
             <label class="flex items-center gap-2 text-sm font-medium text-stone-700">
-                <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $route->is_active ?? true)) class="rounded border-stone-300 text-emerald-700 focus:ring-emerald-600">
+                <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $route->is_active ?? true)) class="rounded border-stone-300 text-blue-600 focus:ring-blue-500">
                 Active
             </label>
         </div>
@@ -94,16 +94,16 @@
                 <div class="mt-4 grid gap-4">
                     <label class="block">
                         <span class="text-sm font-medium text-stone-700">Label</span>
-                        <input type="text" name="start_label" value="{{ old('start_label', $route->start_label) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                        <input type="text" name="start_label" value="{{ old('start_label', $route->start_label) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                     </label>
                     <div class="grid gap-4 sm:grid-cols-2">
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Latitude</span>
-                            <input type="number" name="start_lat" value="{{ old('start_lat', $route->start_lat) }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="number" name="start_lat" value="{{ old('start_lat', $route->start_lat) }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Longitude</span>
-                            <input type="number" name="start_lng" value="{{ old('start_lng', $route->start_lng) }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="number" name="start_lng" value="{{ old('start_lng', $route->start_lng) }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
                     </div>
                 </div>
@@ -114,16 +114,16 @@
                 <div class="mt-4 grid gap-4">
                     <label class="block">
                         <span class="text-sm font-medium text-stone-700">Label</span>
-                        <input type="text" name="destination_label" value="{{ old('destination_label', $route->destination_label) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                        <input type="text" name="destination_label" value="{{ old('destination_label', $route->destination_label) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                     </label>
                     <div class="grid gap-4 sm:grid-cols-2">
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Latitude</span>
-                            <input type="number" name="end_lat" value="{{ old('end_lat', $route->end_lat) }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="number" name="end_lat" value="{{ old('end_lat', $route->end_lat) }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Longitude</span>
-                            <input type="number" name="end_lng" value="{{ old('end_lng', $route->end_lng) }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="number" name="end_lng" value="{{ old('end_lng', $route->end_lng) }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
                     </div>
                 </div>
@@ -155,12 +155,12 @@
                     <div class="grid gap-4 lg:grid-cols-6">
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Order</span>
-                            <input type="number" name="points[{{ $index }}][sort_order]" value="{{ data_get($point, 'sort_order', $index + 1) }}" required min="1" class="sort-order mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="number" name="points[{{ $index }}][sort_order]" value="{{ data_get($point, 'sort_order', $index + 1) }}" required min="1" class="sort-order mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
 
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Instruction</span>
-                            <select name="points[{{ $index }}][maneuver]" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <select name="points[{{ $index }}][maneuver]" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                                 <option value="continue" @selected(data_get($point, 'maneuver') === 'continue')>Continue</option>
                                 <option value="turn_left" @selected(data_get($point, 'maneuver') === 'turn_left')>Turn left</option>
                                 <option value="turn_right" @selected(data_get($point, 'maneuver') === 'turn_right')>Turn right</option>
@@ -169,27 +169,27 @@
 
                         <label class="block lg:col-span-2">
                             <span class="text-sm font-medium text-stone-700">Instruction Text</span>
-                            <input type="text" name="points[{{ $index }}][instruction]" value="{{ data_get($point, 'instruction') }}" placeholder="Turn right onto Main Street" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="text" name="points[{{ $index }}][instruction]" value="{{ data_get($point, 'instruction') }}" placeholder="Turn right onto Main Street" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
 
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Latitude</span>
-                            <input type="number" name="points[{{ $index }}][lat]" value="{{ data_get($point, 'lat') }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="number" name="points[{{ $index }}][lat]" value="{{ data_get($point, 'lat') }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
 
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Longitude</span>
-                            <input type="number" name="points[{{ $index }}][lng]" value="{{ data_get($point, 'lng') }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="number" name="points[{{ $index }}][lng]" value="{{ data_get($point, 'lng') }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
 
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Distance km</span>
-                            <input type="number" name="points[{{ $index }}][distance_km]" value="{{ data_get($point, 'distance_km') }}" min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="number" name="points[{{ $index }}][distance_km]" value="{{ data_get($point, 'distance_km') }}" min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
 
                         <label class="block">
                             <span class="text-sm font-medium text-stone-700">Duration</span>
-                            <input type="text" name="points[{{ $index }}][duration]" value="{{ data_get($point, 'duration') }}" placeholder="1 min" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                            <input type="text" name="points[{{ $index }}][duration]" value="{{ data_get($point, 'duration') }}" placeholder="1 min" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         </label>
                     </div>
                 </div>
@@ -201,7 +201,7 @@
         <a href="{{ route('admin.driving-routes.index') }}" class="rounded-md border border-stone-300 px-4 py-2 font-semibold text-stone-700 hover:bg-stone-100">
             Cancel
         </a>
-        <button type="submit" class="rounded-md bg-emerald-700 px-5 py-2 font-semibold text-white hover:bg-emerald-800">
+        <button type="submit" class="rounded-lg bg-gradient-to-r from-blue-700 to-cyan-600 hover:from-blue-800 hover:to-cyan-700 px-5 py-2 font-semibold text-white shadow-md shadow-blue-500/10 transition">
             Save Route
         </button>
     </div>
@@ -219,12 +219,12 @@
         <div class="grid gap-4 lg:grid-cols-6">
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Order</span>
-                <input type="number" name="points[__INDEX__][sort_order]" value="__NUMBER__" required min="1" class="sort-order mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="number" name="points[__INDEX__][sort_order]" value="__NUMBER__" required min="1" class="sort-order mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Instruction</span>
-                <select name="points[__INDEX__][maneuver]" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <select name="points[__INDEX__][maneuver]" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                     <option value="continue">Continue</option>
                     <option value="turn_left">Turn left</option>
                     <option value="turn_right">Turn right</option>
@@ -233,27 +233,27 @@
 
             <label class="block lg:col-span-2">
                 <span class="text-sm font-medium text-stone-700">Instruction Text</span>
-                <input type="text" name="points[__INDEX__][instruction]" placeholder="Turn right onto Main Street" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="text" name="points[__INDEX__][instruction]" placeholder="Turn right onto Main Street" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Latitude</span>
-                <input type="number" name="points[__INDEX__][lat]" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="number" name="points[__INDEX__][lat]" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Longitude</span>
-                <input type="number" name="points[__INDEX__][lng]" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="number" name="points[__INDEX__][lng]" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Distance km</span>
-                <input type="number" name="points[__INDEX__][distance_km]" min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="number" name="points[__INDEX__][distance_km]" min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
 
             <label class="block">
                 <span class="text-sm font-medium text-stone-700">Duration</span>
-                <input type="text" name="points[__INDEX__][duration]" placeholder="1 min" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-200">
+                <input type="text" name="points[__INDEX__][duration]" placeholder="1 min" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
             </label>
         </div>
     </div>

@@ -151,6 +151,8 @@ class DrivingRouteAdminController extends Controller
             'points.*.lng' => ['nullable', 'numeric', 'between:-180,180'],
             'points.*.distance_km' => ['nullable', 'numeric', 'min:0'],
             'points.*.duration' => ['nullable', 'string', 'max:50'],
+        ], [
+            'preview_pdf.uploaded' => 'The preview pdf failed to upload. Please ensure the file is under 2MB.',
         ]);
 
         $city = City::findOrFail($validated['city_id']);

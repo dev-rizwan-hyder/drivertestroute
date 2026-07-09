@@ -150,7 +150,7 @@
                         <article class="blog-card overflow-hidden {{ $loop->index >= 6 ? 'is-hidden' : '' }}" data-blog-card data-category="{{ $post->category }}" data-page="{{ intdiv($loop->index, 3) }}">
                             <div class="blog-visual h-44">
                                 @if($post->featured_image)
-                                    <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="blog-visual-img" loading="lazy">
+                                    <img src="{{ asset($post->featured_image) }}" alt="{{ $post->title }}" class="blog-visual-img" loading="lazy">
                                 @else
                                     <svg class="h-full w-full" viewBox="0 0 420 220" fill="none" aria-hidden="true">
                                         <path d="M0 54H420M0 116H420M0 178H420M62 0V220M154 0V220M246 0V220M338 0V220" stroke="rgba(148,163,184,.14)" />

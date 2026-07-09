@@ -56,14 +56,23 @@ class BlogPostController extends Controller
             'read_time' => ['required', 'string', 'max:20'],
             'is_published' => ['sometimes', 'boolean'],
             'published_at' => ['nullable', 'date'],
-            'featured_image' => ['nullable', 'image', 'max:2048'],
+            'featured_image' => ['nullable', 'image', 'max:8192'],
+        ], [
+            'featured_image.uploaded' => 'The featured image failed to upload. Please ensure the file is under 8MB.',
         ]);
 
         if ($request->hasFile('featured_image')) {
-            $validated['featured_image'] = $request->file('featured_image')->store('blog', 'public');
+            $file = $request->file('featured_image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('blog-images'), $filename);
+            $validated['featured_image'] = 'blog-images/' . $filename;
         }
 
         $validated['is_published'] = $request->boolean('is_published');
+
+        if ($validated['is_published'] && empty($validated['published_at'])) {
+            $validated['published_at'] = now();
+        }
 
         BlogPost::create($validated);
 
@@ -91,18 +100,30 @@ class BlogPostController extends Controller
             'read_time' => ['required', 'string', 'max:20'],
             'is_published' => ['sometimes', 'boolean'],
             'published_at' => ['nullable', 'date'],
-            'featured_image' => ['nullable', 'image', 'max:2048'],
+            'featured_image' => ['nullable', 'image', 'max:8192'],
+        ], [
+            'featured_image.uploaded' => 'The featured image failed to upload. Please ensure the file is under 8MB.',
         ]);
 
         if ($request->hasFile('featured_image')) {
             if ($blog_post->featured_image) {
-                Storage::disk('public')->delete($blog_post->featured_image);
+                $oldPath = public_path($blog_post->featured_image);
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
             }
 
-            $validated['featured_image'] = $request->file('featured_image')->store('blog', 'public');
+            $file = $request->file('featured_image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('blog-images'), $filename);
+            $validated['featured_image'] = 'blog-images/' . $filename;
         }
 
         $validated['is_published'] = $request->boolean('is_published');
+
+        if ($validated['is_published'] && empty($validated['published_at'])) {
+            $validated['published_at'] = now();
+        }
 
         $blog_post->update($validated);
 
@@ -116,7 +137,10 @@ class BlogPostController extends Controller
         $this->authorizeAdmin();
 
         if ($blog_post->featured_image) {
-            Storage::disk('public')->delete($blog_post->featured_image);
+            $oldPath = public_path($blog_post->featured_image);
+            if (file_exists($oldPath)) {
+                @unlink($oldPath);
+            }
         }
 
         $blog_post->delete();

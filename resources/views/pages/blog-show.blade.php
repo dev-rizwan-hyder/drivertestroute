@@ -200,7 +200,7 @@
         {{-- Hero --}}
         @if($post->featured_image)
             <div class="blog-show-hero">
-                <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}">
+                <img src="{{ asset($post->featured_image) }}" alt="{{ $post->title }}">
                 <div class="blog-show-hero-overlay"></div>
             </div>
         @else
