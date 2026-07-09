@@ -5,27 +5,30 @@
 @push('styles')
     <style>
         .routes-page {
-            background:
-                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .18), transparent 32%),
-                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .12), transparent 30%),
-                linear-gradient(180deg, #0a0e1a, #0d1117 48%, #0a0e1a);
-            color: #f8fafc;
+            background-color: #f8f9fa;
+            background-image:
+                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .09), transparent 32%),
+                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .07), transparent 30%),
+                linear-gradient(180deg, rgba(248, 249, 250, .9), rgba(241, 243, 245, .94) 48%, rgba(248, 249, 250, .96)),
+                var(--public-image-route);
+            background-position: center, center, center, center top;
+            background-repeat: no-repeat;
+            background-size: auto, auto, auto, cover;
+            color: #212529;
         }
 
         .routes-gradient-text {
             color: transparent;
-            background: linear-gradient(100deg, #fff 0%, #bfdbfe 26%, #38bdf8 56%, #cffafe 100%);
+            background: linear-gradient(100deg, #1e40af 0%, #2563eb 44%, #0891b2 100%);
             -webkit-background-clip: text;
             background-clip: text;
         }
 
         .routes-glass {
-            border: 1px solid rgba(59, 130, 246, .22);
+            border: 1px solid rgba(203, 213, 225, .9);
             border-radius: .5rem;
-            background:
-                linear-gradient(180deg, rgba(56, 189, 248, .075), rgba(15, 23, 42, .18)),
-                rgba(17, 24, 39, .68);
-            box-shadow: 0 22px 58px rgba(2, 6, 23, .34), inset 0 1px 0 rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .88);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
             backdrop-filter: blur(16px);
         }
 
@@ -34,17 +37,17 @@
         }
 
         .routes-card:hover {
-            border-color: rgba(56, 189, 248, .38);
-            box-shadow: 0 0 20px rgba(59, 130, 246, .34), 0 26px 64px rgba(2, 6, 23, .38);
+            border-color: rgba(37, 99, 235, .28);
+            box-shadow: 0 14px 32px rgba(15, 23, 42, .12);
             transform: translateY(-4px);
         }
 
         .routes-filter {
-            border: 1px solid rgba(59, 130, 246, .34);
+            border: 1px solid rgba(37, 99, 235, .24);
             border-radius: .5rem;
-            background: rgba(15, 23, 42, .48);
+            background: rgba(255, 255, 255, .86);
             padding: .62rem .85rem;
-            color: #bfdbfe;
+            color: #1d4ed8;
             font-size: .875rem;
             font-weight: 800;
             transition: transform 200ms cubic-bezier(.16, 1, .3, 1), background 200ms ease-out, box-shadow 200ms ease-out;
@@ -53,8 +56,8 @@
         .routes-filter:hover,
         .routes-filter.is-active {
             color: #fff;
-            background: linear-gradient(135deg, #1e3a8a, #2563eb 52%, #06b6d4);
-            box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+            background: linear-gradient(135deg, #1e40af, #2563eb 52%, #0891b2);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
             transform: translateY(-1px);
         }
 
@@ -68,21 +71,19 @@
             grid-template-columns: minmax(0, 1fr) auto;
             align-items: center;
             gap: .75rem;
-            border: 1px solid rgba(59, 130, 246, .28);
+            border: 1px solid #d8dee6;
             border-radius: .5rem;
-            background:
-                linear-gradient(180deg, rgba(56, 189, 248, .07), rgba(15, 23, 42, .2)),
-                rgba(17, 24, 39, .68);
+            background: rgba(255, 255, 255, .92);
             padding: .5rem;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 20px 50px rgba(2, 6, 23, .24);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
             backdrop-filter: blur(16px);
             transition: border-color 220ms ease-out, box-shadow 220ms ease-out;
         }
 
         .routes-city-combobox.is-open .routes-city-input-wrap,
         .routes-city-input-wrap:focus-within {
-            border-color: rgba(56, 189, 248, .58);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, .14), 0 22px 52px rgba(2, 6, 23, .3);
+            border-color: rgba(37, 99, 235, .5);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12), 0 8px 20px rgba(15, 23, 42, .08);
         }
 
         .routes-city-input {
@@ -90,13 +91,13 @@
             border: 0;
             background: transparent;
             padding: .7rem .8rem;
-            color: #fff;
+            color: #212529;
             font-weight: 800;
             outline: 0;
         }
 
         .routes-city-input::placeholder {
-            color: #94a3b8;
+            color: #6b7280;
         }
 
         .routes-city-panel {
@@ -107,12 +108,10 @@
             margin-top: .55rem;
             max-height: 19rem;
             overflow-y: auto;
-            border: 1px solid rgba(59, 130, 246, .28);
+            border: 1px solid #d8dee6;
             border-radius: .5rem;
-            background:
-                linear-gradient(180deg, rgba(56, 189, 248, .08), rgba(15, 23, 42, .16)),
-                rgba(10, 14, 26, .96);
-            box-shadow: 0 26px 70px rgba(2, 6, 23, .48), inset 0 1px 0 rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .98);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, .12);
             opacity: 0;
             pointer-events: none;
             transform: translateY(-6px);
@@ -130,7 +129,7 @@
             display: block;
             width: 100%;
             border: 0;
-            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            border-bottom: 1px solid #e0e0e0;
             background: transparent;
             padding: .9rem 1rem;
             text-align: left;
@@ -139,7 +138,7 @@
 
         .routes-city-option:hover,
         .routes-city-option:focus-visible {
-            background: rgba(37, 99, 235, .16);
+            background: #eff6ff;
             outline: 0;
             transform: translateX(2px);
         }
@@ -165,14 +164,28 @@
 
         .routes-button-primary {
             color: #fff;
-            background: linear-gradient(135deg, #1e3a8a, #2563eb 52%, #06b6d4);
-            box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+            background: linear-gradient(135deg, #1e40af, #2563eb 52%, #0891b2);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
         }
 
         .routes-button-secondary {
-            border: 1px solid rgba(59, 130, 246, .34);
-            color: #bfdbfe;
-            background: rgba(15, 23, 42, .52);
+            border: 1px solid rgba(37, 99, 235, .24);
+            color: #1d4ed8;
+            background: #ffffff;
+        }
+
+        .routes-card-visual {
+            background-color: #f1f3f5;
+            background-image:
+                linear-gradient(135deg, rgba(248, 249, 250, .64), rgba(255, 255, 255, .34), rgba(241, 243, 245, .7)),
+                var(--public-image-route);
+            background-position: center, center;
+            background-repeat: no-repeat;
+            background-size: auto, cover;
+        }
+
+        .routes-card-visual svg {
+            opacity: .78;
         }
     </style>
 @endpush
@@ -278,7 +291,7 @@
                             $cityAddress = $routeCity?->address;
                         @endphp
                         <article class="routes-glass routes-card flex min-h-[25rem] flex-col justify-between overflow-hidden">
-                            <div class="relative h-36 bg-[#0a0e1a]">
+                            <div class="routes-card-visual relative h-36">
                                 <svg class="h-full w-full" viewBox="0 0 420 180" fill="none" aria-hidden="true">
                                     <path d="M0 44H420M0 96H420M0 148H420M70 0V180M154 0V180M238 0V180M322 0V180" stroke="rgba(148,163,184,.15)" />
                                     <path d="M34 142 C96 68 156 110 210 54 C274 -12 322 62 386 30" stroke="url(#routeCard{{ $drivingRoute->id }})" stroke-width="7" stroke-linecap="round" />

@@ -23,7 +23,7 @@
                         </svg>
                         <input type="email" name="email" value="{{ old('email') }}" required autofocus class="auth-input">
                     </span>
-                    @error('email') <span class="mt-1 block text-xs font-semibold text-red-300">{{ $message }}</span> @enderror
+                    @error('email') <span class="mt-1 block text-xs font-semibold text-red-700">{{ $message }}</span> @enderror
                 </label>
 
                 <label class="block">
@@ -35,11 +35,11 @@
                         </svg>
                         <input type="password" name="password" required class="auth-input">
                     </span>
-                    @error('password') <span class="mt-1 block text-xs font-semibold text-red-300">{{ $message }}</span> @enderror
+                    @error('password') <span class="mt-1 block text-xs font-semibold text-red-700">{{ $message }}</span> @enderror
                 </label>
 
                 <label class="flex items-center gap-2 text-sm font-semibold text-slate-400">
-                    <input type="checkbox" name="remember" value="1" class="rounded border-blue-500/30 bg-slate-950 text-blue-600 focus:ring-cyan-300">
+                    <input type="checkbox" name="remember" value="1" class="rounded border-blue-300 bg-white text-blue-700 focus:ring-blue-200">
                     Remember me
                 </label>
 

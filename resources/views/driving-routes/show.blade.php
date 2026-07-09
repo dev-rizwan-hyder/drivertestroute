@@ -5,26 +5,29 @@
 @push('styles')
     <style>
         .route-detail-page {
-            background:
-                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .18), transparent 32%),
-                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .12), transparent 30%),
-                linear-gradient(180deg, #0a0e1a, #0d1117 48%, #0a0e1a);
-            color: #f8fafc;
+            background-color: #f8f9fa;
+            background-image:
+                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .09), transparent 32%),
+                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .07), transparent 30%),
+                linear-gradient(180deg, rgba(248, 249, 250, .9), rgba(241, 243, 245, .94) 48%, rgba(248, 249, 250, .96)),
+                var(--public-image-route);
+            background-position: center, center, center, center top;
+            background-repeat: no-repeat;
+            background-size: auto, auto, auto, cover;
+            color: #212529;
         }
 
         .route-detail-glass {
-            border: 1px solid rgba(59, 130, 246, .22);
+            border: 1px solid rgba(203, 213, 225, .9);
             border-radius: .5rem;
-            background:
-                linear-gradient(180deg, rgba(56, 189, 248, .075), rgba(15, 23, 42, .18)),
-                rgba(17, 24, 39, .68);
-            box-shadow: 0 22px 58px rgba(2, 6, 23, .34), inset 0 1px 0 rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .88);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
             backdrop-filter: blur(16px);
         }
 
         .route-detail-gradient-text {
             color: transparent;
-            background: linear-gradient(100deg, #fff 0%, #bfdbfe 26%, #38bdf8 56%, #cffafe 100%);
+            background: linear-gradient(100deg, #1e40af 0%, #2563eb 44%, #0891b2 100%);
             -webkit-background-clip: text;
             background-clip: text;
         }
@@ -46,25 +49,35 @@
 
         .route-detail-button-primary {
             color: #fff;
-            background: linear-gradient(135deg, #1e3a8a, #2563eb 52%, #06b6d4);
-            box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+            background: linear-gradient(135deg, #1e40af, #2563eb 52%, #0891b2);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
         }
 
         .route-detail-button-secondary {
-            border: 1px solid rgba(59, 130, 246, .34);
-            color: #bfdbfe;
-            background: rgba(15, 23, 42, .52);
+            border: 1px solid rgba(37, 99, 235, .24);
+            color: #1d4ed8;
+            background: #ffffff;
         }
 
         .route-detail-page #active-instruction {
-            border-color: rgba(255, 255, 255, .1) !important;
-            background: rgba(10, 14, 26, .94) !important;
+            border-color: #e0e0e0 !important;
+            background: #f8f9fa !important;
         }
 
         .route-detail-page #active-instruction-title,
         .route-detail-page #directions-list p,
         .route-detail-page #directions-list div {
             color: inherit;
+        }
+
+        .route-detail-map-placeholder {
+            background-color: #f1f3f5;
+            background-image:
+                linear-gradient(135deg, rgba(248, 249, 250, .64), rgba(255, 255, 255, .34), rgba(241, 243, 245, .7)),
+                var(--public-image-route);
+            background-position: center, center;
+            background-repeat: no-repeat;
+            background-size: auto, cover;
         }
     </style>
 @endpush
@@ -145,14 +158,14 @@
                         <div id="active-instruction-detail" class="mt-1 text-sm text-slate-400">Google will calculate the best path from start to midpoint and back to start.</div>
                     </div>
                 @elseif(! $hasRouteStops)
-                    <div class="grid h-[70vh] min-h-[460px] place-items-center bg-[#0a0e1a] p-6 text-center">
+                    <div class="route-detail-map-placeholder grid h-[70vh] min-h-[460px] place-items-center p-6 text-center">
                         <div>
                             <h2 class="text-lg font-black text-white">Start and midpoint needed</h2>
                             <p class="mt-2 max-w-md text-sm text-slate-400">Add a start point and midpoint/end point in the admin panel. Google will calculate the return route automatically.</p>
                         </div>
                     </div>
                 @else
-                    <div class="relative grid h-[70vh] min-h-[460px] place-items-center overflow-hidden bg-[#0a0e1a] p-6 text-center">
+                    <div class="route-detail-map-placeholder relative grid h-[70vh] min-h-[460px] place-items-center overflow-hidden p-6 text-center">
                         <svg class="absolute inset-0 h-full w-full opacity-80" viewBox="0 0 720 520" fill="none" aria-hidden="true">
                             <path d="M0 104H720M0 208H720M0 312H720M0 416H720M120 0V520M240 0V520M360 0V520M480 0V520M600 0V520" stroke="rgba(148,163,184,.14)" />
                             <path d="M74 420 C166 240 260 326 350 174 C438 26 544 164 646 86" stroke="url(#routePlaceholder)" stroke-width="10" stroke-linecap="round" />
@@ -565,7 +578,7 @@
                 if (!accessConsumedForCurrentDrive) {
                     startRouteButton.disabled = true;
                     startRouteButton.textContent = 'Starting...';
-                    startRouteButton.className = 'rounded-md bg-stone-900 px-4 py-2 text-sm font-semibold text-white';
+                    startRouteButton.className = 'rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white';
 
                     const accessGranted = await consumeMapStart();
 
@@ -577,7 +590,7 @@
                 driveStarted = true;
                 startRouteButton.disabled = true;
                 startRouteButton.textContent = 'Driving...';
-                startRouteButton.className = 'rounded-md bg-stone-900 px-4 py-2 text-sm font-semibold text-white';
+                startRouteButton.className = 'rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white';
                 removeCurrentLocationPreview();
 
                 if (latestCurrentPosition) {
@@ -890,7 +903,7 @@
             function vehicleIcon(rotation = 0) {
                 return {
                     path: 'M 0 -18 L 9 11 L 0 6 L -9 11 Z',
-                    fillColor: '#111827',
+                    fillColor: '#1e40af',
                     fillOpacity: 1,
                     strokeColor: '#ffffff',
                     strokeWeight: 2.5,

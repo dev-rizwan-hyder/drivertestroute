@@ -41,7 +41,7 @@
                                 </td>
                                 <td class="px-4 py-4">
                                     @if($user->is_admin)
-                                        <span class="rounded-md bg-stone-900 px-2 py-1 text-xs font-semibold text-white">Admin</span>
+                                        <span class="rounded-md bg-emerald-700 px-2 py-1 text-xs font-semibold text-white">Admin</span>
                                     @else
                                         <span class="rounded-md bg-stone-100 px-2 py-1 text-xs font-semibold text-stone-700">Customer</span>
                                     @endif

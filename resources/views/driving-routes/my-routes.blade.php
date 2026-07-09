@@ -2,17 +2,43 @@
 
 @section('title', 'My Routes')
 
+@push('styles')
+    <style>
+        .my-routes-page {
+            min-height: calc(100vh - 5rem);
+            background-color: #f8f9fa;
+            background-image:
+                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .09), transparent 32%),
+                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .07), transparent 30%),
+                linear-gradient(180deg, rgba(248, 249, 250, .9), rgba(241, 243, 245, .94) 48%, rgba(248, 249, 250, .96)),
+                var(--public-image-route);
+            background-position: center, center, center, center top;
+            background-repeat: no-repeat;
+            background-size: auto, auto, auto, cover;
+            color: #212529;
+        }
+
+        .my-routes-empty {
+            border-color: rgba(203, 213, 225, .9);
+            background: rgba(255, 255, 255, .88);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+            backdrop-filter: blur(16px);
+        }
+    </style>
+@endpush
+
 @section('content')
+    <div class="my-routes-page">
     <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-stone-950">My Routes</h1>
-            <p class="mt-2 text-stone-600">Purchased driving routes, remaining map starts, and live map access.</p>
+            <h1 class="text-3xl font-bold text-white">My Routes</h1>
+            <p class="mt-2 text-slate-400">Purchased driving routes, remaining map starts, and live map access.</p>
         </div>
 
         @if($purchases->isEmpty())
-            <div class="rounded-lg border border-dashed border-stone-300 bg-white px-6 py-12 text-center">
-                <h2 class="text-lg font-semibold text-stone-950">No purchased routes</h2>
-                <a href="{{ route('driving-routes.index') }}" class="mt-4 inline-flex rounded-md bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800">
+            <div class="my-routes-empty rounded-lg border border-dashed px-6 py-12 text-center">
+                <h2 class="text-lg font-semibold text-white">No purchased routes</h2>
+                <a href="{{ route('driving-routes.index') }}" class="mt-4 inline-flex rounded-md bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800">
                     Browse Routes
                 </a>
             </div>
@@ -75,4 +101,5 @@
             </div>
         @endif
     </section>
+    </div>
 @endsection

@@ -5,48 +5,46 @@
 @push('styles')
     <style>
         .admin-city-page {
-            --admin-bg: #0a0e1a;
-            --admin-panel: rgba(17, 24, 39, .74);
-            --admin-border: rgba(59, 130, 246, .22);
-            --admin-muted: #94a3b8;
+            --admin-bg: #f8f9fa;
+            --admin-panel: rgba(255, 255, 255, .9);
+            --admin-border: rgba(203, 213, 225, .9);
+            --admin-muted: #5c6675;
             --admin-blue: #2563eb;
-            --admin-cyan: #06b6d4;
-            color: #f8fafc;
+            --admin-cyan: #0891b2;
+            color: #212529;
         }
 
         .admin-city-shell {
             margin: -1.5rem -1rem;
             min-height: calc(100vh - 4rem);
             background:
-                radial-gradient(circle at 12% 16%, rgba(37, 99, 235, .18), transparent 32%),
-                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .12), transparent 28%),
-                linear-gradient(180deg, rgba(10, 14, 26, 1), rgba(15, 23, 42, .98));
+                radial-gradient(circle at 12% 16%, rgba(37, 99, 235, .08), transparent 32%),
+                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .06), transparent 28%),
+                linear-gradient(180deg, #f8f9fa, #f1f3f5);
             padding: 2rem 1rem;
         }
 
         .admin-city-glass {
             border: 1px solid var(--admin-border);
             border-radius: .5rem;
-            background:
-                linear-gradient(180deg, rgba(56, 189, 248, .075), rgba(15, 23, 42, .18)),
-                var(--admin-panel);
-            box-shadow: 0 22px 58px rgba(2, 6, 23, .36), inset 0 1px 0 rgba(255, 255, 255, .1);
+            background: var(--admin-panel);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
             backdrop-filter: blur(16px);
         }
 
         .admin-city-input {
             width: 100%;
-            border: 1px solid rgba(59, 130, 246, .28);
+            border: 1px solid #cfd8e3;
             border-radius: .5rem;
-            background: rgba(15, 23, 42, .76);
+            background: #ffffff;
             padding: .72rem .85rem;
-            color: #f8fafc;
+            color: #212529;
             transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
         }
 
         .admin-city-input:focus {
-            border-color: rgba(56, 189, 248, .68);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, .16);
+            border-color: rgba(37, 99, 235, .52);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
             outline: 0;
         }
 
@@ -67,14 +65,14 @@
 
         .admin-city-primary {
             color: #fff;
-            background: linear-gradient(135deg, #1e3a8a, var(--admin-blue) 52%, var(--admin-cyan));
-            box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+            background: linear-gradient(135deg, #1e40af, var(--admin-blue) 52%, var(--admin-cyan));
+            box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
         }
 
         .admin-city-secondary {
-            border: 1px solid rgba(59, 130, 246, .34);
-            color: #bfdbfe;
-            background: rgba(15, 23, 42, .56);
+            border: 1px solid rgba(37, 99, 235, .24);
+            color: #1d4ed8;
+            background: #ffffff;
         }
 
         .admin-city-row {
@@ -85,24 +83,21 @@
         }
 
         .admin-city-row:hover {
-            background: rgba(37, 99, 235, .1);
+            background: #eff6ff;
         }
 
         .admin-city-dialog {
             width: min(92vw, 34rem);
-            border: 1px solid transparent;
+            border: 1px solid #e0e0e0;
             border-radius: .5rem;
-            color: #f8fafc;
-            background:
-                linear-gradient(180deg, rgba(56, 189, 248, .08), rgba(15, 23, 42, .14)) padding-box,
-                linear-gradient(135deg, rgba(56, 189, 248, .38), rgba(37, 99, 235, .22), rgba(255, 255, 255, .08)) border-box,
-                rgba(10, 14, 26, .96);
-            box-shadow: 0 26px 70px rgba(2, 6, 23, .54), inset 0 1px 0 rgba(255, 255, 255, .1);
+            color: #212529;
+            background: #ffffff;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, .14);
             backdrop-filter: blur(18px);
         }
 
         .admin-city-dialog::backdrop {
-            background: rgba(2, 6, 23, .62);
+            background: rgba(15, 23, 42, .35);
             backdrop-filter: blur(4px);
         }
 

@@ -22,19 +22,30 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             :root {
-                --public-bg: #0a0e1a;
-                --public-bg-soft: #0d1117;
-                --public-panel: rgba(17, 24, 39, .74);
-                --public-border: rgba(59, 130, 246, .22);
-                --public-muted: #94a3b8;
-                --public-blue-deep: #1e3a8a;
+                --public-bg: #f8f9fa;
+                --public-bg-soft: #f1f3f5;
+                --public-panel: rgba(255, 255, 255, .86);
+                --public-border: rgba(203, 213, 225, .9);
+                --public-text: #212529;
+                --public-muted: #5c6675;
+                --public-blue-deep: #1e40af;
                 --public-blue: #2563eb;
-                --public-cyan: #06b6d4;
-                --public-sky: #38bdf8;
+                --public-cyan: #0891b2;
+                --public-sky: #0284c7;
+                --public-image-hero: url("{{ asset('images/home-hero.png') }}");
+                --public-image-section: url("{{ asset('images/section.png') }}");
+                --public-image-route: url("{{ asset('images/route.png') }}");
+                --public-image-about: url("{{ asset('images/about.png') }}");
             }
 
             .public-main-offset {
-                background: #0a0e1a;
+                background-color: var(--public-bg);
+                background-image:
+                    linear-gradient(180deg, rgba(248, 249, 250, .92), rgba(241, 243, 245, .94)),
+                    var(--public-image-section);
+                background-position: center top, center top;
+                background-repeat: no-repeat;
+                background-size: auto, cover;
                 padding-top: 5rem;
             }
 
@@ -42,9 +53,9 @@
                 position: fixed;
                 inset: 0 0 auto;
                 z-index: 50;
-                border-bottom: 1px solid transparent;
-                background: rgba(10, 14, 26, .76);
-                box-shadow: 0 12px 34px rgba(2, 6, 23, .18);
+                border-bottom: 1px solid rgba(224, 224, 224, .72);
+                background: rgba(255, 255, 255, .84);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
                 backdrop-filter: blur(18px);
                 -webkit-backdrop-filter: blur(18px);
                 transition:
@@ -54,7 +65,7 @@
             }
 
             .public-header-glass[data-transparent-header="true"]:not(.public-header-scrolled) {
-                background: rgba(10, 14, 26, .42);
+                background: rgba(255, 255, 255, .66);
                 box-shadow: none;
             }
 
@@ -66,21 +77,21 @@
                 left: 0;
                 height: 1px;
                 pointer-events: none;
-                background: linear-gradient(90deg, transparent, rgba(37, 99, 235, .7), rgba(6, 182, 212, .76), transparent);
-                box-shadow: 0 0 18px rgba(6, 182, 212, .14);
-                opacity: .34;
+                background: linear-gradient(90deg, transparent, rgba(37, 99, 235, .34), rgba(8, 145, 178, .38), transparent);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+                opacity: .55;
                 transition: opacity 220ms ease-out, box-shadow 220ms ease-out;
             }
 
             .public-header-scrolled {
-                border-color: rgba(59, 130, 246, .18);
-                background: rgba(10, 14, 26, .92);
-                box-shadow: 0 22px 54px rgba(2, 6, 23, .38);
+                border-color: rgba(224, 224, 224, .95);
+                background: rgba(255, 255, 255, .96);
+                box-shadow: 0 10px 28px rgba(15, 23, 42, .1);
             }
 
             .public-header-scrolled::after {
                 opacity: 1;
-                box-shadow: 0 0 24px rgba(6, 182, 212, .24);
+                box-shadow: 0 2px 10px rgba(37, 99, 235, .12);
             }
 
             .public-header-nav {
@@ -89,20 +100,20 @@
             }
 
             .public-brand {
-                color: #fff;
+                color: var(--public-text);
                 text-decoration: none;
             }
 
             .public-logo {
                 background: linear-gradient(135deg, var(--public-blue-deep), var(--public-blue) 52%, var(--public-cyan));
-                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16), 0 14px 34px rgba(59, 130, 246, .18);
+                box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
                 transition: transform 220ms cubic-bezier(.16, 1, .3, 1), box-shadow 220ms ease-out;
             }
 
             .public-wordmark {
                 display: block;
                 color: transparent;
-                background: linear-gradient(100deg, #bfdbfe, var(--public-sky) 48%, #cffafe);
+                background: linear-gradient(100deg, var(--public-blue-deep), var(--public-blue) 48%, var(--public-cyan));
                 -webkit-background-clip: text;
                 background-clip: text;
                 transition: filter 200ms ease-out;
@@ -114,11 +125,11 @@
 
             .public-brand:hover .public-logo {
                 transform: translateY(-1px);
-                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2), 0 0 22px rgba(6, 182, 212, .24), 0 18px 40px rgba(59, 130, 246, .2);
+                box-shadow: 0 10px 24px rgba(37, 99, 235, .28);
             }
 
             .public-brand:hover .public-wordmark {
-                filter: drop-shadow(0 0 12px rgba(56, 189, 248, .3));
+                filter: drop-shadow(0 4px 10px rgba(37, 99, 235, .12));
             }
 
             .public-nav-list {
@@ -145,7 +156,7 @@
             .public-nav-link:hover,
             .public-nav-link:focus-visible,
             .public-nav-active {
-                color: #fff;
+                color: #1a1a1a;
             }
 
             .public-nav-link:focus-visible,
@@ -167,7 +178,7 @@
                 height: 2px;
                 border-radius: 999px;
                 background: linear-gradient(90deg, var(--public-blue), var(--public-cyan), var(--public-sky));
-                box-shadow: 0 0 16px rgba(6, 182, 212, .42);
+                box-shadow: 0 3px 10px rgba(37, 99, 235, .16);
                 opacity: 0;
                 transform: translate3d(0, 0, 0);
                 transition:
@@ -201,28 +212,28 @@
             }
 
             .public-auth-link {
-                border: 1px solid rgba(59, 130, 246, .42);
-                color: #bfdbfe;
-                background: rgba(15, 23, 42, .46);
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+                border: 1px solid rgba(37, 99, 235, .24);
+                color: #1d4ed8;
+                background: rgba(255, 255, 255, .74);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
             }
 
             .public-auth-link:hover {
-                border-color: rgba(56, 189, 248, .55);
-                color: #fff;
-                background: rgba(37, 99, 235, .16);
-                box-shadow: 0 14px 30px rgba(37, 99, 235, .16), inset 0 1px 0 rgba(255, 255, 255, .12);
+                border-color: rgba(37, 99, 235, .38);
+                color: #1e40af;
+                background: #eff6ff;
+                box-shadow: 0 8px 18px rgba(37, 99, 235, .12);
             }
 
             .public-auth-cta {
                 color: #fff;
                 background: linear-gradient(135deg, var(--public-blue-deep), var(--public-blue) 52%, var(--public-cyan));
-                box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+                box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
             }
 
             .public-auth-cta:hover {
                 transform: translateY(-1px) scale(1.03);
-                box-shadow: 0 0 22px rgba(6, 182, 212, .32), 0 20px 42px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .18);
+                box-shadow: 0 16px 34px rgba(37, 99, 235, .28);
             }
 
             .public-user-menu {
@@ -247,10 +258,8 @@
                 border: 1px solid transparent;
                 border-radius: 999px;
                 color: #fff;
-                background:
-                    linear-gradient(135deg, rgba(15, 23, 42, .94), rgba(10, 14, 26, .94)) padding-box,
-                    linear-gradient(135deg, var(--public-blue), var(--public-cyan)) border-box;
-                box-shadow: 0 12px 30px rgba(2, 6, 23, .28), inset 0 1px 0 rgba(255, 255, 255, .12);
+                background: linear-gradient(135deg, var(--public-blue-deep), var(--public-blue) 56%, var(--public-cyan));
+                box-shadow: 0 10px 24px rgba(37, 99, 235, .22);
                 font-size: .8rem;
                 font-weight: 900;
                 line-height: 1;
@@ -261,7 +270,7 @@
             .public-avatar:hover,
             .public-mobile-avatar:hover {
                 transform: translateY(-1px);
-                box-shadow: 0 0 18px rgba(6, 182, 212, .3), 0 16px 34px rgba(2, 6, 23, .32), inset 0 1px 0 rgba(255, 255, 255, .14);
+                box-shadow: 0 14px 30px rgba(37, 99, 235, .28);
             }
 
             .public-user-dropdown {
@@ -269,13 +278,10 @@
                 top: calc(100% + .7rem);
                 right: 0;
                 width: 17rem;
-                border: 1px solid transparent;
+                border: 1px solid #e0e0e0;
                 border-radius: .5rem;
-                background:
-                    linear-gradient(180deg, rgba(56, 189, 248, .08), rgba(15, 23, 42, .12)) padding-box,
-                    linear-gradient(135deg, rgba(56, 189, 248, .38), rgba(37, 99, 235, .22), rgba(255, 255, 255, .08)) border-box,
-                    rgba(10, 14, 26, .94);
-                box-shadow: 0 26px 70px rgba(2, 6, 23, .5), inset 0 1px 0 rgba(255, 255, 255, .1);
+                background: rgba(255, 255, 255, .96);
+                box-shadow: 0 18px 45px rgba(15, 23, 42, .12);
                 opacity: 0;
                 pointer-events: none;
                 transform: translate3d(0, -6px, 0);
@@ -293,7 +299,7 @@
 
             .public-dropdown-divider {
                 height: 1px;
-                background: linear-gradient(90deg, transparent, rgba(59, 130, 246, .44), rgba(6, 182, 212, .34), transparent);
+                background: linear-gradient(90deg, transparent, rgba(203, 213, 225, .95), transparent);
             }
 
             .public-dropdown-link {
@@ -303,7 +309,7 @@
                 gap: .65rem;
                 border-radius: .375rem;
                 padding: .72rem .78rem;
-                color: #e2e8f0;
+                color: #334155;
                 font-size: .875rem;
                 font-weight: 800;
                 text-align: left;
@@ -319,8 +325,8 @@
             }
 
             .public-dropdown-link:hover {
-                color: #fff;
-                background: rgba(37, 99, 235, .16);
+                color: #1e40af;
+                background: #eff6ff;
                 transform: translateX(2px);
             }
 
@@ -333,11 +339,11 @@
             }
 
             .public-dropdown-link-danger:hover {
-                background: rgba(148, 163, 184, .1);
+                background: #f1f3f5;
             }
 
             .public-dropdown-link-danger:hover svg {
-                color: #bfdbfe;
+                color: #1e40af;
             }
 
             .public-menu-button {
@@ -345,20 +351,20 @@
                 height: 2.55rem;
                 width: 2.55rem;
                 place-items: center;
-                border: 1px solid rgba(59, 130, 246, .36);
+                border: 1px solid #d8dee6;
                 border-radius: .5rem;
-                color: #e2e8f0;
-                background: rgba(15, 23, 42, .58);
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+                color: #1f2937;
+                background: rgba(255, 255, 255, .78);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
                 transition: border-color 180ms ease-out, background 180ms ease-out, color 180ms ease-out, box-shadow 180ms ease-out;
             }
 
             .public-menu-button:hover,
             .public-menu-button.is-open {
-                border-color: rgba(56, 189, 248, .56);
-                color: #fff;
-                background: rgba(37, 99, 235, .18);
-                box-shadow: 0 12px 28px rgba(37, 99, 235, .16), inset 0 1px 0 rgba(255, 255, 255, .12);
+                border-color: rgba(37, 99, 235, .34);
+                color: #1e40af;
+                background: #eff6ff;
+                box-shadow: 0 8px 18px rgba(37, 99, 235, .12);
             }
 
             .public-menu-icon span {
@@ -391,7 +397,7 @@
                 inset: 0;
                 z-index: 55;
                 pointer-events: none;
-                background: rgba(2, 6, 23, .44);
+                background: rgba(15, 23, 42, .35);
                 opacity: 0;
                 transition: opacity 200ms ease-out;
             }
@@ -409,11 +415,9 @@
                 height: 100svh;
                 width: min(88vw, 24rem);
                 overflow-y: auto;
-                border-left: 1px solid rgba(59, 130, 246, .22);
-                background:
-                    linear-gradient(180deg, rgba(56, 189, 248, .08), rgba(15, 23, 42, .16)),
-                    rgba(10, 14, 26, .96);
-                box-shadow: -28px 0 70px rgba(2, 6, 23, .54), inset 1px 0 0 rgba(255, 255, 255, .06);
+                border-left: 1px solid #e0e0e0;
+                background: rgba(255, 255, 255, .97);
+                box-shadow: -18px 0 44px rgba(15, 23, 42, .14);
                 transform: translate3d(104%, 0, 0);
                 transition: transform 240ms cubic-bezier(.16, 1, .3, 1);
                 backdrop-filter: blur(18px);
@@ -451,8 +455,8 @@
 
             .public-mobile-link:hover,
             .public-mobile-link.is-active {
-                color: #fff;
-                background: rgba(37, 99, 235, .16);
+                color: #1e40af;
+                background: #eff6ff;
             }
 
             .public-mobile-link.public-auth-link,
@@ -471,12 +475,17 @@
                 min-height: calc(100vh - 5rem);
                 place-items: center;
                 overflow: hidden;
-                background:
-                    radial-gradient(circle at 16% 18%, rgba(37, 99, 235, .2), transparent 34%),
-                    radial-gradient(circle at 84% 14%, rgba(6, 182, 212, .13), transparent 30%),
-                    linear-gradient(180deg, #0a0e1a, #0d1117 54%, #0a0e1a);
+                background-color: var(--public-bg);
+                background-image:
+                    radial-gradient(circle at 16% 18%, rgba(37, 99, 235, .1), transparent 34%),
+                    radial-gradient(circle at 84% 14%, rgba(6, 182, 212, .08), transparent 30%),
+                    linear-gradient(180deg, rgba(248, 249, 250, .88), rgba(241, 243, 245, .94) 54%, rgba(248, 249, 250, .96)),
+                    var(--public-image-section);
+                background-position: center, center, center, center;
+                background-repeat: no-repeat;
+                background-size: auto, auto, auto, cover;
                 padding: 4rem 1rem;
-                color: #f8fafc;
+                color: var(--public-text);
             }
 
             .auth-shell::before {
@@ -484,21 +493,19 @@
                 position: absolute;
                 inset: -18% -12% -10%;
                 z-index: -1;
-                opacity: .38;
+                opacity: .2;
                 filter: blur(24px) saturate(1.08);
                 background:
-                    conic-gradient(from 130deg at 48% 44%, rgba(30, 58, 138, .24), rgba(37, 99, 235, .2), rgba(6, 182, 212, .18), rgba(15, 23, 42, .22), rgba(30, 58, 138, .24));
+                    conic-gradient(from 130deg at 48% 44%, rgba(30, 64, 175, .16), rgba(37, 99, 235, .14), rgba(8, 145, 178, .12), rgba(241, 243, 245, .2), rgba(30, 64, 175, .16));
                 animation: auth-aurora 24s cubic-bezier(.45, 0, .2, 1) infinite alternate;
             }
 
             .auth-card {
                 width: min(100%, 28rem);
-                border: 1px solid rgba(59, 130, 246, .24);
+                border: 1px solid #e0e0e0;
                 border-radius: .5rem;
-                background:
-                    linear-gradient(180deg, rgba(56, 189, 248, .075), rgba(15, 23, 42, .18)),
-                    rgba(17, 24, 39, .76);
-                box-shadow: 0 28px 74px rgba(2, 6, 23, .46), inset 0 1px 0 rgba(255, 255, 255, .1);
+                background: rgba(255, 255, 255, .9);
+                box-shadow: 0 18px 45px rgba(15, 23, 42, .12);
                 padding: 1.5rem;
                 backdrop-filter: blur(18px);
             }
@@ -520,17 +527,17 @@
 
             .auth-input {
                 width: 100%;
-                border: 1px solid rgba(59, 130, 246, .28);
+                border: 1px solid #cfd8e3;
                 border-radius: .5rem;
-                background: rgba(15, 23, 42, .76);
+                background: #ffffff;
                 padding: .82rem .9rem .82rem 2.55rem;
-                color: #f8fafc;
+                color: var(--public-text);
                 transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
             }
 
             .auth-input:focus {
-                border-color: rgba(56, 189, 248, .68);
-                box-shadow: 0 0 0 3px rgba(6, 182, 212, .16);
+                border-color: rgba(37, 99, 235, .52);
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
                 outline: 0;
             }
 
@@ -545,13 +552,13 @@
                 padding: .85rem 1.2rem;
                 color: #fff;
                 font-weight: 900;
-                box-shadow: 0 16px 34px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .14);
+                box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
                 transition: transform 200ms cubic-bezier(.16, 1, .3, 1), box-shadow 200ms ease-out;
             }
 
             .auth-button:hover {
                 transform: translateY(-1px) scale(1.02);
-                box-shadow: 0 0 22px rgba(6, 182, 212, .32), 0 20px 42px rgba(37, 99, 235, .24);
+                box-shadow: 0 16px 34px rgba(37, 99, 235, .28);
             }
 
             .auth-outline-button {
@@ -559,19 +566,19 @@
                 min-height: 2.8rem;
                 align-items: center;
                 justify-content: center;
-                border: 1px solid rgba(59, 130, 246, .34);
+                border: 1px solid rgba(37, 99, 235, .24);
                 border-radius: .5rem;
-                background: rgba(15, 23, 42, .52);
+                background: #ffffff;
                 padding: .75rem 1rem;
-                color: #bfdbfe;
+                color: #1d4ed8;
                 font-weight: 800;
                 transition: background 200ms ease-out, color 200ms ease-out, border-color 200ms ease-out;
             }
 
             .auth-outline-button:hover {
-                border-color: rgba(56, 189, 248, .5);
-                background: rgba(37, 99, 235, .16);
-                color: #fff;
+                border-color: rgba(37, 99, 235, .38);
+                background: #eff6ff;
+                color: #1e40af;
             }
 
             @keyframes auth-aurora {
@@ -630,8 +637,53 @@
             }
         </style>
         @stack('styles')
+        <style>
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page, .auth-shell) :is(.text-white) {
+                color: #212529;
+            }
+
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page, .auth-shell) :is(.text-slate-300, .text-slate-400, .text-zinc-300, .text-zinc-400) {
+                color: #5c6675;
+            }
+
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page, .auth-shell) :is(.text-slate-500, .text-slate-600, .text-zinc-500, .text-zinc-600) {
+                color: #6b7280;
+            }
+
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page, .auth-shell) :is(.text-cyan-100, .text-cyan-200, .text-cyan-300, .text-sky-200, .text-sky-300) {
+                color: #0e7490;
+            }
+
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page, .auth-shell) :is(.text-blue-200, .text-blue-300) {
+                color: #1d4ed8;
+            }
+
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page, .auth-shell) [class~="hover:text-white"]:hover,
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page, .auth-shell) [class~="hover:text-cyan-200"]:hover,
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page, .auth-shell) [class~="hover:text-cyan-300"]:hover {
+                color: #0e7490;
+            }
+
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page) [class~="border-white/10"],
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page) [class~="border-white/15"] {
+                border-color: #e0e0e0;
+            }
+
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page) [class~="divide-white/10"] > :not([hidden]) ~ :not([hidden]) {
+                border-color: #e0e0e0;
+            }
+
+            .public-light-theme :where(.dtr-home, .routes-page, .checkout-page, .my-routes-page, .route-detail-page, .public-dark-page, .contact-page, .blog-page, .blog-show-page) :is([class~="bg-white/[.04]"], [class~="bg-white/[.055]"], [class~="bg-white/[.06]"], [class~="bg-white/[.08]"]) {
+                background-color: #f1f3f5;
+            }
+
+            .public-light-theme :where(.dtr-btn-primary, .routes-button-primary, .route-detail-button-primary, .contact-button, .blog-load-button, .auth-button, .public-auth-cta, [class~="bg-blue-700"], [class~="bg-blue-800"], [class~="bg-emerald-700"], [class~="bg-emerald-800"], [class~="bg-gradient-to-br"], .public-logo),
+            .public-light-theme :where(.dtr-btn-primary, .routes-button-primary, .route-detail-button-primary, .contact-button, .blog-load-button, .auth-button, .public-auth-cta, [class~="bg-blue-700"], [class~="bg-blue-800"], [class~="bg-emerald-700"], [class~="bg-emerald-800"], [class~="bg-gradient-to-br"], .public-logo) * {
+                color: #ffffff !important;
+            }
+        </style>
     </head>
-    <body class="min-h-screen bg-zinc-50 text-zinc-950 antialiased">
+    <body class="public-light-theme min-h-screen bg-zinc-50 text-zinc-950 antialiased">
         @php
             $headerOverlaysContent = request()->routeIs('home');
             $currentUser = auth()->user();
@@ -698,8 +750,8 @@
 
                             <div class="public-user-dropdown p-3">
                                 <div class="px-2 pb-3 pt-1">
-                                    <p class="truncate text-sm font-black text-white">{{ $currentUser->name }}</p>
-                                    <p class="mt-1 truncate text-xs font-medium text-slate-400">{{ $currentUser->email }}</p>
+                                    <p class="truncate text-sm font-black text-zinc-950">{{ $currentUser->name }}</p>
+                                    <p class="mt-1 truncate text-xs font-medium text-slate-600">{{ $currentUser->email }}</p>
                                 </div>
 
                                 <div class="public-dropdown-divider mb-2"></div>
@@ -752,9 +804,9 @@
 
             <aside id="public-mobile-menu" class="public-mobile-panel lg:hidden" aria-hidden="true">
                 <div class="px-5 pb-8 pt-24">
-                    <div class="border-b border-white/10 pb-5">
-                        <p class="text-sm font-black text-white">Driver Test Routes</p>
-                        <p class="mt-1 text-xs font-medium text-slate-400">Practice maps for test day</p>
+                    <div class="border-b border-zinc-200 pb-5">
+                        <p class="text-sm font-black text-zinc-950">Driver Test Routes</p>
+                        <p class="mt-1 text-xs font-medium text-zinc-600">Practice maps for test day</p>
                     </div>
 
                     <nav class="mt-5 space-y-2" aria-label="Mobile navigation">
@@ -771,13 +823,13 @@
                     @endforeach
                     </nav>
 
-                    <div class="mt-6 border-t border-white/10 pt-5">
+                    <div class="mt-6 border-t border-zinc-200 pt-5">
                         @auth
                             <div class="public-mobile-link mb-2 justify-start gap-3" style="--item-index: {{ count($publicNavItems) }};">
                                 <span class="public-avatar h-10 w-10">{{ $userInitials }}</span>
                                 <span class="min-w-0">
-                                    <span class="block truncate text-sm font-black text-white">{{ $currentUser->name }}</span>
-                                    <span class="mt-1 block truncate text-xs font-medium text-slate-400">{{ $currentUser->email }}</span>
+                                    <span class="block truncate text-sm font-black text-zinc-950">{{ $currentUser->name }}</span>
+                                    <span class="mt-1 block truncate text-xs font-medium text-zinc-600">{{ $currentUser->email }}</span>
                                 </span>
                             </div>
 
@@ -831,37 +883,37 @@
             @yield('content')
         </main>
 
-        <footer class="border-t border-white/10 bg-[#0a0a0f] text-white">
+        <footer class="border-t border-zinc-200 bg-[#f8f9fa] text-zinc-950">
             <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr] lg:px-8">
                 <div>
-                    <a href="{{ route('home') }}" class="flex items-center gap-3 text-white">
+                    <a href="{{ route('home') }}" class="flex items-center gap-3 text-zinc-950">
                         <span class="grid h-10 w-10 place-items-center rounded-md bg-gradient-to-br from-blue-950 via-blue-700 to-cyan-400 text-sm font-black text-white">DTR</span>
                         <span class="font-bold">Driver Test Routes</span>
                     </a>
-                    <p class="mt-4 max-w-md text-sm leading-6 text-zinc-400">
+                    <p class="mt-4 max-w-md text-sm leading-6 text-zinc-600">
                         Paid driving test route maps built for focused practice, clear route planning, and confident test-day preparation.
                     </p>
                 </div>
 
                 <div>
-                    <h2 class="text-sm font-bold text-white">Pages</h2>
+                    <h2 class="text-sm font-bold text-zinc-950">Pages</h2>
                     <div class="mt-3 space-y-2 text-sm">
-                        <a href="{{ route('home') }}" class="block text-zinc-400 transition hover:text-cyan-300">Home</a>
-                        <a href="{{ route('about') }}" class="block text-zinc-400 transition hover:text-cyan-300">About</a>
-                        <a href="{{ route('driving-routes.index') }}" class="block text-zinc-400 transition hover:text-cyan-300">Routes</a>
-                        <a href="{{ route('blog') }}" class="block text-zinc-400 transition hover:text-cyan-300">Blog</a>
-                        <a href="{{ route('contact') }}" class="block text-zinc-400 transition hover:text-cyan-300">Contact Us</a>
+                        <a href="{{ route('home') }}" class="block text-zinc-600 transition hover:text-blue-700">Home</a>
+                        <a href="{{ route('about') }}" class="block text-zinc-600 transition hover:text-blue-700">About</a>
+                        <a href="{{ route('driving-routes.index') }}" class="block text-zinc-600 transition hover:text-blue-700">Routes</a>
+                        <a href="{{ route('blog') }}" class="block text-zinc-600 transition hover:text-blue-700">Blog</a>
+                        <a href="{{ route('contact') }}" class="block text-zinc-600 transition hover:text-blue-700">Contact Us</a>
                     </div>
                 </div>
 
                 <div>
-                    <h2 class="text-sm font-bold text-white">Account</h2>
+                    <h2 class="text-sm font-bold text-zinc-950">Account</h2>
                     <div class="mt-3 space-y-2 text-sm">
                         @auth
-                            <a href="{{ route('driving-routes.my') }}" class="block text-zinc-400 transition hover:text-cyan-300">My Routes</a>
+                            <a href="{{ route('driving-routes.my') }}" class="block text-zinc-600 transition hover:text-blue-700">My Routes</a>
                         @else
-                            <a href="{{ route('login') }}" class="block text-zinc-400 transition hover:text-cyan-300">Login</a>
-                            <a href="{{ route('register') }}" class="block text-zinc-400 transition hover:text-cyan-300">Create Account</a>
+                            <a href="{{ route('login') }}" class="block text-zinc-600 transition hover:text-blue-700">Login</a>
+                            <a href="{{ route('register') }}" class="block text-zinc-600 transition hover:text-blue-700">Create Account</a>
                         @endauth
                     </div>
                 </div>

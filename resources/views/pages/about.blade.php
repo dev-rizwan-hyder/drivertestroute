@@ -5,33 +5,50 @@
 @push('styles')
     <style>
         .public-dark-page {
-            background:
-                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .18), transparent 32%),
-                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .12), transparent 30%),
-                linear-gradient(180deg, #0a0e1a, #0d1117 48%, #0a0e1a);
-            color: #f8fafc;
+            background-color: #f8f9fa;
+            background-image:
+                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .09), transparent 32%),
+                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .07), transparent 30%),
+                linear-gradient(180deg, rgba(248, 249, 250, .9), rgba(241, 243, 245, .94) 48%, rgba(248, 249, 250, .96)),
+                var(--public-image-section);
+            background-position: center, center, center, center top;
+            background-repeat: no-repeat;
+            background-size: auto, auto, auto, cover;
+            color: #212529;
+        }
+
+        .about-hero {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            background-color: #f1f3f5;
+            background-image:
+                linear-gradient(90deg, rgba(248, 249, 250, .94) 0%, rgba(248, 249, 250, .72) 48%, rgba(248, 249, 250, .42) 100%),
+                linear-gradient(180deg, rgba(248, 249, 250, .52), rgba(241, 243, 245, .74)),
+                var(--public-image-about);
+            background-position: center, center, center right;
+            background-repeat: no-repeat;
+            background-size: auto, auto, cover;
         }
 
         .public-glass-card {
-            border: 1px solid rgba(59, 130, 246, .22);
+            border: 1px solid rgba(203, 213, 225, .9);
             border-radius: .5rem;
-            background:
-                linear-gradient(180deg, rgba(56, 189, 248, .075), rgba(15, 23, 42, .18)),
-                rgba(17, 24, 39, .68);
-            box-shadow: 0 22px 58px rgba(2, 6, 23, .34), inset 0 1px 0 rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .88);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
             backdrop-filter: blur(16px);
             transition: transform 240ms cubic-bezier(.16, 1, .3, 1), box-shadow 240ms ease-out, border-color 240ms ease-out;
         }
 
         .public-glass-card:hover {
-            border-color: rgba(56, 189, 248, .38);
-            box-shadow: 0 0 20px rgba(59, 130, 246, .32), 0 26px 64px rgba(2, 6, 23, .38);
+            border-color: rgba(37, 99, 235, .28);
+            box-shadow: 0 14px 32px rgba(15, 23, 42, .12);
             transform: translateY(-3px);
         }
 
         .public-gradient-text {
             color: transparent;
-            background: linear-gradient(100deg, #fff 0%, #bfdbfe 26%, #38bdf8 56%, #cffafe 100%);
+            background: linear-gradient(100deg, #1e40af 0%, #2563eb 44%, #0891b2 100%);
             -webkit-background-clip: text;
             background-clip: text;
         }
@@ -70,8 +87,9 @@
     @endphp
 
     <div class="public-dark-page">
-        <section class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-            <div class="max-w-4xl" data-page-reveal>
+        <section class="about-hero">
+            <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+                <div class="max-w-4xl" data-page-reveal>
                 <p class="text-sm font-black uppercase text-cyan-200">About us</p>
                 <h1 class="mt-4 text-5xl font-black leading-tight text-white sm:text-6xl">
                     Route preparation with
@@ -80,6 +98,7 @@
                 <p class="mt-6 max-w-3xl text-lg leading-8 text-slate-400">
                     Driver Test Routes helps learners and instructors plan focused practice with paid route maps, controlled starts, and simple dashboards for repeatable test-day preparation.
                 </p>
+                </div>
             </div>
         </section>
 

@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\DrivingRouteAdminController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\DrivingRouteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -13,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [DrivingRouteController::class, 'home'])->name('home');
 Route::get('/routes', [DrivingRouteController::class, 'index'])->name('routes.index');
 Route::view('/about', 'pages.about')->name('about');
-Route::view('/blog', 'pages.blog')->name('blog');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::post('/contact', function (Request $request) {
     $request->validate([
@@ -54,5 +57,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::resource('cities', CityController::class)->except(['create', 'show', 'edit']);
         Route::resource('driving-routes', DrivingRouteAdminController::class);
+        Route::resource('blog-posts', BlogPostController::class);
     });
 });

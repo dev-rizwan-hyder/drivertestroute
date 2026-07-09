@@ -2,6 +2,33 @@
 
 @section('title', 'Checkout - '.$drivingRoute->title)
 
+@push('styles')
+    <style>
+        .checkout-page {
+            min-height: calc(100vh - 5rem);
+            background-color: #f8f9fa;
+            background-image:
+                radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .09), transparent 32%),
+                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .07), transparent 30%),
+                linear-gradient(180deg, rgba(248, 249, 250, .9), rgba(241, 243, 245, .94) 48%, rgba(248, 249, 250, .96)),
+                var(--public-image-route);
+            background-position: center, center, center, center top;
+            background-repeat: no-repeat;
+            background-size: auto, auto, auto, cover;
+        }
+
+        .checkout-route-head {
+            background-color: #f1f3f5;
+            background-image:
+                linear-gradient(135deg, rgba(248, 249, 250, .72), rgba(255, 255, 255, .38), rgba(241, 243, 245, .8)),
+                var(--public-image-route);
+            background-position: center, center;
+            background-repeat: no-repeat;
+            background-size: auto, cover;
+        }
+    </style>
+@endpush
+
 @section('content')
     @php
         $startsIncluded = max(1, (int) ($drivingRoute->access_limit ?? 1));
@@ -9,14 +36,15 @@
         $totalAfterPurchase = $remainingStarts + $startsIncluded;
     @endphp
 
+    <div class="checkout-page">
     <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <a href="{{ route('driving-routes.index') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">Back to routes</a>
-                <h1 class="mt-3 text-3xl font-bold text-zinc-950">Secure Checkout</h1>
-                <p class="mt-2 max-w-2xl text-zinc-600">Confirm student details, review the route access, and complete payment to unlock the map.</p>
+                <a href="{{ route('driving-routes.index') }}" class="text-sm font-semibold text-cyan-200 hover:text-white">Back to routes</a>
+                <h1 class="mt-3 text-3xl font-bold text-white">Secure Checkout</h1>
+                <p class="mt-2 max-w-2xl text-slate-400">Confirm student details, review the route access, and complete payment to unlock the map.</p>
             </div>
-            <span class="inline-flex w-fit rounded-md bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-800">
+            <span class="inline-flex w-fit rounded-md border border-blue-500/20 bg-white/[.08] px-3 py-2 text-sm font-bold text-cyan-100">
                 {{ $stripeEnabled ? 'Stripe card payment' : 'Local checkout mode' }}
             </span>
         </div>
@@ -24,10 +52,10 @@
         <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
             <div class="space-y-6">
                 <article class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm">
-                    <div class="border-b border-zinc-200 bg-zinc-950 p-6 text-white">
-                        <p class="text-sm font-bold uppercase tracking-normal text-emerald-300">Selected route</p>
+                    <div class="checkout-route-head border-b border-zinc-200 p-6 text-white">
+                        <p class="text-sm font-bold uppercase tracking-normal text-emerald-700">Selected route</p>
                         <h2 class="mt-2 text-3xl font-bold">{{ $drivingRoute->title }}</h2>
-                        <p class="mt-2 text-zinc-300">{{ $drivingRoute->city }}, {{ $drivingRoute->province }}</p>
+                    <p class="mt-2 text-zinc-600">{{ $drivingRoute->city }}, {{ $drivingRoute->province }}</p>
                     </div>
 
                     <div class="grid gap-4 p-6 md:grid-cols-2">
@@ -177,6 +205,7 @@
             </aside>
         </div>
     </section>
+    </div>
 
     @if($stripeEnabled)
         <script src="https://js.stripe.com/v3/"></script>
