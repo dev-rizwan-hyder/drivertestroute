@@ -45,4 +45,19 @@ return [
         'currency' => env('STRIPE_CURRENCY', 'usd'),
     ],
 
+    'paypal' => [
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'secret' => env('PAYPAL_SECRET'),
+        'mode' => env('PAYPAL_MODE', 'sandbox'),
+        'currency' => env('PAYPAL_CURRENCY', 'USD'),
+    ],
+
+    'square' => [
+        'application_id' => env('SQUARE_APPLICATION_ID'),
+        'access_token' => env('SQUARE_ACCESS_TOKEN'),
+        'location_id' => env('SQUARE_LOCATION_ID'),
+        'environment' => env('SQUARE_ENVIRONMENT', 'sandbox'),
+        'currency' => env('SQUARE_CURRENCY', 'USD'),
+    ],
+
 ];

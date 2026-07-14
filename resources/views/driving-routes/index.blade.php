@@ -10,7 +10,7 @@
                 radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .09), transparent 32%),
                 radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .07), transparent 30%),
                 linear-gradient(180deg, rgba(248, 249, 250, .9), rgba(241, 243, 245, .94) 48%, rgba(248, 249, 250, .96)),
-                var(--public-image-route);
+                var(--public-image-pages);
             background-position: center, center, center, center top;
             background-repeat: no-repeat;
             background-size: auto, auto, auto, cover;

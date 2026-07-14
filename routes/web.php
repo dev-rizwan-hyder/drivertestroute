@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-routes', [DrivingRouteController::class, 'myRoutes'])->name('driving-routes.my');
     Route::get('/driving-routes/{drivingRoute}/checkout', [DrivingRouteController::class, 'checkout'])->name('driving-routes.checkout');
     Route::post('/driving-routes/{drivingRoute}/payment-intent', [DrivingRouteController::class, 'paymentIntent'])->name('driving-routes.payment-intent');
+    Route::post('/driving-routes/{drivingRoute}/paypal/create-order', [DrivingRouteController::class, 'createPaypalOrder'])->name('driving-routes.paypal.create-order');
     Route::post('/driving-routes/{drivingRoute}/checkout', [DrivingRouteController::class, 'checkoutStore'])->name('driving-routes.checkout.store');
     Route::post('/driving-routes/{drivingRoute}/buy', [DrivingRouteController::class, 'buy'])->name('driving-routes.buy');
     Route::post('/driving-routes/{drivingRoute}/start', [DrivingRouteController::class, 'start'])->name('driving-routes.start');

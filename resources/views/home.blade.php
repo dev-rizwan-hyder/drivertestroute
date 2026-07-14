@@ -117,11 +117,10 @@
             background-color: var(--dtr-bg);
             background-image:
                 linear-gradient(90deg, rgba(248, 249, 250, .96) 0%, rgba(248, 249, 250, .72) 48%, rgba(248, 249, 250, .36) 100%),
-                linear-gradient(180deg, rgba(248, 249, 250, .72) 0%, rgba(255, 255, 255, .34) 52%, rgba(241, 243, 245, .92) 100%),
-                var(--public-image-hero);
-            background-position: center, center, center right;
+                linear-gradient(180deg, rgba(248, 249, 250, .72) 0%, rgba(255, 255, 255, .34) 52%, rgba(241, 243, 245, .92) 100%);
+            background-position: center, center;
             background-repeat: no-repeat;
-            background-size: auto, auto, cover;
+            background-size: auto, auto;
         }
 
         .dtr-aurora {
@@ -696,10 +695,6 @@
             .dtr-route-row {
                 grid-template-columns: 1fr;
                 gap: .55rem;
-            }
-
-            .dtr-hero {
-                background-position: center, center, 62% center;
             }
         }
 

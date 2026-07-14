@@ -2,123 +2,6 @@
 
 @section('title', 'Blog Posts')
 
-@push('styles')
-    <style>
-        .admin-blog-page {
-            --admin-bg: #f8f9fa;
-            --admin-panel: rgba(255, 255, 255, .9);
-            --admin-border: rgba(203, 213, 225, .9);
-            --admin-muted: #5c6675;
-            --admin-blue: #2563eb;
-            --admin-cyan: #0891b2;
-            color: #212529;
-        }
-
-        .admin-blog-shell {
-            margin: -1.5rem -1rem;
-            min-height: calc(100vh - 4rem);
-            background:
-                radial-gradient(circle at 12% 16%, rgba(37, 99, 235, .08), transparent 32%),
-                radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .06), transparent 28%),
-                linear-gradient(180deg, #f8f9fa, #f1f3f5);
-            padding: 2rem 1rem;
-        }
-
-        .admin-blog-glass {
-            border: 1px solid var(--admin-border);
-            border-radius: .5rem;
-            background: var(--admin-panel);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
-            backdrop-filter: blur(16px);
-        }
-
-        .admin-blog-input {
-            width: 100%;
-            border: 1px solid #cfd8e3;
-            border-radius: .5rem;
-            background: #ffffff;
-            padding: .72rem .85rem;
-            color: #212529;
-            transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
-        }
-
-        .admin-blog-input:focus {
-            border-color: rgba(37, 99, 235, .52);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
-            outline: 0;
-        }
-
-        .admin-blog-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: .5rem;
-            border-radius: .5rem;
-            padding: .72rem 1rem;
-            font-weight: 800;
-            transition: transform 200ms cubic-bezier(.16, 1, .3, 1), box-shadow 200ms ease-out, background 200ms ease-out, border-color 200ms ease-out;
-        }
-
-        .admin-blog-button:hover {
-            transform: translateY(-1px);
-        }
-
-        .admin-blog-primary {
-            color: #fff;
-            background: linear-gradient(135deg, #1e40af, var(--admin-blue) 52%, var(--admin-cyan));
-            box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
-        }
-
-        .admin-blog-secondary {
-            border: 1px solid rgba(37, 99, 235, .24);
-            color: #1d4ed8;
-            background: #ffffff;
-        }
-
-        .admin-blog-row {
-            opacity: 0;
-            transform: translateY(8px);
-            animation: admin-blog-row-in 360ms cubic-bezier(.16, 1, .3, 1) forwards;
-            animation-delay: calc(var(--row-index, 0) * 35ms);
-        }
-
-        .admin-blog-row:hover {
-            background: #eff6ff;
-        }
-
-        .admin-blog-dialog {
-            width: min(92vw, 34rem);
-            border: 1px solid #e0e0e0;
-            border-radius: .5rem;
-            color: #212529;
-            background: #ffffff;
-            box-shadow: 0 18px 45px rgba(15, 23, 42, .14);
-            backdrop-filter: blur(18px);
-        }
-
-        .admin-blog-dialog::backdrop {
-            background: rgba(15, 23, 42, .35);
-            backdrop-filter: blur(4px);
-        }
-
-        @keyframes admin-blog-row-in {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .admin-blog-shell {
-                margin-right: -2rem;
-                margin-left: -2rem;
-                padding-right: 2rem;
-                padding-left: 2rem;
-            }
-        }
-    </style>
-@endpush
-
 @section('content')
     @php
         $nextDirection = $direction === 'asc' ? 'desc' : 'asc';
@@ -129,116 +12,133 @@
         ]));
     @endphp
 
-    <section class="admin-blog-page admin-blog-shell">
-        <div class="mx-auto max-w-7xl">
-            <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                    <p class="text-sm font-black uppercase text-cyan-200">Blog Management</p>
-                    <h1 class="mt-2 text-3xl font-black text-white">Blog Posts</h1>
-                    <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Create and manage blog articles, tips, and guides for driver test preparation.</p>
-                </div>
-
-                <a href="{{ route('admin.blog-posts.create') }}" class="admin-blog-button admin-blog-primary">
-                    Add Post
-                </a>
+    <section>
+        <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-blue-600">Blog Management</p>
+                <h1 class="mt-2 text-3xl font-black text-slate-900 tracking-tight">Blog Posts</h1>
+                <p class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-500">Create, edit, and publish articles, tips, and guides for driver test preparation.</p>
             </div>
 
-            <div class="admin-blog-glass mb-5 p-4">
-                <form method="GET" action="{{ route('admin.blog-posts.index') }}" class="grid gap-3 md:grid-cols-[1fr_auto_auto]">
-                    <label class="block">
-                        <span class="sr-only">Search blog posts</span>
-                        <input type="search" name="search" value="{{ request('search') }}" placeholder="Search by title or category" class="admin-blog-input">
-                    </label>
-                    <input type="hidden" name="sort" value="{{ $sort }}">
-                    <input type="hidden" name="direction" value="{{ $direction }}">
-                    <button type="submit" class="admin-blog-button admin-blog-primary">Search</button>
-                    <a href="{{ route('admin.blog-posts.index') }}" class="admin-blog-button admin-blog-secondary">Reset</a>
-                </form>
-            </div>
+            <a href="{{ route('admin.blog-posts.create') }}" class="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-700 to-cyan-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/10 hover:from-blue-800 hover:to-cyan-700 transition">
+                Add Post
+            </a>
+        </div>
 
-            <div class="admin-blog-glass overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-white/10 text-sm">
-                        <thead class="bg-white/[.04] text-left text-xs font-black uppercase text-slate-400">
-                            <tr>
-                                <th class="px-4 py-4">
-                                    <a href="{{ $sortLink('title') }}" class="transition hover:text-cyan-200">Title</a>
-                                </th>
-                                <th class="px-4 py-4">
-                                    <a href="{{ $sortLink('category') }}" class="transition hover:text-cyan-200">Category</a>
-                                </th>
-                                <th class="px-4 py-4">
-                                    <a href="{{ $sortLink('is_published') }}" class="transition hover:text-cyan-200">Status</a>
-                                </th>
-                                <th class="px-4 py-4">
-                                    <a href="{{ $sortLink('published_at') }}" class="transition hover:text-cyan-200">Published Date</a>
-                                </th>
-                                <th class="px-4 py-4 text-right">Actions</th>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm mb-6">
+            <form method="GET" action="{{ route('admin.blog-posts.index') }}" class="grid gap-3 md:grid-cols-[1fr_auto_auto]">
+                <label class="block">
+                    <span class="sr-only">Search blog posts</span>
+                    <input type="search" name="search" value="{{ request('search') }}" placeholder="Search by title or category" class="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 outline-none transition">
+                </label>
+                <input type="hidden" name="sort" value="{{ $sort }}">
+                <input type="hidden" name="direction" value="{{ $direction }}">
+                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition">Search</button>
+                <a href="{{ route('admin.blog-posts.index') }}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">Reset</a>
+            </form>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-slate-50/70 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        <tr>
+                            <th class="px-5 py-3">
+                                <a href="{{ $sortLink('title') }}" class="transition hover:text-blue-700 flex items-center gap-1.5">
+                                    Title
+                                    @if($sort === 'title')
+                                        <span class="text-[10px]">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="px-5 py-3">
+                                <a href="{{ $sortLink('category') }}" class="transition hover:text-blue-700 flex items-center gap-1.5">
+                                    Category
+                                    @if($sort === 'category')
+                                        <span class="text-[10px]">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="px-5 py-3">
+                                <a href="{{ $sortLink('is_published') }}" class="transition hover:text-blue-700 flex items-center gap-1.5">
+                                    Status
+                                    @if($sort === 'is_published')
+                                        <span class="text-[10px]">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="px-5 py-3">
+                                <a href="{{ $sortLink('published_at') }}" class="transition hover:text-blue-700 flex items-center gap-1.5">
+                                    Published Date
+                                    @if($sort === 'published_at')
+                                        <span class="text-[10px]">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                    @endif
+                                </a>
+                            </th>
+                            <th class="px-5 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        @forelse($posts as $post)
+                            <tr class="hover:bg-slate-50/40 transition">
+                                <td class="px-5 py-4">
+                                    <div class="font-bold text-slate-900 leading-snug">{{ $post->title }}</div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <span class="inline-flex items-center rounded-md bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-700/10">{{ $post->category }}</span>
+                                </td>
+                                <td class="px-5 py-4">
+                                    @if($post->is_published)
+                                        <span class="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/10">Published</span>
+                                    @else
+                                        <span class="inline-flex items-center rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">Draft</span>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-4 text-slate-500 font-medium">
+                                    {{ $post->published_at ? $post->published_at->format('M d, Y') : '—' }}
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('admin.blog-posts.edit', $post) }}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition">
+                                            Edit
+                                        </a>
+                                        <button type="button" class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition" data-modal-open="post-delete-{{ $post->id }}">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/10">
-                            @forelse($posts as $post)
-                                <tr class="admin-blog-row transition" style="--row-index: {{ $loop->index }};">
-                                    <td class="px-4 py-4">
-                                        <div class="font-black text-white">{{ $post->title }}</div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <span class="rounded-md border border-blue-500/20 bg-white/[.06] px-2.5 py-1 font-black text-cyan-100">{{ $post->category }}</span>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        @if($post->is_published)
-                                            <span class="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 font-black text-emerald-300">Published</span>
-                                        @else
-                                            <span class="rounded-md border border-slate-500/20 bg-slate-500/10 px-2.5 py-1 font-black text-slate-400">Draft</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-4 text-slate-300">
-                                        {{ $post->published_at ? $post->published_at->format('M d, Y') : '—' }}
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <a href="{{ route('admin.blog-posts.edit', $post) }}" class="admin-blog-button admin-blog-secondary px-3 py-2">
-                                                Edit
-                                            </a>
-                                            <button type="button" class="admin-blog-button admin-blog-secondary px-3 py-2" data-modal-open="post-delete-{{ $post->id }}">
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-4 py-12 text-center text-slate-400">No blog posts found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="mt-6 text-slate-300">
-                {{ $posts->links() }}
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-5 py-12 text-center text-slate-500">No blog posts found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 
+        <div class="mt-6">
+            {{ $posts->links() }}
+        </div>
+
         @foreach($posts as $post)
-            <dialog id="post-delete-{{ $post->id }}" class="admin-blog-dialog p-0">
-                <form method="POST" action="{{ route('admin.blog-posts.destroy', $post) }}" class="p-5">
+            <dialog id="post-delete-{{ $post->id }}" class="rounded-xl border border-slate-200 bg-white shadow-xl max-w-md w-full p-6 outline-none backdrop:bg-slate-900/40 backdrop:backdrop-blur-sm">
+                <form method="POST" action="{{ route('admin.blog-posts.destroy', $post) }}">
                     @csrf
                     @method('DELETE')
-                    <div class="flex items-start justify-between gap-4">
+                    <div class="flex flex-col gap-4">
                         <div>
-                            <h2 class="text-xl font-black text-white">Delete "{{ $post->title }}"?</h2>
-                            <p class="mt-2 text-sm leading-6 text-slate-400">
-                                This action is permanent. The blog post and all associated data will be removed and cannot be recovered.
+                            <h2 class="text-xl font-bold text-slate-900">Delete Post</h2>
+                            <p class="mt-2 text-sm leading-relaxed text-slate-500">
+                                Are you sure you want to delete <span class="font-semibold text-slate-800">"{{ $post->title }}"</span>? This action is permanent and cannot be undone.
                             </p>
                         </div>
-                        <button type="button" class="text-slate-400 transition hover:text-white" data-modal-close aria-label="Close modal">Close</button>
-                    </div>
 
-                    <div class="mt-6 flex justify-end gap-2">
-                        <button type="button" class="admin-blog-button admin-blog-secondary" data-modal-close>Cancel</button>
-                        <button type="submit" class="admin-blog-button admin-blog-primary">Delete Post</button>
+                        <div class="flex justify-end gap-2 mt-2">
+                            <button type="button" class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition" data-modal-close>Cancel</button>
+                            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition">Delete Post</button>
+                        </div>
                     </div>
                 </form>
             </dialog>

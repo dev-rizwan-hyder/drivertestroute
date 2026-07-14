@@ -32,10 +32,11 @@
                 --public-blue: #2563eb;
                 --public-cyan: #0891b2;
                 --public-sky: #0284c7;
-                --public-image-hero: url("{{ asset('images/home-hero.png') }}");
-                --public-image-section: url("{{ asset('images/section.png') }}");
+                --public-image-hero: url("{{ asset('images/home-hero.jpeg') }}");
+                --public-image-section: url("{{ asset('images/section.png.png') }}");
                 --public-image-route: url("{{ asset('images/route.png') }}");
                 --public-image-about: url("{{ asset('images/about.png') }}");
+                --public-image-pages: url("{{ asset('images/pages.png') }}");
             }
 
             .public-main-offset {

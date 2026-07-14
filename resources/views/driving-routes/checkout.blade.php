@@ -11,7 +11,7 @@
                 radial-gradient(circle at 12% 14%, rgba(37, 99, 235, .09), transparent 32%),
                 radial-gradient(circle at 86% 12%, rgba(6, 182, 212, .07), transparent 30%),
                 linear-gradient(180deg, rgba(248, 249, 250, .9), rgba(241, 243, 245, .94) 48%, rgba(248, 249, 250, .96)),
-                var(--public-image-route);
+                var(--public-image-pages);
             background-position: center, center, center, center top;
             background-repeat: no-repeat;
             background-size: auto, auto, auto, cover;
@@ -25,6 +25,14 @@
             background-position: center, center;
             background-repeat: no-repeat;
             background-size: auto, cover;
+        }
+
+        .payment-method-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .payment-method-btn:hover {
+            border-color: #059669; /* emerald-600 */
+            background-color: rgba(240, 253, 244, 0.5); /* emerald-50/50 */
         }
     </style>
 @endpush
@@ -81,6 +89,7 @@
                 <form id="checkout-form" method="POST" action="{{ route('driving-routes.checkout.store', $drivingRoute) }}" class="space-y-6">
                     @csrf
                     <input id="payment-intent-id" type="hidden" name="payment_intent_id" value="{{ old('payment_intent_id') }}">
+                    <input id="payment-provider" type="hidden" name="payment_provider" value="{{ $stripeEnabled ? 'stripe' : ($paypalEnabled ? 'paypal' : ($squareEnabled ? 'square' : 'local')) }}">
 
                     <section class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
                         <div class="mb-5">
@@ -121,10 +130,44 @@
                         </div>
                     </section>
 
+                    <!-- Payment Method Selector -->
                     <section class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
                         <div class="mb-5">
-                            <h2 class="text-xl font-bold text-zinc-950">Billing & Card</h2>
-                            <p class="mt-1 text-sm text-zinc-600">Card details are handled securely by Stripe and never stored on this server.</p>
+                            <h2 class="text-xl font-bold text-zinc-950">Payment Method</h2>
+                            <p class="mt-1 text-sm text-zinc-600">Select your preferred secure payment method.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
+                            @if($stripeEnabled)
+                                <label class="payment-method-btn relative flex cursor-pointer flex-col rounded-lg border-2 p-4 text-center hover:bg-zinc-50 focus:outline-none border-emerald-600 bg-emerald-50/30">
+                                    <input type="radio" name="payment_provider_select" value="stripe" class="sr-only" checked>
+                                    <span class="block text-sm font-bold text-zinc-900">Stripe Card</span>
+                                    <span class="mt-1 block text-xs text-zinc-500">Pay securely using Credit/Debit Card</span>
+                                </label>
+                            @endif
+
+                            @if($paypalEnabled)
+                                <label class="payment-method-btn relative flex cursor-pointer flex-col rounded-lg border-2 p-4 text-center hover:bg-zinc-50 focus:outline-none @if(!$stripeEnabled) border-emerald-600 bg-emerald-50/30 @else border-zinc-200 @endif">
+                                    <input type="radio" name="payment_provider_select" value="paypal" class="sr-only" @if(!$stripeEnabled) checked @endif>
+                                    <span class="block text-sm font-bold text-zinc-900">PayPal</span>
+                                    <span class="mt-1 block text-xs text-zinc-500">Pay with PayPal balance or card</span>
+                                </label>
+                            @endif
+
+                            @if($squareEnabled)
+                                <label class="payment-method-btn relative flex cursor-pointer flex-col rounded-lg border-2 p-4 text-center hover:bg-zinc-50 focus:outline-none @if(!$stripeEnabled && !$paypalEnabled) border-emerald-600 bg-emerald-50/30 @else border-zinc-200 @endif">
+                                    <input type="radio" name="payment_provider_select" value="square" class="sr-only" @if(!$stripeEnabled && !$paypalEnabled) checked @endif>
+                                    <span class="block text-sm font-bold text-zinc-900">Square Card</span>
+                                    <span class="mt-1 block text-xs text-zinc-500">Fast card payment via Square</span>
+                                </label>
+                            @endif
+                        </div>
+                    </section>
+
+                    <section class="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+                        <div class="mb-5">
+                            <h2 class="text-xl font-bold text-zinc-950">Billing & Payment Details</h2>
+                            <p class="mt-1 text-sm text-zinc-600">All payment details are handled securely by the respective providers and never stored on this server.</p>
                         </div>
 
                         <div class="grid gap-5 md:grid-cols-2">
@@ -139,8 +182,9 @@
                             </label>
                         </div>
 
+                        <!-- Stripe Details -->
                         @if($stripeEnabled)
-                            <div class="mt-5">
+                            <div id="stripe-payment-container" class="payment-details-container mt-5">
                                 <label class="block">
                                     <span class="text-sm font-bold text-zinc-800">Card Details</span>
                                     <div id="card-element" class="mt-1 rounded-md border border-zinc-300 bg-white px-3 py-3 shadow-sm"></div>
@@ -148,9 +192,25 @@
                                 <p id="card-errors" class="mt-3 hidden rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"></p>
                                 <p class="mt-3 text-xs leading-5 text-zinc-500">Use Stripe test cards in test mode, for example 4242 4242 4242 4242 with any future expiry and CVC.</p>
                             </div>
-                        @else
-                            <div class="mt-5 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                                Stripe is not configured. This checkout will record a local paid purchase after submission.
+                        @endif
+
+                        <!-- PayPal Details -->
+                        @if($paypalEnabled)
+                            <div id="paypal-payment-container" class="payment-details-container mt-5 hidden">
+                                <span class="text-sm font-bold text-zinc-800 block mb-2">PayPal Checkout</span>
+                                <div id="paypal-button-container" class="mt-1 min-h-[50px]"></div>
+                                <p id="paypal-errors" class="mt-3 hidden rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"></p>
+                            </div>
+                        @endif
+
+                        <!-- Square Details -->
+                        @if($squareEnabled)
+                            <div id="square-payment-container" class="payment-details-container mt-5 hidden">
+                                <label class="block">
+                                    <span class="text-sm font-bold text-zinc-800">Card Details</span>
+                                    <div id="square-card-container" class="mt-1 rounded-md border border-zinc-300 bg-white px-3 py-3 shadow-sm min-h-[40px]"></div>
+                                </label>
+                                <p id="square-errors" class="mt-3 hidden rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700"></p>
                             </div>
                         @endif
 
@@ -207,17 +267,115 @@
     </section>
     </div>
 
+    <!-- Payment SDKs -->
     @if($stripeEnabled)
         <script src="https://js.stripe.com/v3/"></script>
-        <script>
-            const checkoutForm = document.getElementById('checkout-form');
-            const checkoutButton = document.getElementById('checkout-submit');
-            const checkoutStatus = document.getElementById('checkout-status');
+    @endif
+
+    @if($paypalEnabled)
+        <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency={{ $paypalCurrency }}"></script>
+    @endif
+
+    @if($squareEnabled)
+        @if($squareEnv === 'sandbox')
+            <script src="https://sandbox.web.squareupsandbox.com/v2/paymentform"></script>
+        @else
+            <script src="https://web.squareupsandbox.com/v2/paymentform"></script>
+        @endif
+    @endif
+
+    <script>
+        const checkoutForm = document.getElementById('checkout-form');
+        const checkoutButton = document.getElementById('checkout-submit');
+        const checkoutStatus = document.getElementById('checkout-status');
+        const paymentIntentInput = document.getElementById('payment-intent-id');
+        const providerInput = document.getElementById('payment-provider');
+        const providerSelects = document.querySelectorAll('input[name="payment_provider_select"]');
+
+        function setCheckoutMessage(message, error = false) {
+            let target = checkoutStatus;
+            
+            // Redirect error to active gateway element if exists
+            const currentProvider = providerInput.value;
+            if (error) {
+                const gatewayErrors = document.getElementById(`${currentProvider}-errors`);
+                if (gatewayErrors) {
+                    target = gatewayErrors;
+                } else {
+                    const stripeErrors = document.getElementById('card-errors');
+                    if (stripeErrors) target = stripeErrors;
+                }
+            }
+            
+            target.textContent = message;
+            target.classList.remove('hidden');
+            
+            // Clean up other errors if success message
+            if (!error) {
+                document.querySelectorAll('[id$="-errors"]').forEach(el => el.classList.add('hidden'));
+            }
+        }
+
+        function setCheckoutLoading(loading) {
+            checkoutButton.disabled = loading;
+            checkoutButton.textContent = loading ? 'Processing payment...' : 'Pay ${{ number_format((float) $drivingRoute->price, 2) }} and Unlock';
+        }
+
+        // Dynamic gateway selector styling and switching
+        function switchPaymentProvider(provider) {
+            providerInput.value = provider;
+            
+            // Hide all payment containers
+            document.querySelectorAll('.payment-details-container').forEach(el => el.classList.add('hidden'));
+            
+            // Show selected container
+            const container = document.getElementById(`${provider}-payment-container`);
+            if (container) {
+                container.classList.remove('hidden');
+            }
+            
+            // Control primary submit button display
+            if (provider === 'paypal') {
+                checkoutButton.classList.add('hidden');
+            } else {
+                checkoutButton.classList.remove('hidden');
+            }
+        }
+
+        providerSelects.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                // Remove selected styles from all labels
+                providerSelects.forEach(r => {
+                    const label = r.closest('.payment-method-btn');
+                    if (label) {
+                        label.classList.remove('border-emerald-600', 'bg-emerald-50/30');
+                        label.classList.add('border-zinc-200');
+                    }
+                });
+                
+                if (e.target.checked) {
+                    const label = e.target.closest('.payment-method-btn');
+                    if (label) {
+                        label.classList.remove('border-zinc-200');
+                        label.classList.add('border-emerald-600', 'bg-emerald-50/30');
+                    }
+                    switchPaymentProvider(e.target.value);
+                }
+            });
+            
+            // Trigger load setup
+            if (radio.checked) {
+                radio.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Initialize Stripe if enabled
+        let stripe, card;
+        @if($stripeEnabled)
             const cardErrors = document.getElementById('card-errors');
-            const paymentIntentInput = document.getElementById('payment-intent-id');
-            const stripe = Stripe(@json($stripeKey));
+            stripe = Stripe(@json($stripeKey));
             const elements = stripe.elements();
-            const card = elements.create('card', {
+            card = elements.create('card', {
                 style: {
                     base: {
                         color: '#18181b',
@@ -228,37 +386,109 @@
                     invalid: { color: '#b91c1c' },
                 },
             });
-
             card.mount('#card-element');
+        @endif
 
-            function setCheckoutMessage(message, error = false) {
-                const target = error ? cardErrors : checkoutStatus;
-                target.textContent = message;
-                target.classList.remove('hidden');
-                if (!error) {
-                    cardErrors.classList.add('hidden');
+        // Initialize PayPal if enabled
+        @if($paypalEnabled)
+            const paypalErrors = document.getElementById('paypal-errors');
+            paypal.Buttons({
+                onClick: function(data, actions) {
+                    if (!checkoutForm.reportValidity()) {
+                        return actions.reject();
+                    }
+                },
+                createOrder: async function(data, actions) {
+                    try {
+                        const formData = new FormData(checkoutForm);
+                        const response = await fetch(@json(route('driving-routes.paypal.create-order', $drivingRoute)), {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': @json(csrf_token()),
+                            },
+                            credentials: 'same-origin',
+                            body: formData
+                        });
+
+                        const payload = await response.json();
+                        if (!response.ok) {
+                            throw new Error(payload.message || 'PayPal order creation failed.');
+                        }
+
+                        return payload.id;
+                    } catch (error) {
+                        paypalErrors.textContent = error.message;
+                        paypalErrors.classList.remove('hidden');
+                        throw error;
+                    }
+                },
+                onApprove: async function(data, actions) {
+                    paypalErrors.classList.add('hidden');
+                    paymentIntentInput.value = data.orderID;
+                    setCheckoutMessage('Payment authorized. Completing checkout...');
+                    checkoutForm.submit();
+                },
+                onError: function(err) {
+                    paypalErrors.textContent = 'PayPal transaction error occurred.';
+                    paypalErrors.classList.remove('hidden');
+                    console.error(err);
+                }
+            }).render('#paypal-button-container');
+        @endif
+
+        // Initialize Square if enabled
+        let squarePayments, squareCard;
+        @if($squareEnabled)
+            const squareErrors = document.getElementById('square-errors');
+            async function initializeSquare() {
+                try {
+                    squarePayments = Square.payments(@json($squareAppId), @json($squareLocationId));
+                    squareCard = await squarePayments.card({
+                        style: {
+                            input: {
+                                color: '#18181b',
+                                fontSize: '16px',
+                                fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+                            },
+                            'input::placeholder': {
+                                color: '#a1a1aa'
+                            }
+                        }
+                    });
+                    await squareCard.attach('#square-card-container');
+                } catch (error) {
+                    console.error('Square initialization failed', error);
+                    squareErrors.textContent = 'Square Card elements failed to load.';
+                    squareErrors.classList.remove('hidden');
                 }
             }
+            initializeSquare();
+        @endif
 
-            function setCheckoutLoading(loading) {
-                checkoutButton.disabled = loading;
-                checkoutButton.textContent = loading ? 'Processing payment...' : 'Pay ${{ number_format((float) $drivingRoute->price, 2) }} and Unlock';
+        // Form Submit Handler
+        checkoutForm.addEventListener('submit', async (event) => {
+            const currentProvider = providerInput.value;
+
+            if (paymentIntentInput.value) {
+                return; // Payment already authorized, allow form submission
             }
 
-            checkoutForm.addEventListener('submit', async (event) => {
-                if (paymentIntentInput.value) {
-                    return;
-                }
+            // Local mode bypass
+            if (currentProvider === 'local') {
+                return;
+            }
 
-                event.preventDefault();
+            event.preventDefault();
 
-                if (!checkoutForm.reportValidity()) {
-                    return;
-                }
+            if (!checkoutForm.reportValidity()) {
+                return;
+            }
 
-                setCheckoutLoading(true);
+            setCheckoutLoading(true);
+
+            if (currentProvider === 'stripe') {
                 setCheckoutMessage('Creating secure payment...');
-
                 try {
                     const formData = new FormData(checkoutForm);
                     const intentResponse = await fetch(@json(route('driving-routes.payment-intent', $drivingRoute)), {
@@ -302,7 +532,26 @@
                     setCheckoutMessage(error.message, true);
                     setCheckoutLoading(false);
                 }
-            });
-        </script>
-    @endif
+            } else if (currentProvider === 'square') {
+                setCheckoutMessage('Tokenizing card details...');
+                try {
+                    const result = await squareCard.tokenize();
+                    if (result.status === 'OK') {
+                        paymentIntentInput.value = result.token;
+                        setCheckoutMessage('Card authorized. Completing checkout...');
+                        checkoutForm.submit();
+                    } else {
+                        let tokenizationError = 'Card tokenization failed.';
+                        if (result.errors && result.errors.length > 0) {
+                            tokenizationError = result.errors[0].message;
+                        }
+                        throw new Error(tokenizationError);
+                    }
+                } catch (error) {
+                    setCheckoutMessage(error.message, true);
+                    setCheckoutLoading(false);
+                }
+            }
+        });
+    </script>
 @endsection
