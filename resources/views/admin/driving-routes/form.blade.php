@@ -31,6 +31,14 @@
             </label>
 
             <label class="block">
+                <span class="text-sm font-medium text-stone-700">Package Type</span>
+                <select name="package_type" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                    <option value="g1" @selected(old('package_type', $route->package_type) === 'g1')>G1 Package (G2 Road Test)</option>
+                    <option value="g2" @selected(old('package_type', $route->package_type) === 'g2')>G2 Package (G Road Test)</option>
+                </select>
+            </label>
+
+            <label class="block">
                 <span class="text-sm font-medium text-stone-700">City</span>
                 <select name="city_id" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                     <option value="">Choose a city</option>

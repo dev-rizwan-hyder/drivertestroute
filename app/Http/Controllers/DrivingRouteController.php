@@ -27,7 +27,7 @@ class DrivingRouteController extends Controller
         $featuredRoutes = $featuredRoutesQuery->take(6)->get();
 
         $cities = $citySchemaReady
-            ? City::withCount(['routes as active_routes_count' => function ($query) {
+            ? City::with(['routes' => function ($query) {
                     $query->where('is_active', true);
                 }])
                 ->orderBy('name')
@@ -51,6 +51,7 @@ class DrivingRouteController extends Controller
         $selectedCity = $citySchemaReady && $request->filled('city')
             ? City::find($request->integer('city'))
             : null;
+        $selectedPackageType = $request->input('package_type');
 
         $routesQuery = DrivingRoute::where('is_active', true)
             ->withCount('points')
@@ -58,6 +59,10 @@ class DrivingRouteController extends Controller
 
         if ($citySchemaReady) {
             $routesQuery->with('cityModel');
+        }
+
+        if ($selectedPackageType) {
+            $routesQuery->where('package_type', $selectedPackageType);
         }
 
         if ($selectedCity) {
@@ -73,8 +78,11 @@ class DrivingRouteController extends Controller
         $routes = $routesQuery->get();
 
         $cities = $citySchemaReady
-            ? City::withCount(['routes as active_routes_count' => function ($query) {
+            ? City::withCount(['routes as active_routes_count' => function ($query) use ($selectedPackageType) {
                     $query->where('is_active', true);
+                    if ($selectedPackageType) {
+                        $query->where('package_type', $selectedPackageType);
+                    }
                 }])
                 ->orderBy('name')
                 ->get()
@@ -87,7 +95,7 @@ class DrivingRouteController extends Controller
                 ->keyBy('driving_route_id')
             : collect();
 
-        return view('driving-routes.index', compact('routes', 'purchases', 'cities', 'selectedCity'));
+        return view('driving-routes.index', compact('routes', 'purchases', 'cities', 'selectedCity', 'selectedPackageType'));
     }
 
     public function myRoutes()

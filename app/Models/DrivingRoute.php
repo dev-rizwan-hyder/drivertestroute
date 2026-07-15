@@ -8,6 +8,7 @@ class DrivingRoute extends Model
 {
     protected $fillable = [
         'title',
+        'package_type',
         'city_id',
         'city',
         'province',
@@ -28,6 +29,7 @@ class DrivingRoute extends Model
 
     protected $casts = [
         'city_id' => 'integer',
+        'package_type' => 'string',
         'start_lat' => 'float',
         'start_lng' => 'float',
         'end_lat' => 'float',

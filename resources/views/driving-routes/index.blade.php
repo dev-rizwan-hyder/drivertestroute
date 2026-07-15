@@ -217,8 +217,24 @@
                     @endauth
                 </div>
 
+                <div class="mt-8 flex flex-col md:flex-row md:items-center gap-6">
+                    <!-- Package Type Filters -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-slate-400 mr-2">Package:</span>
+                        <a href="{{ route('driving-routes.index', array_filter(array_merge(request()->query(), ['package_type' => null]))) }}" class="routes-filter {{ !$selectedPackageType ? 'is-active' : '' }}">
+                            All Packages
+                        </a>
+                        <a href="{{ route('driving-routes.index', array_merge(request()->query(), ['package_type' => 'g1'])) }}" class="routes-filter {{ $selectedPackageType === 'g1' ? 'is-active' : '' }}">
+                            G1 Package
+                        </a>
+                        <a href="{{ route('driving-routes.index', array_merge(request()->query(), ['package_type' => 'g2'])) }}" class="routes-filter {{ $selectedPackageType === 'g2' ? 'is-active' : '' }}">
+                            G2 Package
+                        </a>
+                    </div>
+                </div>
+
                 @if($cities->isNotEmpty())
-                    <div class="routes-city-combobox mt-8" data-routes-city-combobox>
+                    <div class="routes-city-combobox mt-6" data-routes-city-combobox>
                         <div class="routes-city-input-wrap">
                             <input
                                 type="text"
@@ -231,7 +247,7 @@
                                 aria-controls="routes-city-options"
                                 data-routes-city-input
                             >
-                            <a href="{{ route('driving-routes.index') }}" class="routes-button {{ $selectedCity ? 'routes-button-secondary' : 'routes-button-primary' }}">
+                            <a href="{{ route('driving-routes.index', array_filter(array_merge(request()->query(), ['city' => null]))) }}" class="routes-button {{ $selectedCity ? 'routes-button-secondary' : 'routes-button-primary' }}">
                                 All Cities
                             </a>
                         </div>
@@ -245,7 +261,7 @@
                                     data-routes-city-option
                                     data-city-name="{{ \Illuminate\Support\Str::lower($city->name) }}"
                                     data-city-address="{{ \Illuminate\Support\Str::lower($city->address) }}"
-                                    data-city-url="{{ route('driving-routes.index', ['city' => $city->id]) }}"
+                                    data-city-url="{{ route('driving-routes.index', array_filter(array_merge(request()->query(), ['city' => $city->id]))) }}"
                                     @if($selectedCity?->id === $city->id) aria-selected="true" @endif
                                 >
                                     <span class="flex items-start justify-between gap-4">
@@ -310,6 +326,11 @@
                             <div class="flex flex-1 flex-col p-5">
                                 <div class="flex items-start justify-between gap-4">
                                     <div>
+                                        <div class="mb-2">
+                                            <span class="inline-flex items-center rounded bg-blue-500/10 px-2 py-0.5 text-xs font-extrabold text-cyan-300 border border-blue-500/20 uppercase">
+                                                {{ strtoupper($drivingRoute->package_type) }} Package
+                                            </span>
+                                        </div>
                                         <h3 class="text-xl font-black text-white">{{ $drivingRoute->title }}</h3>
                                         <p class="mt-1 text-sm text-slate-400">{{ $cityName }}, {{ $drivingRoute->province }}</p>
                                         @if($cityAddress)

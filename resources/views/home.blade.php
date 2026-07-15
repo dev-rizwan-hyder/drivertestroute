@@ -242,90 +242,30 @@
             box-shadow: 0 10px 24px rgba(37, 99, 235, .12);
         }
 
-        .dtr-city-combobox {
-            position: relative;
-            max-width: 42rem;
-        }
-
-        .dtr-city-input-wrap {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            align-items: center;
-            gap: .75rem;
-            border: 1px solid #d8dee6;
-            border-radius: .5rem;
-            background: rgba(255, 255, 255, .92);
-            padding: .5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
-            backdrop-filter: blur(16px);
-            transition: border-color 220ms ease-out, box-shadow 220ms ease-out;
-        }
-
-        .dtr-city-combobox.is-open .dtr-city-input-wrap,
-        .dtr-city-input-wrap:focus-within {
-            border-color: rgba(37, 99, 235, .5);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12), 0 8px 20px rgba(15, 23, 42, .08);
-        }
-
-        .dtr-city-input {
-            min-width: 0;
-            border: 0;
-            background: transparent;
-            padding: .7rem .8rem;
-            color: var(--dtr-text);
+        .dtr-select-input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            padding: 0.75rem 1.2rem;
             font-weight: 800;
             outline: 0;
+            transition: border-color 220ms ease-out, box-shadow 220ms ease-out;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em;
+            cursor: pointer;
         }
-
-        .dtr-city-input::placeholder {
-            color: #6b7280;
+        .dtr-select-input:focus {
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
         }
-
-        .dtr-city-panel {
-            position: absolute;
-            right: 0;
-            left: 0;
-            z-index: 20;
-            margin-top: .55rem;
-            max-height: 19rem;
-            overflow-y: auto;
-            border: 1px solid #d8dee6;
-            border-radius: .5rem;
-            background: rgba(255, 255, 255, .98);
-            box-shadow: 0 18px 45px rgba(15, 23, 42, .12);
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-6px);
-            transition: opacity 180ms ease-out, transform 180ms cubic-bezier(.16, 1, .3, 1);
-            backdrop-filter: blur(18px);
-        }
-
-        .dtr-city-combobox.is-open .dtr-city-panel {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
-
-        .dtr-city-option {
-            display: block;
-            width: 100%;
-            border: 0;
-            border-bottom: 1px solid #e0e0e0;
-            background: transparent;
-            padding: .9rem 1rem;
-            text-align: left;
-            transition: background 180ms ease-out, transform 180ms cubic-bezier(.16, 1, .3, 1);
-        }
-
-        .dtr-city-option:hover,
-        .dtr-city-option:focus-visible {
-            background: #eff6ff;
-            outline: 0;
-            transform: translateX(2px);
-        }
-
-        .dtr-city-option:last-child {
-            border-bottom: 0;
+        .dtr-select-input option {
+            background-color: #18181b;
+            color: #ffffff;
         }
 
         .dtr-icon {
@@ -773,47 +713,64 @@
                     </p>
 
                     @if($cities->isNotEmpty())
-                        <div class="dtr-city-combobox mt-8" data-city-combobox>
-                            <div class="dtr-city-input-wrap">
-                                <input
-                                    type="text"
-                                    class="dtr-city-input"
-                                    placeholder="Select your city"
-                                    autocomplete="off"
-                                    role="combobox"
-                                    aria-expanded="false"
-                                    aria-controls="city-options"
-                                    data-city-input
-                                >
-                                <a href="{{ route('driving-routes.index') }}" class="dtr-btn dtr-btn-primary min-h-11 px-4 py-3">
-                                    Routes
-                                </a>
+                        <div class="mt-8 max-w-[42rem] rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-md p-6 shadow-2xl">
+                            
+                            <!-- Step 1: Select Package Type -->
+                            <div class="mb-6">
+                                <span class="block text-xs uppercase tracking-wider font-extrabold text-cyan-400 mb-3">1. Select Package Type</span>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button type="button" data-package-select="g1" class="group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.02] p-4 text-left transition-all duration-300 hover:bg-white/[0.06] hover:border-white/20 focus:outline-none">
+                                        <span class="block text-lg font-black text-white group-hover:text-cyan-300 transition-colors">G1 Package</span>
+                                        <span class="mt-1 block text-xs font-bold text-zinc-400">For G2 exit road test prep</span>
+                                    </button>
+                                    <button type="button" data-package-select="g2" class="group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.02] p-4 text-left transition-all duration-300 hover:bg-white/[0.06] hover:border-white/20 focus:outline-none">
+                                        <span class="block text-lg font-black text-white group-hover:text-cyan-300 transition-colors">G2 Package</span>
+                                        <span class="mt-1 block text-xs font-bold text-zinc-400">For G exit road test prep</span>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div id="city-options" class="dtr-city-panel" role="listbox" data-city-panel>
-                                @foreach($cities as $city)
-                                    <button
-                                        type="button"
-                                        class="dtr-city-option"
-                                        role="option"
-                                        data-city-option
-                                        data-city-name="{{ \Illuminate\Support\Str::lower($city->name) }}"
-                                        data-city-address="{{ \Illuminate\Support\Str::lower($city->address) }}"
-                                        data-city-url="{{ route('driving-routes.index', ['city' => $city->id]) }}"
-                                    >
-                                        <span class="flex items-start justify-between gap-4">
-                                            <span>
-                                                <span class="block font-black text-white">{{ $city->name }}</span>
-                                                <span class="mt-1 block text-sm leading-5 text-slate-400">{{ $city->address }}</span>
-                                            </span>
-                                            <span class="shrink-0 rounded-md border border-blue-500/20 bg-white/[.06] px-2 py-1 text-xs font-black text-cyan-100">
-                                                {{ $city->active_routes_count }}
-                                            </span>
-                                        </span>
-                                    </button>
-                                @endforeach
-                                <p class="hidden px-4 py-5 text-sm font-semibold text-slate-400" data-city-empty>No matching cities.</p>
+                            <!-- Step 2: Select City -->
+                            <div id="step-city" class="mb-6 opacity-40 pointer-events-none transition-all duration-300">
+                                <span class="block text-xs uppercase tracking-wider font-extrabold text-cyan-400 mb-3">2. Select Your City</span>
+                                <div class="relative">
+                                    <select id="home-city-select" class="dtr-select-input">
+                                        <option value="" class="bg-slate-900 text-zinc-400">Choose a city...</option>
+                                    </select>
+                                </div>
                             </div>
+
+                            <!-- Step 3: Select Available Route -->
+                            <div id="step-route" class="mb-6 opacity-40 pointer-events-none transition-all duration-300">
+                                <span class="block text-xs uppercase tracking-wider font-extrabold text-cyan-400 mb-3">3. Select Available Route</span>
+                                <div class="relative">
+                                    <select id="home-route-select" class="dtr-select-input">
+                                        <option value="" class="bg-slate-900 text-zinc-400">Choose a route...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Route Info & Action -->
+                            <div id="route-action-container" class="hidden border-t border-white/10 pt-5 transition-all duration-300">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div class="flex-1">
+                                        <h4 id="action-route-title" class="text-xl font-black text-white">Route Title</h4>
+                                        <p class="mt-1 text-sm text-zinc-400">
+                                            <span id="action-route-duration">0 mins</span> &bull; 
+                                            <span id="action-route-length">0 km</span> &bull; 
+                                            Price: <span id="action-route-price" class="text-cyan-300 font-extrabold">$0.00</span>
+                                        </p>
+                                    </div>
+                                    <a id="action-route-btn" href="#" class="dtr-btn dtr-btn-primary w-full sm:w-auto px-6 py-3 font-extrabold text-center flex items-center justify-center gap-2">
+                                        Practice Route
+                                        <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+                                            <path d="M5 12h14" />
+                                            <path d="m13 6 6 6-6 6" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+
                         </div>
                     @endif
 
@@ -1258,68 +1215,121 @@
                 });
             });
 
-            document.querySelectorAll('[data-city-combobox]').forEach((combobox) => {
-                const input = combobox.querySelector('[data-city-input]');
-                const options = Array.from(combobox.querySelectorAll('[data-city-option]'));
-                const empty = combobox.querySelector('[data-city-empty]');
+            // Step-by-step Route Search Wizard
+            const citiesData = @json($cities);
+            let selectedPackage = null;
+            let selectedCityId = null;
 
-                function openCityPanel() {
-                    combobox.classList.add('is-open');
-                    input?.setAttribute('aria-expanded', 'true');
+            const pkgG1Btn = document.querySelector('[data-package-select="g1"]');
+            const pkgG2Btn = document.querySelector('[data-package-select="g2"]');
+            const stepCityDiv = document.getElementById('step-city');
+            const citySelect = document.getElementById('home-city-select');
+            const stepRouteDiv = document.getElementById('step-route');
+            const routeSelect = document.getElementById('home-route-select');
+            const actionContainer = document.getElementById('route-action-container');
+            const routeTitle = document.getElementById('action-route-title');
+            const routeDuration = document.getElementById('action-route-duration');
+            const routeLength = document.getElementById('action-route-length');
+            const routePrice = document.getElementById('action-route-price');
+            const routeBtn = document.getElementById('action-route-btn');
+
+            function resetSteps(fromStep) {
+                if (fromStep <= 1) {
+                    selectedCityId = null;
+                    citySelect.value = '';
+                    stepCityDiv.classList.add('opacity-40', 'pointer-events-none');
+                }
+                if (fromStep <= 2) {
+                    routeSelect.value = '';
+                    stepRouteDiv.classList.add('opacity-40', 'pointer-events-none');
+                    actionContainer.classList.add('hidden');
+                }
+            }
+
+            function selectPackage(pkg) {
+                selectedPackage = pkg;
+                resetSteps(1);
+
+                // Update button styles
+                const activeClasses = ['border-cyan-500', 'bg-cyan-500/10', 'ring-2', 'ring-cyan-500/20'];
+                if (pkg === 'g1') {
+                    pkgG1Btn.classList.add(...activeClasses);
+                    pkgG2Btn.classList.remove(...activeClasses);
+                } else {
+                    pkgG2Btn.classList.add(...activeClasses);
+                    pkgG1Btn.classList.remove(...activeClasses);
                 }
 
-                function closeCityPanel() {
-                    combobox.classList.remove('is-open');
-                    input?.setAttribute('aria-expanded', 'false');
-                }
+                // Filter and populate cities
+                citySelect.innerHTML = '<option value="" class="bg-slate-900 text-zinc-400">Choose a city...</option>';
+                const filteredCities = citiesData.filter(city => 
+                    city.routes && city.routes.some(route => route.package_type === pkg)
+                );
 
-                function filterCities() {
-                    const query = (input?.value || '').trim().toLowerCase();
-                    let visibleCount = 0;
-
-                    options.forEach((option) => {
-                        const matches = !query
-                            || option.dataset.cityName.includes(query)
-                            || option.dataset.cityAddress.includes(query);
-
-                        option.hidden = !matches;
-                        visibleCount += matches ? 1 : 0;
-                    });
-
-                    empty?.classList.toggle('hidden', visibleCount > 0);
-                    openCityPanel();
-                }
-
-                input?.addEventListener('focus', openCityPanel);
-                input?.addEventListener('click', openCityPanel);
-                input?.addEventListener('input', filterCities);
-                input?.addEventListener('keydown', (event) => {
-                    if (event.key === 'Escape') {
-                        closeCityPanel();
-                    }
-
-                    if (event.key === 'Enter') {
-                        const firstVisibleOption = options.find((option) => !option.hidden);
-
-                        if (firstVisibleOption) {
-                            event.preventDefault();
-                            window.location.href = firstVisibleOption.dataset.cityUrl;
-                        }
-                    }
+                filteredCities.forEach(city => {
+                    const opt = document.createElement('option');
+                    opt.value = city.id;
+                    opt.textContent = city.name;
+                    opt.className = 'bg-slate-900 text-white';
+                    citySelect.appendChild(opt);
                 });
 
-                options.forEach((option) => {
-                    option.addEventListener('click', () => {
-                        window.location.href = option.dataset.cityUrl;
-                    });
-                });
+                stepCityDiv.classList.remove('opacity-40', 'pointer-events-none');
+            }
 
-                document.addEventListener('click', (event) => {
-                    if (!combobox.contains(event.target)) {
-                        closeCityPanel();
+            if (pkgG1Btn && pkgG2Btn) {
+                pkgG1Btn.addEventListener('click', () => selectPackage('g1'));
+                pkgG2Btn.addEventListener('click', () => selectPackage('g2'));
+            }
+
+            if (citySelect) {
+                citySelect.addEventListener('change', (e) => {
+                    selectedCityId = Number(e.target.value);
+                    resetSteps(2);
+
+                    if (!selectedCityId) return;
+
+                    // Filter and populate routes
+                    routeSelect.innerHTML = '<option value="" class="bg-slate-900 text-zinc-400">Choose a route...</option>';
+                    const city = citiesData.find(c => c.id === selectedCityId);
+                    if (city && city.routes) {
+                        const filteredRoutes = city.routes.filter(r => r.package_type === selectedPackage);
+                        filteredRoutes.forEach(route => {
+                            const opt = document.createElement('option');
+                            opt.value = route.id;
+                            opt.textContent = route.title;
+                            opt.className = 'bg-slate-900 text-white';
+                            routeSelect.appendChild(opt);
+                        });
+                    }
+
+                    stepRouteDiv.classList.remove('opacity-40', 'pointer-events-none');
+                });
+            }
+
+            if (routeSelect) {
+                routeSelect.addEventListener('change', (e) => {
+                    const routeId = Number(e.target.value);
+                    if (!routeId) {
+                        actionContainer.classList.add('hidden');
+                        return;
+                    }
+
+                    const city = citiesData.find(c => c.id === selectedCityId);
+                    const route = city && city.routes ? city.routes.find(r => r.id === routeId) : null;
+
+                    if (route) {
+                        routeTitle.textContent = route.title;
+                        routeDuration.textContent = route.route_duration_minutes ? `${route.route_duration_minutes} mins` : 'N/A';
+                        routeLength.textContent = route.route_length_km ? `${route.route_length_km} km` : 'N/A';
+                        routePrice.textContent = `$${Number(route.price).toFixed(2)}`;
+                        routeBtn.href = `/driving-routes/${route.id}`;
+                        actionContainer.classList.remove('hidden');
+                    } else {
+                        actionContainer.classList.add('hidden');
                     }
                 });
-            });
+            }
 
             const dashboardTabs = document.querySelectorAll('[data-dashboard-tab]');
             const dashboardIndicator = document.querySelector('[data-dashboard-indicator]');

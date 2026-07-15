@@ -128,6 +128,7 @@ class DrivingRouteAdminController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'package_type' => ['required', 'string', Rule::in(['g1', 'g2'])],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
             'province' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
@@ -159,6 +160,7 @@ class DrivingRouteAdminController extends Controller
 
         return [
             'title' => $validated['title'],
+            'package_type' => $validated['package_type'],
             'city_id' => $city->id,
             'city' => $city->name,
             'province' => $validated['province'],
