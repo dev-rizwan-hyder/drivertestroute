@@ -9,7 +9,7 @@
       "env": {
         "JET_WORKSPACE": "/opt/lampp/htdocs/drivertestroute",
         "JET_API_URL": "https://api.jetro.ai",
-        "PATH": "/home/dev/.jetro/runtime:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/dev/.local/bin"
+        "PATH": "/home/dev/.jetro/runtime:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/dev/.local/bin:/home/dev/.local/bin"
       }
     }
   }
