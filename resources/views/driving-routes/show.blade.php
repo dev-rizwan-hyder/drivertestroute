@@ -116,6 +116,18 @@
         $hasStart = ($route->start_lat !== null && $route->start_lng !== null) || $startQuery !== '';
         $hasDestination = ($route->end_lat !== null && $route->end_lng !== null) || $destinationQuery !== '';
         $hasRouteStops = $hasStart && $hasDestination;
+
+        $mappedPoints = $points->map(function($p) {
+            return [
+                'lat' => $p->lat === null ? null : (float) $p->lat,
+                'lng' => $p->lng === null ? null : (float) $p->lng,
+                'instruction' => $p->instruction,
+                'maneuver' => $p->maneuver,
+                'distance_km' => $p->distance_km === null ? null : (float) $p->distance_km,
+                'duration' => $p->duration,
+                'sort_order' => $p->sort_order,
+            ];
+        });
     @endphp
 
     <div class="route-detail-page">
@@ -410,17 +422,7 @@
                 }
             };
 
-            const manualPoints = @json($points->map(function($p) {
-                return [
-                    'lat' => $p->lat === null ? null : (float) $p->lat,
-                    'lng' => $p->lng === null ? null : (float) $p->lng,
-                    'instruction' => $p->instruction,
-                    'maneuver' => $p->maneuver,
-                    'distance_km' => $p->distance_km === null ? null : (float) $p->distance_km,
-                    'duration' => $p->duration,
-                    'sort_order' => $p->sort_order,
-                ];
-            }));
+            const manualPoints = @json($mappedPoints);
 
             const pointsWithCoords = manualPoints.filter(p => p.lat !== null && p.lng !== null && Number.isFinite(p.lat) && Number.isFinite(p.lng));
 
