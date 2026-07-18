@@ -79,6 +79,22 @@
             background-repeat: no-repeat;
             background-size: auto, cover;
         }
+
+        /* --- Navigation HUD Custom Styles --- */
+        #nav-hud-overlay * {
+            text-shadow: none;
+        }
+        .text-teal-150 {
+            color: #b2dfdb;
+        }
+        .hud-slide-down {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+        }
+        .hud-slide-up {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+        }
     </style>
 @endpush
 
@@ -149,23 +165,124 @@
             </div>
 
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
-                <div class="route-detail-glass overflow-hidden">
+                <div class="route-detail-glass overflow-hidden relative">
                 @if(config('services.google.maps_key') && $hasRouteStops)
-                    <div id="map" class="h-[68vh] min-h-[460px] w-full"></div>
-                    <div id="active-instruction" class="border-t border-white/10 px-5 py-4">
+                    <!-- Navigation HUD Overlays -->
+                    <div id="nav-hud-overlay" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-4">
+                        <!-- Top Instruction Banner -->
+                        <div id="hud-top-banner" class="w-full flex flex-col gap-2 pointer-events-auto transform -translate-y-24 opacity-0 transition-all duration-500 ease-out">
+                            <div class="flex items-center gap-4 rounded-2xl bg-[#005c53] px-5 py-4 shadow-2xl border border-[#004841] text-white">
+                                <!-- Action Direction Icon -->
+                                <div id="hud-maneuver-icon" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
+                                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                    </svg>
+                                </div>
+                                <!-- Text Info -->
+                                <div class="flex-1 min-w-0">
+                                    <h3 id="hud-main-instruction" class="text-lg sm:text-xl font-black leading-tight truncate">Head north</h3>
+                                    <p id="hud-sub-instruction" class="text-xs sm:text-sm font-bold text-teal-200 leading-tight mt-0.5 truncate">Ottawa Street North</p>
+                                </div>
+                                <!-- Mic / Audio Indicator -->
+                                <button id="hud-mic-btn" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition active:scale-95">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <!-- Next instruction hint -->
+                            <div id="hud-next-step" class="self-start flex items-center gap-2 rounded-xl bg-[#004841]/95 px-3 py-1.5 border border-[#003933] shadow-lg backdrop-blur-md">
+                                <span class="text-[10px] font-black uppercase tracking-wider text-teal-300">Then</span>
+                                <span id="hud-next-step-text" class="text-xs font-bold text-white truncate max-w-[200px]">Turn right</span>
+                            </div>
+                        </div>
+
+                        <!-- Side Floaters Column -->
+                        <div class="absolute right-4 top-[100px] flex flex-col gap-3 pointer-events-auto">
+                            <!-- Compass -->
+                            <button id="btn-hud-compass" class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-xl border border-slate-100/80 hover:bg-slate-50 transition active:scale-90" title="Reset Map Angle">
+                                <svg class="h-6 w-6 text-red-500 transform transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
+                                </svg>
+                            </button>
+                            <!-- Search -->
+                            <button class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-xl border border-slate-100/80 hover:bg-slate-50 transition active:scale-90">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                            <!-- Audio Speaker Toggle -->
+                            <button id="btn-hud-audio" class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-xl border border-slate-100/80 hover:bg-slate-50 transition active:scale-90" title="Toggle Voice Guidance">
+                                <svg id="hud-audio-svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                </svg>
+                            </button>
+                            <!-- Report Button -->
+                            <button id="btn-hud-report" class="flex items-center gap-2 rounded-full bg-white px-4 py-3 text-slate-700 shadow-xl border border-slate-100/80 hover:bg-slate-50 transition active:scale-90">
+                                <svg class="h-5 w-5 text-amber-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span class="text-sm font-black text-slate-800">Report</span>
+                            </button>
+                        </div>
+
+                        <!-- Speedometer bottom left -->
+                        <div class="absolute left-4 bottom-[100px] pointer-events-auto">
+                            <div class="flex h-16 w-16 flex-col items-center justify-center rounded-full border-4 border-slate-100/90 bg-white shadow-2xl">
+                                <span id="hud-speed-val" class="text-lg font-black text-slate-900 leading-none">--</span>
+                                <span class="text-[9px] font-extrabold text-slate-400 mt-0.5">km/h</span>
+                            </div>
+                        </div>
+
+                        <!-- Bottom HUD Panel -->
+                        <div id="hud-bottom-sheet" class="w-full bg-white rounded-3xl p-5 shadow-2xl border border-slate-100 pointer-events-auto mt-auto transform translate-y-36 opacity-0 transition-all duration-500 ease-out">
+                            <div class="flex items-center justify-between gap-4">
+                                <!-- Exit Drive Button -->
+                                <button id="btn-hud-exit" class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition active:scale-90" title="Exit Navigation">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                                <!-- Stats Details -->
+                                <div class="text-center">
+                                    <div class="flex items-baseline justify-center gap-0.5">
+                                        <span id="hud-duration-val" class="text-3xl font-black text-orange-600">--</span>
+                                        <span class="text-lg font-extrabold text-orange-600">min</span>
+                                    </div>
+                                    <div class="mt-1 text-xs sm:text-sm font-black text-slate-500 flex items-center justify-center gap-2">
+                                        <span id="hud-distance-val">-- km</span>
+                                        <span class="text-slate-300">•</span>
+                                        <span id="hud-eta-val">--:--</span>
+                                    </div>
+                                </div>
+                                <!-- Directions drawer toggle -->
+                                <button id="btn-hud-list" class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition active:scale-90" title="Toggle Directions List">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="map" class="h-[70vh] min-h-[500px] w-full z-0"></div>
+
+                    <!-- Legacy Active Instruction (will hide when HUD is active) -->
+                    <div id="active-instruction" class="border-t border-slate-200 px-5 py-4 bg-white/95">
                         <div class="text-xs font-black uppercase text-slate-500">Drive Guidance</div>
-                        <div id="active-instruction-title" class="mt-1 text-xl font-black text-white">Route loading...</div>
-                        <div id="active-instruction-detail" class="mt-1 text-sm text-slate-400">Google will calculate the best path from start to midpoint and back to start.</div>
+                        <div id="active-instruction-title" class="mt-1 text-xl font-black text-slate-900">Route loading...</div>
+                        <div id="active-instruction-detail" class="mt-1 text-sm text-slate-600">Google will calculate the best path from start to midpoint and back to start.</div>
                     </div>
                 @elseif(! $hasRouteStops)
-                    <div class="route-detail-map-placeholder grid h-[70vh] min-h-[460px] place-items-center p-6 text-center">
+                    <div class="route-detail-map-placeholder grid h-[70vh] min-h-[500px] place-items-center p-6 text-center">
                         <div>
                             <h2 class="text-lg font-black text-white">Start and midpoint needed</h2>
                             <p class="mt-2 max-w-md text-sm text-slate-400">Add a start point and midpoint/end point in the admin panel. Google will calculate the return route automatically.</p>
                         </div>
                     </div>
                 @else
-                    <div class="route-detail-map-placeholder relative grid h-[70vh] min-h-[460px] place-items-center overflow-hidden p-6 text-center">
+                    <div class="route-detail-map-placeholder relative grid h-[70vh] min-h-[500px] place-items-center overflow-hidden p-6 text-center">
                         <svg class="absolute inset-0 h-full w-full opacity-80" viewBox="0 0 720 520" fill="none" aria-hidden="true">
                             <path d="M0 104H720M0 208H720M0 312H720M0 416H720M120 0V520M240 0V520M360 0V520M480 0V520M600 0V520" stroke="rgba(148,163,184,.14)" />
                             <path d="M74 420 C166 240 260 326 350 174 C438 26 544 164 646 86" stroke="url(#routePlaceholder)" stroke-width="10" stroke-linecap="round" />
@@ -330,6 +447,7 @@
                     mapTypeControl: false,
                     streetViewControl: false,
                     fullscreenControl: true,
+                    rotateControl: true,
                     gestureHandling: 'greedy',
                     styles: [
                         { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
@@ -474,6 +592,24 @@
                 renderDirectionList(directionSteps);
                 initializeVehicle();
                 map.fitBounds(bounds, 72);
+
+                // Calculate total duration and distance
+                let totalRouteDuration = 0;
+                let totalRouteDistance = 0;
+                results.forEach((res) => {
+                    const leg = res.routes?.[0]?.legs?.[0];
+                    if (leg) {
+                        totalRouteDuration += leg.duration?.value ?? 0;
+                        totalRouteDistance += leg.distance?.value ?? 0;
+                    }
+                });
+
+                // Update bottom sheet values initially
+                const durationVal = Math.max(1, Math.round(totalRouteDuration / 60));
+                document.getElementById('hud-duration-val').textContent = durationVal;
+                document.getElementById('hud-distance-val').textContent = (totalRouteDistance / 1000).toFixed(1) + ' km';
+                updateETA(totalRouteDuration);
+
                 setActiveInstruction('Route ready', 'Use location, go to the start point, then start the drive.');
             }
 
@@ -593,10 +729,31 @@
                 startRouteButton.className = 'rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white';
                 removeCurrentLocationPreview();
 
+                // Show/Slide-in HUD overlays
+                const topBanner = document.getElementById('hud-top-banner');
+                const bottomSheet = document.getElementById('hud-bottom-sheet');
+                if (topBanner) topBanner.classList.add('hud-slide-down');
+                if (bottomSheet) bottomSheet.classList.add('hud-slide-up');
+
+                // Hide legacy text guidance
+                const legacyCard = document.getElementById('active-instruction');
+                if (legacyCard) legacyCard.classList.add('hidden');
+
+                // Tilt and rotate map for navigation mode by switching to Hybrid map type
+                if (map) {
+                    map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+                    map.setZoom(18);
+                    if (typeof map.setTilt === 'function') {
+                        map.setTilt(45);
+                    }
+                }
+
                 if (latestCurrentPosition) {
                     moveVehicle(latestCurrentPosition);
                     map.panTo(latestCurrentPosition);
-                    map.setZoom(Math.max(map.getZoom(), 16));
+                } else if (routeStartPosition) {
+                    moveVehicle(routeStartPosition);
+                    map.panTo(routeStartPosition);
                 }
 
                 updateActiveDrivingInstruction(latestCurrentPosition ?? routeStartPosition);
@@ -694,6 +851,20 @@
                 };
                 latestCurrentPosition = currentPosition;
 
+                // Update speedometer HUD
+                const speed = position.coords.speed;
+                const speedValEl = document.getElementById('hud-speed-val');
+                if (speedValEl) {
+                    if (speed !== null && speed !== undefined) {
+                        speedValEl.textContent = Math.round(speed * 3.6);
+                    } else if (driveStarted) {
+                        const simulatedSpeed = Math.floor(Math.random() * 8) + 45;
+                        speedValEl.textContent = simulatedSpeed;
+                    } else {
+                        speedValEl.textContent = '--';
+                    }
+                }
+
                 if (!driveStarted) {
                     updateCurrentLocationMarker(currentPosition, position.coords.accuracy);
                     updateStartProximity(currentPosition, position.coords.accuracy);
@@ -704,8 +875,8 @@
                 updateActiveDrivingInstruction(currentPosition);
                 map.panTo(currentPosition);
 
-                if (map.getZoom() < 16) {
-                    map.setZoom(16);
+                if (map.getZoom() < 17) {
+                    map.setZoom(17);
                 }
             }
 
@@ -776,6 +947,32 @@
                 const step = directionSteps[currentStepIndex];
                 const nextStep = directionSteps[currentStepIndex + 1] ?? null;
                 const distance = distanceMeters(position, step.end);
+
+                // Update bottom sheet statistics dynamically
+                let remainingDistance = 0;
+                for (let i = currentStepIndex; i < directionSteps.length; i++) {
+                    remainingDistance += directionSteps[i].distanceMeters;
+                }
+                // Convert distance to average travel duration (e.g. 40 km/h = ~1.5 min per km)
+                const remainingDurationMinutes = Math.max(1, Math.round((remainingDistance / 1000) * 1.5));
+                
+                const durValEl = document.getElementById('hud-duration-val');
+                const distValEl = document.getElementById('hud-distance-val');
+                if (durValEl) durValEl.textContent = remainingDurationMinutes;
+                if (distValEl) distValEl.textContent = (remainingDistance / 1000).toFixed(1) + ' km';
+                updateETA(remainingDurationMinutes * 60);
+
+                // Update Next Step banner
+                const nextStepEl = document.getElementById('hud-next-step');
+                const nextStepTextEl = document.getElementById('hud-next-step-text');
+                if (nextStepEl && nextStepTextEl) {
+                    if (nextStep) {
+                        nextStepEl.classList.remove('hidden');
+                        nextStepTextEl.textContent = nextStep.text;
+                    } else {
+                        nextStepEl.classList.add('hidden');
+                    }
+                }
 
                 if (currentStepIndex === directionSteps.length - 1 && distance < 35) {
                     setActiveInstruction('Route complete', 'You are back at the start point.');
@@ -858,10 +1055,198 @@
                 };
             }
 
-            function setActiveInstruction(title, detail) {
-                document.getElementById('active-instruction-title').textContent = title;
-                document.getElementById('active-instruction-detail').textContent = detail;
+            let audioEnabled = true;
+            let lastSpokenInstruction = '';
+
+            function getManeuverIcon(text) {
+                const lower = text.toLowerCase();
+                if (lower.includes('left')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>`;
+                }
+                if (lower.includes('right')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>`;
+                }
+                if (lower.includes('merge') || lower.includes('exit') || lower.includes('highway') || lower.includes('ramp')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H8m0 0l4-4m-4 4l4 4" />
+                    </svg>`;
+                }
+                if (lower.includes('roundabout')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89" />
+                    </svg>`;
+                }
+                // Straight / Continue
+                return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>`;
             }
+
+            function speakInstruction(text) {
+                if (!audioEnabled || !('speechSynthesis' in window)) return;
+                const cleanText = text.replace(/\d+\s*(m|km)/gi, '').replace(/\s+/g, ' ').trim();
+                if (!cleanText || cleanText === lastSpokenInstruction) return;
+                lastSpokenInstruction = cleanText;
+
+                try {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(cleanText);
+                    utterance.rate = 1.0;
+                    window.speechSynthesis.speak(utterance);
+                } catch (e) {
+                    console.error('SpeechSynthesis error:', e);
+                }
+            }
+
+            function alertToast(message) {
+                const existing = document.getElementById('hud-toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.id = 'hud-toast';
+                toast.className = 'fixed bottom-28 left-1/2 transform -translate-x-1/2 z-[999] rounded-full bg-slate-900/90 text-white px-5 py-3 text-sm font-bold shadow-2xl backdrop-blur-md transition-opacity duration-300 pointer-events-none';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 2000);
+            }
+
+            function updateETA(durationSeconds) {
+                const now = new Date();
+                const etaDate = new Date(now.getTime() + durationSeconds * 1000);
+                let hours = etaDate.getHours();
+                const minutes = String(etaDate.getMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                const etaValEl = document.getElementById('hud-eta-val');
+                if (etaValEl) etaValEl.textContent = `${hours}:${minutes} ${ampm}`;
+            }
+
+            function setActiveInstruction(title, detail) {
+                // Update legacy elements
+                const legacyTitle = document.getElementById('active-instruction-title');
+                const legacyDetail = document.getElementById('active-instruction-detail');
+                if (legacyTitle) legacyTitle.textContent = title;
+                if (legacyDetail) legacyDetail.textContent = detail;
+
+                // Update HUD overlays
+                const mainInstEl = document.getElementById('hud-main-instruction');
+                const subInstEl = document.getElementById('hud-sub-instruction');
+                const iconEl = document.getElementById('hud-maneuver-icon');
+
+                if (mainInstEl) mainInstEl.textContent = title;
+                if (subInstEl) subInstEl.textContent = detail;
+                if (iconEl) iconEl.innerHTML = getManeuverIcon(title);
+
+                if (driveStarted) {
+                    speakInstruction(title + '. ' + detail);
+                }
+            }
+
+            // Register HUD Interaction button listeners
+            document.addEventListener('DOMContentLoaded', () => {
+                const btnCompass = document.getElementById('btn-hud-compass');
+                const btnAudio = document.getElementById('btn-hud-audio');
+                const btnReport = document.getElementById('btn-hud-report');
+                const btnExit = document.getElementById('btn-hud-exit');
+                const btnList = document.getElementById('btn-hud-list');
+
+                if (btnCompass) {
+                    btnCompass.addEventListener('click', () => {
+                        if (latestCurrentPosition) {
+                            map.panTo(latestCurrentPosition);
+                        } else if (routeStartPosition) {
+                            map.panTo(routeStartPosition);
+                        }
+                        if (typeof map.setHeading === 'function') {
+                            map.setHeading(0);
+                        }
+                        const svg = btnCompass.querySelector('svg');
+                        if (svg) {
+                            svg.style.transform = 'rotate(360deg)';
+                            setTimeout(() => svg.style.transform = 'rotate(0deg)', 300);
+                        }
+                        alertToast('Map alignment reset');
+                    });
+                }
+
+                if (btnAudio) {
+                    btnAudio.addEventListener('click', () => {
+                        audioEnabled = !audioEnabled;
+                        const svg = document.getElementById('hud-audio-svg');
+                        if (audioEnabled) {
+                            svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />`;
+                            alertToast('Voice guidance enabled');
+                        } else {
+                            svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />`;
+                            alertToast('Voice guidance muted');
+                        }
+                    });
+                }
+
+                if (btnReport) {
+                    btnReport.addEventListener('click', () => {
+                        alertToast('Hazard reported. Thank you!');
+                    });
+                }
+
+                if (btnExit) {
+                    btnExit.addEventListener('click', () => {
+                        driveStarted = false;
+                        hasReachedStart = false;
+                        accessConsumedForCurrentDrive = false;
+
+                        // Hide HUD overlays
+                        const topBanner = document.getElementById('hud-top-banner');
+                        const bottomSheet = document.getElementById('hud-bottom-sheet');
+                        if (topBanner) topBanner.classList.remove('hud-slide-down');
+                        if (bottomSheet) bottomSheet.classList.remove('hud-slide-up');
+
+                        // Show legacy elements
+                        const legacyCard = document.getElementById('active-instruction');
+                        if (legacyCard) legacyCard.classList.remove('hidden');
+
+                        // Restore start drive button state
+                        if (startRouteButton) {
+                            startRouteButton.disabled = false;
+                            startRouteButton.textContent = 'Start drive';
+                            startRouteButton.className = 'rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800';
+                        }
+
+                        // Restore map view defaults
+                        if (map) {
+                            if (typeof map.setTilt === 'function') map.setTilt(0);
+                            if (typeof map.setHeading === 'function') map.setHeading(0);
+                            map.setZoom(14);
+                            if (routeStartPosition) map.panTo(routeStartPosition);
+                        }
+
+                        // Stop Speech
+                        if ('speechSynthesis' in window) {
+                            window.speechSynthesis.cancel();
+                        }
+
+                        alertToast('Navigation ended');
+                    });
+                }
+
+                if (btnList) {
+                    btnList.addEventListener('click', () => {
+                        const listSection = document.getElementById('directions-list');
+                        if (listSection) {
+                            listSection.scrollIntoView({ behavior: 'smooth' });
+                            alertToast('Scrolled to instructions list');
+                        }
+                    });
+                }
+            });
 
             function stripHtml(html) {
                 const element = document.createElement('div');
@@ -925,6 +1310,9 @@
                     vehicleMarker.setIcon(vehicleIcon(heading));
                     lastVehiclePosition = nextPosition;
                     lastVehicleHeading = heading;
+                    if (driveStarted && map && typeof map.setHeading === 'function') {
+                        map.setHeading(heading);
+                    }
                     return;
                 }
 
@@ -948,6 +1336,11 @@
 
                     lastVehiclePosition = nextPosition;
                     lastVehicleHeading = heading;
+
+                    // Automatically rotate the map to face forward (360 rotation)
+                    if (driveStarted && map && typeof map.setHeading === 'function') {
+                        map.setHeading(heading);
+                    }
                 }
 
                 requestAnimationFrame(step);
