@@ -410,6 +410,45 @@
                 }
             };
 
+            const manualPoints = @json($points->map(function($p) {
+                return [
+                    'lat' => $p->lat === null ? null : (float) $p->lat,
+                    'lng' => $p->lng === null ? null : (float) $p->lng,
+                    'instruction' => $p->instruction,
+                    'maneuver' => $p->maneuver,
+                    'distance_km' => $p->distance_km === null ? null : (float) $p->distance_km,
+                    'duration' => $p->duration,
+                    'sort_order' => $p->sort_order,
+                ];
+            }));
+
+            const pointsWithCoords = manualPoints.filter(p => p.lat !== null && p.lng !== null && Number.isFinite(p.lat) && Number.isFinite(p.lng));
+
+            // Chunk points into segments of at most 20 points
+            const segments = [];
+            const chunkSize = 20;
+            for (let i = 0; i < pointsWithCoords.length - 1; i += chunkSize - 1) {
+                const chunk = pointsWithCoords.slice(i, i + chunkSize);
+                if (chunk.length >= 2) {
+                    segments.push(chunk);
+                }
+            }
+
+            // Fill in missing coordinates in manualPoints for navigation/list safety
+            let lastValidCoord = { lat: routeData.start.lat, lng: routeData.start.lng };
+            for (const p of pointsWithCoords) {
+                lastValidCoord = { lat: p.lat, lng: p.lng };
+                break;
+            }
+            manualPoints.forEach(p => {
+                if (p.lat === null || p.lng === null || !Number.isFinite(p.lat) || !Number.isFinite(p.lng)) {
+                    p.lat = lastValidCoord.lat;
+                    p.lng = lastValidCoord.lng;
+                } else {
+                    lastValidCoord = { lat: p.lat, lng: p.lng };
+                }
+            });
+
             const routeAccess = {
                 isAdmin: @json(auth()->user()->is_admin),
                 remainingStarts: @json($remainingStarts),
@@ -472,6 +511,11 @@
             }
 
             async function resolveStopsAndCalculateRoute() {
+                if (pointsWithCoords.length >= 2) {
+                    calculateManualRoute();
+                    return;
+                }
+
                 setActiveInstruction('Finding route stops...', 'Google is locating the start and midpoint.');
 
                 try {
@@ -496,11 +540,36 @@
                     .catch((status) => showRouteError(status, 'Google could not calculate a driving route for these stops.'));
             }
 
-            function requestDirections(directionsService, origin, destination) {
+            async function calculateManualRoute() {
+                setActiveInstruction('Calculating route...', 'Google is choosing the best driving path.');
+
+                const directionsService = new google.maps.DirectionsService();
+
+                const promises = segments.map(segment => {
+                    const origin = { lat: segment[0].lat, lng: segment[0].lng };
+                    const destination = { lat: segment[segment.length - 1].lat, lng: segment[segment.length - 1].lng };
+                    const waypoints = segment.slice(1, -1).map(p => ({
+                        location: { lat: p.lat, lng: p.lng },
+                        stopover: false
+                    }));
+
+                    return requestDirections(directionsService, origin, destination, waypoints);
+                });
+
+                try {
+                    const results = await Promise.all(promises);
+                    renderManualDirections(results);
+                } catch (status) {
+                    showRouteError(status, 'Google could not calculate a driving route for these stops.');
+                }
+            }
+
+            function requestDirections(directionsService, origin, destination, waypoints = []) {
                 return new Promise((resolve, reject) => {
                     directionsService.route({
                         origin,
                         destination,
+                        waypoints,
                         optimizeWaypoints: false,
                         provideRouteAlternatives: false,
                         travelMode: google.maps.TravelMode.DRIVING,
@@ -605,6 +674,131 @@
                 });
 
                 // Update bottom sheet values initially
+                const durationVal = Math.max(1, Math.round(totalRouteDuration / 60));
+                document.getElementById('hud-duration-val').textContent = durationVal;
+                document.getElementById('hud-distance-val').textContent = (totalRouteDistance / 1000).toFixed(1) + ' km';
+                updateETA(totalRouteDuration);
+
+                setActiveInstruction('Route ready', 'Use location, go to the start point, then start the drive.');
+            }
+
+            function renderManualDirections(results) {
+                const bounds = new google.maps.LatLngBounds();
+
+                results.forEach((result) => {
+                    const renderer = new google.maps.DirectionsRenderer({
+                        map,
+                        suppressMarkers: true,
+                        preserveViewport: true,
+                        polylineOptions: {
+                            strokeColor: '#047857',
+                            strokeOpacity: 0.95,
+                            strokeWeight: 7,
+                        },
+                    });
+                    renderer.setDirections(result);
+
+                    result.routes[0].overview_path.forEach((point) => bounds.extend(point));
+                });
+
+                // Set positions
+                routeStartPosition = { lat: pointsWithCoords[0].lat, lng: pointsWithCoords[0].lng };
+                
+                let midpointIndex = 0;
+                if (hasCoordinates(routeData.midpoint)) {
+                    let minDistance = Infinity;
+                    pointsWithCoords.forEach((p, idx) => {
+                        const dist = distanceMeters({ lat: p.lat, lng: p.lng }, toPosition(routeData.midpoint));
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            midpointIndex = idx;
+                        }
+                    });
+                } else {
+                    midpointIndex = Math.floor(pointsWithCoords.length / 2);
+                }
+                routeMidpointPosition = { lat: pointsWithCoords[midpointIndex].lat, lng: pointsWithCoords[midpointIndex].lng };
+
+                new google.maps.Marker({
+                    position: routeStartPosition,
+                    map,
+                    title: routeData.start.label,
+                    icon: endpointIcon('#047857', 'S'),
+                });
+
+                new google.maps.Marker({
+                    position: routeMidpointPosition,
+                    map,
+                    title: routeData.midpoint.label,
+                    icon: endpointIcon('#dc2626', 'M'),
+                });
+
+                // Populate directionSteps from manual points
+                directionSteps = manualPoints.map((p, index) => {
+                    const nextPoint = manualPoints[index + 1] || null;
+                    const startPos = { lat: p.lat, lng: p.lng };
+                    const endPos = nextPoint ? { lat: nextPoint.lat, lng: nextPoint.lng } : startPos;
+
+                    let distMeters = 0;
+                    if (p.distance_km !== null) {
+                        distMeters = p.distance_km * 1000;
+                    } else if (nextPoint && Number.isFinite(p.lat) && Number.isFinite(p.lng) && Number.isFinite(nextPoint.lat) && Number.isFinite(nextPoint.lng)) {
+                        distMeters = distanceMeters(startPos, endPos);
+                    }
+
+                    const distText = p.distance_km !== null 
+                        ? (p.distance_km < 1 ? `${Math.round(p.distance_km * 1000)} m` : `${p.distance_km.toFixed(1)} km`)
+                        : (distMeters > 0 ? formatDistance(distMeters) : '');
+
+                    return {
+                        legIndex: index <= midpointIndex ? 0 : 1,
+                        html: p.instruction,
+                        text: stripHtml(p.instruction),
+                        distanceText: distText,
+                        distanceMeters: distMeters,
+                        durationText: p.duration || '',
+                        start: startPos,
+                        end: endPos,
+                    };
+                });
+
+                renderDirectionList(directionSteps);
+                initializeVehicle();
+                map.fitBounds(bounds, 72);
+
+                // Calculate total duration and distance
+                let totalRouteDuration = 0;
+                let totalRouteDistance = 0;
+                
+                manualPoints.forEach(p => {
+                    if (p.distance_km !== null) {
+                        totalRouteDistance += p.distance_km * 1000;
+                    }
+                    if (p.duration) {
+                        const parsedDuration = parseInt(p.duration);
+                        if (!isNaN(parsedDuration)) {
+                            totalRouteDuration += parsedDuration * 60;
+                        }
+                    }
+                });
+
+                if (totalRouteDistance === 0) {
+                    results.forEach((res) => {
+                        const leg = res.routes?.[0]?.legs?.[0];
+                        if (leg) {
+                            totalRouteDistance += leg.distance?.value ?? 0;
+                        }
+                    });
+                }
+                if (totalRouteDuration === 0) {
+                    results.forEach((res) => {
+                        const leg = res.routes?.[0]?.legs?.[0];
+                        if (leg) {
+                            totalRouteDuration += leg.duration?.value ?? 0;
+                        }
+                    });
+                }
+
                 const durationVal = Math.max(1, Math.round(totalRouteDuration / 60));
                 document.getElementById('hud-duration-val').textContent = durationVal;
                 document.getElementById('hud-distance-val').textContent = (totalRouteDistance / 1000).toFixed(1) + ' km';
