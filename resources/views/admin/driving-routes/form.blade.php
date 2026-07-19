@@ -97,6 +97,16 @@
         <h2 class="text-lg font-bold text-stone-950">Visual Route Builder</h2>
         <p class="mt-1 text-sm text-stone-600">Click on the map or search addresses below to add waypoints. Drag markers to adjust paths. Start and Midpoint details are updated automatically.</p>
 
+        <!-- Import from Google Maps Link Box -->
+        <div class="mt-4 p-4 bg-emerald-50/40 rounded-xl border border-emerald-200/60 shadow-sm">
+            <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider block mb-1">Import Entire Route from Google Maps Link</span>
+            <span class="text-xs text-stone-600 block mb-3">Copy the directions URL from Google Maps (e.g. `https://www.google.com/maps/dir/PointA/PointB/...`) and paste it below to load all stops instantly.</span>
+            <div class="flex gap-2">
+                <input type="text" id="import-url-input" placeholder="Paste Google Maps directions URL here..." class="flex-1 rounded-md border border-stone-300 px-3 py-2 text-sm text-stone-950 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100">
+                <button type="button" id="btn-import-url" class="rounded-md bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 font-semibold text-sm transition shrink-0">Import Route</button>
+            </div>
+        </div>
+
         <!-- Place Search Input -->
         <div class="mt-4 flex gap-2">
             <input type="text" id="map-search-input" placeholder="Search address, landmark, or street name to add a waypoint..." class="flex-1 rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
@@ -236,6 +246,19 @@
             addCoordinateWaypoint(lat, lng);
         });
 
+        // URL importer listener
+        const importBtn = document.getElementById('btn-import-url');
+        if (importBtn) {
+            importBtn.addEventListener('click', () => {
+                const url = document.getElementById('import-url-input').value.trim();
+                if (url) {
+                    importRouteFromUrl(url);
+                } else {
+                    alert('Please enter a Google Maps Directions URL.');
+                }
+            });
+        }
+
         // Set midpoint
         if (Number.isFinite(endLat) && Number.isFinite(endLng)) {
             let minDistance = Infinity;
@@ -333,6 +356,123 @@
             return (parts[0].trim() + ', ' + parts[1].trim());
         }
         return fullAddress;
+    }
+
+    function parseGoogleMapsUrl(url) {
+        const addresses = [];
+        try {
+            const decodedUrl = decodeURIComponent(url);
+            const urlObj = new URL(url);
+            
+            if (urlObj.pathname.includes('/maps/dir/')) {
+                const dirPart = urlObj.pathname.split('/maps/dir/')[1];
+                if (dirPart) {
+                    const segments = dirPart.split('/');
+                    segments.forEach(segment => {
+                        if (segment && !segment.startsWith('@') && !segment.startsWith('data=')) {
+                            const decoded = decodeURIComponent(segment.replace(/\+/g, ' '));
+                            if (decoded.trim() !== '') {
+                                addresses.push(decoded.trim());
+                            }
+                        }
+                    });
+                }
+            } else {
+                const params = new URLSearchParams(urlObj.search);
+                const origin = params.get('origin');
+                const destination = params.get('destination');
+                const waypointsParam = params.get('waypoints');
+
+                if (origin) addresses.push(origin);
+                if (waypointsParam) {
+                    waypointsParam.split('|').forEach(wp => {
+                        if (wp.trim() !== '') addresses.push(wp.trim());
+                    });
+                }
+                if (destination) addresses.push(destination);
+            }
+        } catch (e) {
+            const dirMatch = url.match(/\/dir\/([^\?]+)/);
+            if (dirMatch && dirMatch[1]) {
+                const segments = dirMatch[1].split('/');
+                segments.forEach(segment => {
+                    if (segment && !segment.startsWith('@') && !segment.startsWith('data=')) {
+                        const decoded = decodeURIComponent(segment.replace(/\+/g, ' '));
+                        if (decoded.trim() !== '') {
+                            addresses.push(decoded.trim());
+                        }
+                    }
+                });
+            }
+        }
+        return addresses;
+    }
+
+    async function importRouteFromUrl(url) {
+        const addresses = parseGoogleMapsUrl(url);
+        if (addresses.length === 0) {
+            alert('Could not find any locations in that URL. Please ensure it is a Google Maps Directions URL from your browser address bar.');
+            return;
+        }
+
+        const importBtn = document.getElementById('btn-import-url');
+        const origText = importBtn.textContent;
+        importBtn.disabled = true;
+        importBtn.textContent = 'Importing...';
+
+        const geocoder = new google.maps.Geocoder();
+        const newWaypoints = [];
+
+        for (let i = 0; i < addresses.length; i++) {
+            importBtn.textContent = `Importing (${i + 1}/${addresses.length})...`;
+            try {
+                const result = await new Promise((resolve, reject) => {
+                    geocoder.geocode({ address: addresses[i] }, (results, status) => {
+                        if (status === 'OK' && results?.[0]) {
+                            resolve(results[0]);
+                        } else {
+                            reject(status);
+                        }
+                    });
+                });
+
+                const lat = result.geometry.location.lat();
+                const lng = result.geometry.location.lng();
+                const address = result.formatted_address || addresses[i];
+
+                newWaypoints.push({
+                    lat: lat,
+                    lng: lng,
+                    instruction: 'Continue onto ' + cleanAddress(address),
+                    maneuver: 'continue',
+                    distance_km: null,
+                    duration: null,
+                    sort_order: newWaypoints.length + 1
+                });
+            } catch (err) {
+                console.warn(`Could not geocode waypoint: ${addresses[i]}. Status: ${err}`);
+            }
+        }
+
+        importBtn.disabled = false;
+        importBtn.textContent = origText;
+
+        if (newWaypoints.length > 0) {
+            waypoints = newWaypoints;
+            midpointIndex = Math.floor(waypoints.length / 2);
+            renderWaypoints();
+            calculateRoute();
+            map.panTo({ lat: waypoints[0].lat, lng: waypoints[0].lng });
+            document.getElementById('import-url-input').value = '';
+            
+            document.getElementById('route-start-label-input').value = cleanAddress(waypoints[0].address || waypoints[0].instruction);
+            document.getElementById('route-destination-label-input').value = cleanAddress(waypoints[midpointIndex].address || waypoints[midpointIndex].instruction);
+            updateStartMidpointInputs();
+            
+            alert(`Imported ${waypoints.length} route points successfully!`);
+        } else {
+            alert('Failed to geocode any locations from the pasted URL. Please try again.');
+        }
     }
 
     function renderWaypoints() {
