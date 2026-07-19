@@ -1070,6 +1070,37 @@
                 updateActiveDrivingInstruction(latestCurrentPosition ?? routeStartPosition);
             }
 
+            function interpolatePath(points, stepMeters = 3) {
+                if (points.length < 2) return points;
+                
+                const densePoints = [];
+                densePoints.push(points[0]);
+                
+                for (let i = 0; i < points.length - 1; i++) {
+                    const start = points[i];
+                    const end = points[i+1];
+                    const segmentDist = distanceMeters(start, end);
+                    
+                    if (segmentDist <= stepMeters) {
+                        densePoints.push(end);
+                        continue;
+                    }
+                    
+                    const numSteps = Math.floor(segmentDist / stepMeters);
+                    const latStep = (end.lat - start.lat) / numSteps;
+                    const lngStep = (end.lng - start.lng) / numSteps;
+                    
+                    for (let j = 1; j <= numSteps; j++) {
+                        densePoints.push({
+                            lat: start.lat + (latStep * j),
+                            lng: start.lng + (lngStep * j)
+                        });
+                    }
+                }
+                
+                return densePoints;
+            }
+
             function startSimulationDrive() {
                 driveStarted = true;
                 accessConsumedForCurrentDrive = true; // Bypassed for demo simulation
@@ -1108,21 +1139,24 @@
                     }
                 }
 
+                // Smooth path interpolation (spacing points by 3 meters)
+                const densePath = interpolatePath(routePathPoints, 3);
+
                 // Initialize vehicle position at path start
                 simIndex = 0;
-                if (routePathPoints.length > 0) {
-                    moveVehicle(routePathPoints[0], lastVehicleHeading);
-                    map.panTo(routePathPoints[0]);
+                if (densePath.length > 0) {
+                    moveVehicle(densePath[0], lastVehicleHeading);
+                    map.panTo(densePath[0]);
                 }
 
-                updateActiveDrivingInstruction(routePathPoints[0]);
+                updateActiveDrivingInstruction(densePath[0]);
 
                 if (simIntervalId) {
                     clearInterval(simIntervalId);
                 }
 
                 simIntervalId = setInterval(() => {
-                    if (simIndex >= routePathPoints.length) {
+                    if (simIndex >= densePath.length) {
                         clearInterval(simIntervalId);
                         simIntervalId = null;
                         alertToast("Destination reached!");
@@ -1130,8 +1164,8 @@
                         return;
                     }
 
-                    const currentPos = routePathPoints[simIndex];
-                    const nextPos = routePathPoints[simIndex + 1] || currentPos;
+                    const currentPos = densePath[simIndex];
+                    const nextPos = densePath[simIndex + 1] || currentPos;
                     const currentHeading = bearing(currentPos, nextPos) ?? lastVehicleHeading;
 
                     moveVehicle(currentPos, currentHeading);
@@ -1145,11 +1179,11 @@
                     // Speed HUD simulation
                     const speedValEl = document.getElementById('hud-speed-val');
                     if (speedValEl) {
-                        speedValEl.textContent = Math.round(simulatedSpeed + (Math.random() * 6 - 3));
+                        speedValEl.textContent = Math.round(simulatedSpeed + (Math.random() * 4 - 2));
                     }
 
                     simIndex += 1;
-                }, 750); // Updates every 750ms for smooth forward movement
+                }, 200); // 200ms updates for professional taxi app style movement
             }
 
             async function consumeMapStart() {
@@ -1405,7 +1439,17 @@
                     ? reportedHeading
                     : bearing(lastVehiclePosition, position) ?? lastVehicleHeading;
 
-                animateVehicle(position, heading);
+                if (simIntervalId && vehicleMarker) {
+                    vehicleMarker.setPosition(position);
+                    vehicleMarker.setIcon(vehicleIcon(heading));
+                    lastVehiclePosition = position;
+                    lastVehicleHeading = heading;
+                    if (driveStarted && map && typeof map.setHeading === 'function') {
+                        map.setHeading(heading);
+                    }
+                } else {
+                    animateVehicle(position, heading);
+                }
             }
 
             function enableStartDrive() {
