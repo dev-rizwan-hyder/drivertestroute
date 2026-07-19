@@ -180,7 +180,36 @@
                 <div class="route-detail-glass overflow-hidden relative">
                 @if(config('services.google.maps_key') && $hasRouteStops)
                     <!-- Navigation HUD Overlays -->
+                    <!-- Navigation HUD Overlays -->
                     <div id="nav-hud-overlay" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-4">
+                        <!-- Preview Mode Search Header -->
+                        <div id="preview-search-header" class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200/50 p-4 pointer-events-auto transition-all duration-350 transform translate-y-0 opacity-100 flex flex-col gap-2 shrink-0">
+                            <div class="flex items-center gap-3.5">
+                                <div class="flex flex-col items-center gap-1.5 pt-1 shrink-0">
+                                    <span class="inline-block h-3 w-3 rounded-full border-2 border-white bg-blue-600 shadow-sm ring-4 ring-blue-100"></span>
+                                    <span class="w-0.5 h-6 border-l border-dashed border-slate-300"></span>
+                                    <svg class="h-4.5 w-4.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 flex flex-col gap-2 min-w-0">
+                                    <div class="border-b border-slate-100 pb-1">
+                                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Start location</span>
+                                        <span id="preview-start-loc-label" class="font-bold text-sm text-slate-800 block truncate">Your Location</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Destination</span>
+                                        <span class="font-bold text-sm text-slate-800 block truncate">{{ $route->destination_label ?: 'Midpoint' }}</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-700 transition active:scale-95">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Top Instruction Banner -->
                         <div id="hud-top-banner" class="w-full flex flex-col gap-2 pointer-events-auto transform -translate-y-24 opacity-0 transition-all duration-500 ease-out">
                             <div class="flex items-center gap-4 rounded-2xl bg-[#005c53] px-5 py-4 shadow-2xl border border-[#004841] text-white">
@@ -247,11 +276,11 @@
                             </div>
                         </div>
 
-                        <!-- Bottom HUD Panel -->
-                        <div id="hud-bottom-sheet" class="w-full bg-white rounded-3xl p-5 shadow-2xl border border-slate-100 pointer-events-auto mt-auto transform translate-y-36 opacity-0 transition-all duration-500 ease-out">
+                        <!-- Bottom HUD Panel (Navigation mode) -->
+                        <div id="hud-bottom-sheet" class="w-full bg-white rounded-3xl p-5 shadow-2xl border border-slate-100 pointer-events-auto mt-auto transform translate-y-36 opacity-0 transition-all duration-500 ease-out hidden">
                             <div class="flex items-center justify-between gap-4">
                                 <!-- Exit Drive Button -->
-                                <button id="btn-hud-exit" class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition active:scale-90" title="Exit Navigation">
+                                <button type="button" id="btn-hud-exit" class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition active:scale-90" title="Exit Navigation">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -269,7 +298,47 @@
                                     </div>
                                 </div>
                                 <!-- Directions drawer toggle -->
-                                <button id="btn-hud-list" class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition active:scale-90" title="Toggle Directions List">
+                                <button type="button" id="btn-hud-list" class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition active:scale-90" title="Toggle Directions List">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Preview Mode Bottom Sheet -->
+                        <div id="preview-bottom-sheet" class="w-full bg-white rounded-3xl p-5 shadow-2xl border border-slate-150 pointer-events-auto mt-auto transform translate-y-0 opacity-100 transition-all duration-350 flex flex-col gap-4">
+                            <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto shrink-0"></div>
+                            
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                                        <span>Drive</span>
+                                        <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 shrink-0">Best Route</span>
+                                    </h3>
+                                    <div class="mt-1 flex items-baseline gap-1.5">
+                                        <span id="preview-duration" class="text-2xl font-black text-emerald-600">-- min</span>
+                                        <span id="preview-distance" class="text-sm font-extrabold text-slate-500">(-- km)</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-500 mt-1">Fastest route, standard traffic</p>
+                                </div>
+                                <!-- Voice guidance toggle in preview -->
+                                <button type="button" id="btn-preview-audio" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:text-slate-800 transition active:scale-95" title="Toggle Voice Guidance">
+                                    <svg id="preview-audio-svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <button type="button" id="btn-preview-start" class="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-teal-800 hover:bg-teal-900 py-3.5 font-bold text-white shadow-lg transition active:scale-97">
+                                    <svg class="h-5 w-5 transform rotate-45" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
+                                    </svg>
+                                    <span id="btn-preview-start-text">Start drive</span>
+                                </button>
+
+                                <button type="button" id="btn-preview-steps" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition active:scale-95" title="Toggle Directions List">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
@@ -280,8 +349,28 @@
 
                     <div id="map" class="h-[70vh] min-h-[500px] w-full z-0"></div>
 
+                    <!-- GPS Simulation Dialog -->
+                    <div id="sim-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
+                        <div class="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300">
+                            <h3 class="text-lg font-black text-slate-900">Start Navigation</h3>
+                            <p class="mt-2 text-sm text-slate-500 leading-relaxed">You are currently away from the start point of this driving route. Would you like to simulate the drive as a demo, or start active GPS navigation anyway?</p>
+                            
+                            <div class="mt-6 flex flex-col gap-2.5">
+                                <button type="button" id="btn-sim-demo" class="w-full rounded-2xl bg-teal-800 hover:bg-teal-900 py-3 font-bold text-white shadow-lg transition active:scale-97">
+                                    Simulate Drive (Demo)
+                                </button>
+                                <button type="button" id="btn-sim-gps" class="w-full rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 py-3 font-bold text-slate-700 transition active:scale-97">
+                                    Start GPS Navigation Anyway
+                                </button>
+                                <button type="button" id="btn-sim-cancel" class="w-full rounded-2xl py-2 font-bold text-slate-400 hover:text-slate-600 transition">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Legacy Active Instruction (will hide when HUD is active) -->
-                    <div id="active-instruction" class="border-t border-slate-200 px-5 py-4 bg-white/95">
+                    <div id="active-instruction" class="border-t border-slate-200 px-5 py-4 bg-white/95 hidden">
                         <div class="text-xs font-black uppercase text-slate-500">Drive Guidance</div>
                         <div id="active-instruction-title" class="mt-1 text-xl font-black text-slate-900">Route loading...</div>
                         <div id="active-instruction-detail" class="mt-1 text-sm text-slate-600">Google will calculate the best path from start to midpoint and back to start.</div>
@@ -480,6 +569,10 @@
             let routeStatus = null;
             let accessConsumedForCurrentDrive = false;
             const startDistanceThresholdMeters = 60;
+            let routePathPoints = [];
+            let simIntervalId = null;
+            let simIndex = 0;
+            let simulatedSpeed = 40;
 
             function initMap() {
                 map = new google.maps.Map(document.getElementById('map'), {
@@ -625,6 +718,7 @@
             function renderDirections(results) {
                 const bounds = new google.maps.LatLngBounds();
 
+                routePathPoints = [];
                 results.forEach((result) => {
                     directionsRenderer = new google.maps.DirectionsRenderer({
                         map,
@@ -638,7 +732,10 @@
                     });
                     directionsRenderer.setDirections(result);
 
-                    result.routes[0].overview_path.forEach((point) => bounds.extend(point));
+                    result.routes[0].overview_path.forEach((point) => {
+                        bounds.extend(point);
+                        routePathPoints.push(latLngToPosition(point));
+                    });
                 });
 
                 const outboundRoute = results[0].routes[0];
@@ -681,12 +778,19 @@
                 document.getElementById('hud-distance-val').textContent = (totalRouteDistance / 1000).toFixed(1) + ' km';
                 updateETA(totalRouteDuration);
 
+                // Update preview sheet values
+                const previewDur = document.getElementById('preview-duration');
+                const previewDist = document.getElementById('preview-distance');
+                if (previewDur) previewDur.textContent = durationVal + ' min';
+                if (previewDist) previewDist.textContent = `(${(totalRouteDistance / 1000).toFixed(1)} km)`;
+
                 setActiveInstruction('Route ready', 'Use location, go to the start point, then start the drive.');
             }
 
             function renderManualDirections(results) {
                 const bounds = new google.maps.LatLngBounds();
 
+                routePathPoints = [];
                 results.forEach((result) => {
                     const renderer = new google.maps.DirectionsRenderer({
                         map,
@@ -700,7 +804,10 @@
                     });
                     renderer.setDirections(result);
 
-                    result.routes[0].overview_path.forEach((point) => bounds.extend(point));
+                    result.routes[0].overview_path.forEach((point) => {
+                        bounds.extend(point);
+                        routePathPoints.push(latLngToPosition(point));
+                    });
                 });
 
                 // Set positions
@@ -806,6 +913,12 @@
                 document.getElementById('hud-distance-val').textContent = (totalRouteDistance / 1000).toFixed(1) + ' km';
                 updateETA(totalRouteDuration);
 
+                // Update preview sheet values
+                const previewDur = document.getElementById('preview-duration');
+                const previewDist = document.getElementById('preview-distance');
+                if (previewDur) previewDur.textContent = durationVal + ' min';
+                if (previewDist) previewDist.textContent = `(${(totalRouteDistance / 1000).toFixed(1)} km)`;
+
                 setActiveInstruction('Route ready', 'Use location, go to the start point, then start the drive.');
             }
 
@@ -853,33 +966,13 @@
             }
 
             function addRouteControls() {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'm-3 rounded-lg bg-white p-3 shadow-lg ring-1 ring-stone-200';
+                // Map elements
+                startRouteButton = document.getElementById('btn-preview-start');
+                routeStatus = document.getElementById('preview-start-loc-label');
+                locateButton = null; // Locate is done automatically on page load
 
-                startRouteButton = document.createElement('button');
-                startRouteButton.type = 'button';
-                startRouteButton.disabled = true;
-                startRouteButton.className = 'rounded-md bg-stone-300 px-4 py-2 text-sm font-semibold text-stone-600';
-                startRouteButton.textContent = 'Start drive';
-
-                locateButton = document.createElement('button');
-                locateButton.type = 'button';
-                locateButton.className = 'ml-2 rounded-md border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100';
-                locateButton.textContent = 'Use location';
-
-                routeStatus = document.createElement('div');
-                routeStatus.className = 'mt-2 max-w-64 text-xs font-medium text-stone-600';
-                routeStatus.textContent = routeAccess.isAdmin
-                    ? 'Route is loading for admin preview.'
-                    : `Route is loading. ${routeAccess.remainingStarts} map starts available.`;
-
-                startRouteButton.addEventListener('click', startLiveRoute);
-                locateButton.addEventListener('click', beginLocationWatch);
-
-                wrapper.appendChild(startRouteButton);
-                wrapper.appendChild(locateButton);
-                wrapper.appendChild(routeStatus);
-                map.controls[google.maps.ControlPosition.TOP_LEFT].push(wrapper);
+                // Automatically watch location on load
+                beginLocationWatch();
             }
 
             function initializeVehicle() {
@@ -900,17 +993,27 @@
                 lastVehicleHeading = heading;
             }
 
-            async function startLiveRoute() {
-                if (!hasReachedStart) {
-                    beginLocationWatch();
-                    routeStatus.textContent = 'Go to the start point first. The drive button activates when you arrive.';
+            async function startLiveRoute(force = false) {
+                if (!hasReachedStart && !force) {
+                    // Open the simulation choices dialog modal
+                    const modal = document.getElementById('sim-modal');
+                    if (modal) {
+                        modal.classList.remove('opacity-0', 'pointer-events-none');
+                        const card = modal.querySelector('div');
+                        if (card) {
+                            card.classList.remove('scale-95');
+                            card.classList.add('scale-100');
+                        }
+                    }
                     return;
                 }
 
                 if (!accessConsumedForCurrentDrive) {
-                    startRouteButton.disabled = true;
-                    startRouteButton.textContent = 'Starting...';
-                    startRouteButton.className = 'rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white';
+                    if (startRouteButton) {
+                        startRouteButton.disabled = true;
+                        const btnText = document.getElementById('btn-preview-start-text');
+                        if (btnText) btnText.textContent = 'Starting...';
+                    }
 
                     const accessGranted = await consumeMapStart();
 
@@ -920,16 +1023,28 @@
                 }
 
                 driveStarted = true;
-                startRouteButton.disabled = true;
-                startRouteButton.textContent = 'Driving...';
-                startRouteButton.className = 'rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white';
                 removeCurrentLocationPreview();
 
-                // Show/Slide-in HUD overlays
+                // Hide preview elements
+                const searchHeader = document.getElementById('preview-search-header');
+                const previewSheet = document.getElementById('preview-bottom-sheet');
+                if (searchHeader) {
+                    searchHeader.classList.remove('translate-y-0', 'opacity-100');
+                    searchHeader.classList.add('-translate-y-36', 'opacity-0', 'pointer-events-none');
+                }
+                if (previewSheet) {
+                    previewSheet.classList.remove('translate-y-0', 'opacity-100');
+                    previewSheet.classList.add('translate-y-36', 'opacity-0', 'pointer-events-none');
+                }
+
+                // Show HUD overlays
                 const topBanner = document.getElementById('hud-top-banner');
                 const bottomSheet = document.getElementById('hud-bottom-sheet');
                 if (topBanner) topBanner.classList.add('hud-slide-down');
-                if (bottomSheet) bottomSheet.classList.add('hud-slide-up');
+                if (bottomSheet) {
+                    bottomSheet.classList.remove('hidden');
+                    bottomSheet.classList.add('hud-slide-up');
+                }
 
                 // Hide legacy text guidance
                 const legacyCard = document.getElementById('active-instruction');
@@ -953,6 +1068,88 @@
                 }
 
                 updateActiveDrivingInstruction(latestCurrentPosition ?? routeStartPosition);
+            }
+
+            function startSimulationDrive() {
+                driveStarted = true;
+                accessConsumedForCurrentDrive = true; // Bypassed for demo simulation
+                
+                // Hide preview elements
+                const searchHeader = document.getElementById('preview-search-header');
+                const previewSheet = document.getElementById('preview-bottom-sheet');
+                if (searchHeader) {
+                    searchHeader.classList.remove('translate-y-0', 'opacity-100');
+                    searchHeader.classList.add('-translate-y-36', 'opacity-0', 'pointer-events-none');
+                }
+                if (previewSheet) {
+                    previewSheet.classList.remove('translate-y-0', 'opacity-100');
+                    previewSheet.classList.add('translate-y-36', 'opacity-0', 'pointer-events-none');
+                }
+
+                // Show HUD overlays
+                const topBanner = document.getElementById('hud-top-banner');
+                const bottomSheet = document.getElementById('hud-bottom-sheet');
+                if (topBanner) topBanner.classList.add('hud-slide-down');
+                if (bottomSheet) {
+                    bottomSheet.classList.remove('hidden');
+                    bottomSheet.classList.add('hud-slide-up');
+                }
+
+                // Hide legacy text guidance
+                const legacyCard = document.getElementById('active-instruction');
+                if (legacyCard) legacyCard.classList.add('hidden');
+
+                // Tilt and rotate map for navigation mode by switching to Hybrid map type
+                if (map) {
+                    map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+                    map.setZoom(18);
+                    if (typeof map.setTilt === 'function') {
+                        map.setTilt(45);
+                    }
+                }
+
+                // Initialize vehicle position at path start
+                simIndex = 0;
+                if (routePathPoints.length > 0) {
+                    moveVehicle(routePathPoints[0], lastVehicleHeading);
+                    map.panTo(routePathPoints[0]);
+                }
+
+                updateActiveDrivingInstruction(routePathPoints[0]);
+
+                if (simIntervalId) {
+                    clearInterval(simIntervalId);
+                }
+
+                simIntervalId = setInterval(() => {
+                    if (simIndex >= routePathPoints.length) {
+                        clearInterval(simIntervalId);
+                        simIntervalId = null;
+                        alertToast("Destination reached!");
+                        exitNavigation();
+                        return;
+                    }
+
+                    const currentPos = routePathPoints[simIndex];
+                    const nextPos = routePathPoints[simIndex + 1] || currentPos;
+                    const currentHeading = bearing(currentPos, nextPos) ?? lastVehicleHeading;
+
+                    moveVehicle(currentPos, currentHeading);
+                    map.panTo(currentPos);
+                    if (map && typeof map.setHeading === 'function') {
+                        map.setHeading(currentHeading);
+                    }
+
+                    updateActiveDrivingInstruction(currentPos);
+
+                    // Speed HUD simulation
+                    const speedValEl = document.getElementById('hud-speed-val');
+                    if (speedValEl) {
+                        speedValEl.textContent = Math.round(simulatedSpeed + (Math.random() * 6 - 3));
+                    }
+
+                    simIndex += 1;
+                }, 750); // Updates every 750ms for smooth forward movement
             }
 
             async function consumeMapStart() {
@@ -1346,13 +1543,75 @@
                 }
             }
 
-            // Register HUD Interaction button listeners
+            function exitNavigation() {
+                driveStarted = false;
+                hasReachedStart = false;
+                accessConsumedForCurrentDrive = false;
+
+                if (simIntervalId) {
+                    clearInterval(simIntervalId);
+                    simIntervalId = null;
+                }
+
+                // Hide HUD overlays
+                const topBanner = document.getElementById('hud-top-banner');
+                const bottomSheet = document.getElementById('hud-bottom-sheet');
+                if (topBanner) topBanner.classList.remove('hud-slide-down');
+                if (bottomSheet) {
+                    bottomSheet.classList.remove('hud-slide-up');
+                    bottomSheet.classList.add('hidden');
+                }
+
+                // Show preview elements
+                const searchHeader = document.getElementById('preview-search-header');
+                const previewSheet = document.getElementById('preview-bottom-sheet');
+                if (searchHeader) {
+                    searchHeader.classList.remove('-translate-y-36', 'opacity-0', 'pointer-events-none');
+                    searchHeader.classList.add('translate-y-0', 'opacity-100');
+                }
+                if (previewSheet) {
+                    previewSheet.classList.remove('translate-y-36', 'opacity-0', 'pointer-events-none');
+                    previewSheet.classList.add('translate-y-0', 'opacity-100');
+                }
+
+                // Restore start drive button text in preview
+                const btnText = document.getElementById('btn-preview-start-text');
+                if (btnText) btnText.textContent = 'Start drive';
+                if (startRouteButton) startRouteButton.disabled = false;
+
+                // Restore map view defaults
+                if (map) {
+                    map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+                    if (typeof map.setTilt === 'function') map.setTilt(0);
+                    if (typeof map.setHeading === 'function') map.setHeading(0);
+                    map.setZoom(14);
+                    if (routeStartPosition) map.panTo(routeStartPosition);
+                }
+
+                // Stop Speech
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+
+                alertToast('Navigation ended');
+            }
+
+            // Register HUD and Preview Interaction button listeners
             document.addEventListener('DOMContentLoaded', () => {
                 const btnCompass = document.getElementById('btn-hud-compass');
                 const btnAudio = document.getElementById('btn-hud-audio');
                 const btnReport = document.getElementById('btn-hud-report');
                 const btnExit = document.getElementById('btn-hud-exit');
                 const btnList = document.getElementById('btn-hud-list');
+
+                const btnPreviewStart = document.getElementById('btn-preview-start');
+                const btnPreviewSteps = document.getElementById('btn-preview-steps');
+                const btnPreviewAudio = document.getElementById('btn-preview-audio');
+
+                const btnSimDemo = document.getElementById('btn-sim-demo');
+                const btnSimGps = document.getElementById('btn-sim-gps');
+                const btnSimCancel = document.getElementById('btn-sim-cancel');
+                const modal = document.getElementById('sim-modal');
 
                 if (btnCompass) {
                     btnCompass.addEventListener('click', () => {
@@ -1373,18 +1632,31 @@
                     });
                 }
 
+                function toggleAudioGuidance() {
+                    audioEnabled = !audioEnabled;
+                    const svgHud = document.getElementById('hud-audio-svg');
+                    const svgPreview = document.getElementById('preview-audio-svg');
+                    
+                    const pathSoundOn = `<path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />`;
+                    const pathMute = `<path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />`;
+                    
+                    if (audioEnabled) {
+                        if (svgHud) svgHud.innerHTML = pathSoundOn;
+                        if (svgPreview) svgPreview.innerHTML = pathSoundOn;
+                        alertToast('Voice guidance enabled');
+                    } else {
+                        if (svgHud) svgHud.innerHTML = pathMute;
+                        if (svgPreview) svgPreview.innerHTML = pathMute;
+                        alertToast('Voice guidance muted');
+                    }
+                }
+
                 if (btnAudio) {
-                    btnAudio.addEventListener('click', () => {
-                        audioEnabled = !audioEnabled;
-                        const svg = document.getElementById('hud-audio-svg');
-                        if (audioEnabled) {
-                            svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />`;
-                            alertToast('Voice guidance enabled');
-                        } else {
-                            svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />`;
-                            alertToast('Voice guidance muted');
-                        }
-                    });
+                    btnAudio.addEventListener('click', toggleAudioGuidance);
+                }
+
+                if (btnPreviewAudio) {
+                    btnPreviewAudio.addEventListener('click', toggleAudioGuidance);
                 }
 
                 if (btnReport) {
@@ -1394,43 +1666,7 @@
                 }
 
                 if (btnExit) {
-                    btnExit.addEventListener('click', () => {
-                        driveStarted = false;
-                        hasReachedStart = false;
-                        accessConsumedForCurrentDrive = false;
-
-                        // Hide HUD overlays
-                        const topBanner = document.getElementById('hud-top-banner');
-                        const bottomSheet = document.getElementById('hud-bottom-sheet');
-                        if (topBanner) topBanner.classList.remove('hud-slide-down');
-                        if (bottomSheet) bottomSheet.classList.remove('hud-slide-up');
-
-                        // Show legacy elements
-                        const legacyCard = document.getElementById('active-instruction');
-                        if (legacyCard) legacyCard.classList.remove('hidden');
-
-                        // Restore start drive button state
-                        if (startRouteButton) {
-                            startRouteButton.disabled = false;
-                            startRouteButton.textContent = 'Start drive';
-                            startRouteButton.className = 'rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800';
-                        }
-
-                        // Restore map view defaults
-                        if (map) {
-                            if (typeof map.setTilt === 'function') map.setTilt(0);
-                            if (typeof map.setHeading === 'function') map.setHeading(0);
-                            map.setZoom(14);
-                            if (routeStartPosition) map.panTo(routeStartPosition);
-                        }
-
-                        // Stop Speech
-                        if ('speechSynthesis' in window) {
-                            window.speechSynthesis.cancel();
-                        }
-
-                        alertToast('Navigation ended');
-                    });
+                    btnExit.addEventListener('click', exitNavigation);
                 }
 
                 if (btnList) {
@@ -1441,6 +1677,51 @@
                             alertToast('Scrolled to instructions list');
                         }
                     });
+                }
+
+                if (btnPreviewSteps) {
+                    btnPreviewSteps.addEventListener('click', () => {
+                        const listSection = document.getElementById('directions-list');
+                        if (listSection) {
+                            listSection.scrollIntoView({ behavior: 'smooth' });
+                            alertToast('Scrolled to instructions list');
+                        }
+                    });
+                }
+
+                if (btnPreviewStart) {
+                    btnPreviewStart.addEventListener('click', () => {
+                        startLiveRoute();
+                    });
+                }
+
+                function closeModal() {
+                    if (modal) {
+                        modal.classList.add('opacity-0', 'pointer-events-none');
+                        const card = modal.querySelector('div');
+                        if (card) {
+                            card.classList.remove('scale-100');
+                            card.classList.add('scale-95');
+                        }
+                    }
+                }
+
+                if (btnSimDemo) {
+                    btnSimDemo.addEventListener('click', () => {
+                        closeModal();
+                        startSimulationDrive();
+                    });
+                }
+
+                if (btnSimGps) {
+                    btnSimGps.addEventListener('click', () => {
+                        closeModal();
+                        startLiveRoute(true);
+                    });
+                }
+
+                if (btnSimCancel) {
+                    btnSimCancel.addEventListener('click', closeModal);
                 }
             });
 
