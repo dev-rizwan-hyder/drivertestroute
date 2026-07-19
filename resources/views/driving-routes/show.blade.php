@@ -706,7 +706,7 @@
                     console.log("resolveStop: Geocoding address query:", queryStr);
                     geocoder.geocode({
                         address: queryStr,
-                        componentRestrictions: routeData.start.query.includes('Karachi') || routeData.midpoint.query.includes('Karachi')
+                        componentRestrictions: (routeData.start.query && routeData.start.query.includes('Karachi')) || (routeData.midpoint.query && routeData.midpoint.query.includes('Karachi'))
                             ? { country: 'PK' }
                             : undefined,
                     }, (results, status) => {
