@@ -113,15 +113,88 @@
         .dtr-hero {
             position: relative;
             isolation: isolate;
-            min-height: 100svh;
-            background-color: #f8f9fa;
-            background-image:
-                radial-gradient(circle at 18% 28%, rgba(59, 130, 246, 0.12), transparent 48%),
-                radial-gradient(circle at 82% 44%, rgba(6, 182, 212, 0.10), transparent 42%),
-                linear-gradient(180deg, rgba(248, 249, 250, 0.3) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(241, 243, 245, 0.95) 100%);
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
+            min-height: 80vh;
+            background-color: #0f172a;
+        }
+
+        /* Override light theme overrides inside dtr-hero */
+        .public-light-theme .dtr-hero .text-white {
+            color: #ffffff !important;
+        }
+        .public-light-theme .dtr-hero .text-slate-300 {
+            color: #cbd5e1 !important;
+        }
+        .public-light-theme .dtr-hero .text-slate-400 {
+            color: #94a3b8 !important;
+        }
+        .public-light-theme .dtr-hero .dtr-kpi-card--dark dt {
+            color: #cbd5e1 !important;
+        }
+        .public-light-theme .dtr-hero .dtr-kpi-card--dark dd {
+            color: #ffffff !important;
+        }
+
+        /* Enforce header transparency at the top of the Homepage */
+        .public-light-theme #public-header[data-transparent-header="true"]:not(.public-header-scrolled) {
+            background: transparent !important;
+            border-bottom-color: transparent !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        /* Enforce white links when transparent at the top */
+        .public-light-theme #public-header:not(.public-header-scrolled) .public-nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        .public-light-theme #public-header:not(.public-header-scrolled) .public-nav-link:hover,
+        .public-light-theme #public-header:not(.public-header-scrolled) .public-nav-active {
+            color: #ffffff !important;
+        }
+
+        /* Style Log In button when transparent */
+        .public-light-theme #public-header:not(.public-header-scrolled) .public-auth-link {
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: none !important;
+        }
+        .public-light-theme #public-header:not(.public-header-scrolled) .public-auth-link:hover {
+            border-color: rgba(255, 255, 255, 0.6) !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+        }
+
+        /* Style Mobile Hamburger toggle when transparent */
+        .public-light-theme #public-header:not(.public-header-scrolled) .public-menu-button {
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: none !important;
+        }
+        .public-light-theme #public-header:not(.public-header-scrolled) .public-menu-button:hover {
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        /* Logo visibility enhancement against dark hero video */
+        .public-light-theme #public-header:not(.public-header-scrolled) .public-brand img {
+            filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.8)) drop-shadow(0 1px 2px rgba(255, 255, 255, 0.5));
+        }
+
+        /* Enforce bright blue-cyan gradient logo text when transparent at the top of homepage */
+        .public-light-theme #public-header:not(.public-header-scrolled) .dtr-logo-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 52%, #22d3ee 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            text-fill-color: transparent !important;
+        }
+
+        /* Enforce bright cyan color for logo subtitle when transparent at the top of homepage */
+        .public-light-theme #public-header:not(.public-header-scrolled) .dtr-logo-subtitle {
+            color: #22d3ee !important;
+            opacity: 0.9 !important;
         }
 
         .dtr-aurora {
@@ -243,6 +316,52 @@
             border-color: rgba(37, 99, 235, .34);
             background: #eff6ff;
             box-shadow: 0 10px 24px rgba(37, 99, 235, .12);
+        }
+
+        .dtr-btn-secondary-light {
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dtr-btn-secondary-light:hover {
+            border-color: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.16);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .dtr-gradient-text-light {
+            display: inline-block;
+            color: transparent;
+            background: linear-gradient(100deg, #38bdf8 0%, #22d3ee 45%, #a5b4fc 80%, #38bdf8 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: dtr-gradient-shift 7s ease-in-out infinite;
+        }
+
+        .dtr-kpi-card--dark {
+            background: rgba(15, 23, 42, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+            transition: all 280ms cubic-bezier(.16, 1, .3, 1) !important;
+        }
+
+        .dtr-kpi-card--dark::before {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .dtr-kpi-card--dark:hover {
+            transform: translateY(-5px) !important;
+            background: rgba(15, 23, 42, 0.65) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3) !important;
         }
 
         .dtr-city-combobox {
@@ -1045,30 +1164,50 @@
     @endphp
 
     <div class="dtr-home">
-        <section class="dtr-hero">
+        <section class="dtr-hero relative overflow-hidden flex items-center min-h-[92vh]">
             <div class="dtr-aurora"></div>
 
-            <!-- Floating Ambient Blur Blobs -->
-            <div class="dtr-blur-blob dtr-blur-blob--blue top-[12%] left-[10%] w-[320px] h-[320px]" style="z-index: 1;"></div>
-            <div class="dtr-blur-blob dtr-blur-blob--cyan top-[25%] right-[5%] w-[420px] h-[420px]" style="z-index: 1;"></div>
-            <div class="dtr-blur-blob dtr-blur-blob--indigo bottom-[15%] left-[25%] w-[360px] h-[360px]" style="z-index: 1;"></div>
+            <!-- Full Width Background Video -->
+            <div class="absolute inset-0 z-0 overflow-hidden">
+                <video 
+                    class="w-full h-full object-cover" 
+                    src="{{ asset('images/hero.mp4') }}" 
+                    autoplay 
+                    muted 
+                    loop 
+                    playsinline
+                    poster="{{ asset('images/home-hero.jpeg') }}"
+                >
+                    Your browser does not support the video tag.
+                </video>
+                <!-- Dark Gradient Overlays (Full Width - Reduced Opacity) -->
+                <div class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/65 to-slate-950/15"></div>
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-transparent to-slate-950/60"></div>
+                <!-- Subtle Grid Mask -->
+                <div class="absolute inset-0 opacity-[0.06] bg-[linear-gradient(rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.07)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
+            </div>
 
-            <div class="relative z-10 mx-auto grid min-h-[100svh] max-w-7xl items-center gap-12 px-4 pb-16 pt-28 sm:px-6 lg:grid-cols-[.92fr_1.08fr] lg:px-8 lg:pt-32">
-                <div data-reveal>
-                    <span class="dtr-kicker">
-                        <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <!-- Floating Ambient Blur Blobs (Behind Text but in front of Video) -->
+            <div class="dtr-blur-blob dtr-blur-blob--blue top-[15%] left-[5%] w-[320px] h-[320px] opacity-30" style="z-index: 1;"></div>
+            <div class="dtr-blur-blob dtr-blur-blob--cyan top-[35%] right-[5%] w-[420px] h-[420px] opacity-25" style="z-index: 1;"></div>
+
+            <!-- Content Container (Safe Padded under Header) -->
+            <div class="relative z-10 mx-auto max-w-7xl w-full px-4 pt-36 pb-16 sm:px-6 sm:pt-40 lg:px-8 lg:pt-48 lg:pb-24">
+                <div class="max-w-3xl w-full" data-reveal>
+                    <span class="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/70 px-4 py-1.5 text-xs font-extrabold uppercase tracking-wider text-cyan-400 backdrop-blur-md">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                             <path d="M4 19V5" />
                             <path d="M4 7c2.5-2 5-2 7.5 0s5 2 8.5 0v10c-3.5 2-6 2-8.5 0s-5-2-7.5 0" />
                         </svg>
                         Paid route practice platform
                     </span>
 
-                    <h1 class="mt-6 max-w-3xl text-5xl font-extrabold tracking-tight leading-[1.08] text-slate-900 sm:text-6xl lg:text-7xl">
+                    <h1 class="mt-6 text-4xl font-extrabold tracking-tight leading-[1.1] text-white sm:text-5xl lg:text-6xl">
                         Driver Test Routes
-                        <span class="dtr-gradient-text block mt-1">practice with precision.</span>
+                        <span class="dtr-gradient-text-light block mt-1">practice with precision.</span>
                     </h1>
 
-                    <p class="mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg font-medium">
+                    <p class="mt-6 text-sm leading-7 text-slate-300 sm:text-base font-medium">
                         Unlock professional test-route maps, track live practice starts, and keep every session organized in a polished route dashboard built for focused test-day preparation.
                     </p>
 
@@ -1162,7 +1301,7 @@
                         </div>
                     @endif
 
-                    <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+                    <div class="mt-8 flex flex-col gap-3.5 sm:flex-row">
                         <a href="{{ route('driving-routes.index') }}" class="dtr-btn dtr-btn-primary px-6">
                             Browse Routes
                             <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
@@ -1171,7 +1310,7 @@
                             </svg>
                         </a>
                         @auth
-                            <a href="{{ route('driving-routes.my') }}" class="dtr-btn dtr-btn-secondary px-6">
+                            <a href="{{ route('driving-routes.my') }}" class="dtr-btn dtr-btn-secondary-light px-6">
                                 <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
                                     <path d="M8 6h13" />
                                     <path d="M8 12h13" />
@@ -1183,7 +1322,7 @@
                                 My Routes
                             </a>
                         @else
-                            <a href="{{ route('register') }}" class="dtr-btn dtr-btn-secondary px-6">
+                            <a href="{{ route('register') }}" class="dtr-btn dtr-btn-secondary-light px-6">
                                 <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                     <circle cx="9" cy="7" r="4" />
@@ -1195,123 +1334,49 @@
                         @endauth
                     </div>
 
-                    <dl class="mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
+                    <dl class="mt-10 grid max-w-2xl gap-4 grid-cols-3">
                         <!-- Premium KPI Card: Active Routes -->
-                        <div class="dtr-kpi-card dtr-kpi-card--blue rounded-xl p-5">
+                        <div class="dtr-kpi-card dtr-kpi-card--dark rounded-xl p-5">
                             <div class="flex items-center justify-between mb-3.5">
-                                <span class="dtr-kpi-icon-wrap bg-blue-500/10 text-blue-600 rounded-lg p-2">
+                                <span class="dtr-kpi-icon-wrap bg-blue-500/20 text-blue-300 rounded-lg p-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
                                     </svg>
                                 </span>
-                                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-2.5 py-0.5 rounded-full">Active</span>
+                                <span class="text-[10px] font-bold text-blue-300 uppercase tracking-wider bg-blue-950/60 border border-blue-500/30 px-2.5 py-0.5 rounded-full">Active</span>
                             </div>
                             <dt class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Active routes</dt>
-                            <dd class="mt-1 text-3xl font-black text-slate-800" data-counter data-target="{{ $routeCount }}">{{ number_format($routeCount) }}</dd>
+                            <dd class="mt-1 text-2xl font-black text-white" data-counter data-target="{{ $routeCount }}">{{ number_format($routeCount) }}</dd>
                         </div>
 
                         <!-- Premium KPI Card: Cities Covered -->
-                        <div class="dtr-kpi-card dtr-kpi-card--cyan rounded-xl p-5">
+                        <div class="dtr-kpi-card dtr-kpi-card--dark rounded-xl p-5">
                             <div class="flex items-center justify-between mb-3.5">
-                                <span class="dtr-kpi-icon-wrap bg-cyan-500/10 text-cyan-600 rounded-lg p-2">
+                                <span class="dtr-kpi-icon-wrap bg-cyan-500/20 text-cyan-300 rounded-lg p-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-10.5h16.5m-16.5 3h16.5m-16.5 3h16.5M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-9h.75m-.75 3h.75m-.75 3h.75m3-9h.75m-.75 3h.75m-.75 3h.75m3-9h.75m-.75 3h.75m-.75 3h.75" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-10.5h16.5m-16.5 3h16.5m-16.5 3h16.5M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-9h.75m-.75 3h.75m-.75 3h.75m3-9h.75m-.75 3h.75m-.75 3h.75" />
                                     </svg>
                                 </span>
-                                <span class="text-[10px] font-bold text-cyan-600 uppercase tracking-wider bg-cyan-50 px-2.5 py-0.5 rounded-full">Cities</span>
+                                <span class="text-[10px] font-bold text-cyan-300 uppercase tracking-wider bg-cyan-950/60 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">Cities</span>
                             </div>
                             <dt class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Cities covered</dt>
-                            <dd class="mt-1 text-3xl font-black text-slate-800" data-counter data-target="{{ $cityCount }}">{{ number_format($cityCount) }}</dd>
+                            <dd class="mt-1 text-2xl font-black text-white" data-counter data-target="{{ $cityCount }}">{{ number_format($cityCount) }}</dd>
                         </div>
 
                         <!-- Premium KPI Card: Starts Used -->
-                        <div class="dtr-kpi-card dtr-kpi-card--indigo rounded-xl p-5">
+                        <div class="dtr-kpi-card dtr-kpi-card--dark rounded-xl p-5">
                             <div class="flex items-center justify-between mb-3.5">
-                                <span class="dtr-kpi-icon-wrap bg-indigo-500/10 text-indigo-600 rounded-lg p-2">
+                                <span class="dtr-kpi-icon-wrap bg-indigo-500/20 text-indigo-300 rounded-lg p-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653z" />
                                     </svg>
                                 </span>
-                                <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-2.5 py-0.5 rounded-full">Sims</span>
+                                <span class="text-[10px] font-bold text-indigo-300 uppercase tracking-wider bg-indigo-950/60 border border-indigo-500/30 px-2.5 py-0.5 rounded-full">Sims</span>
                             </div>
-                            <dt class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Map starts used</dt>
-                            <dd class="mt-1 text-3xl font-black text-slate-800" data-counter data-target="{{ $startCount }}">{{ number_format($startCount) }}</dd>
+                            <dt class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Starts used</dt>
+                            <dd class="mt-1 text-2xl font-black text-white" data-counter data-target="{{ $startCount }}">{{ number_format($startCount) }}</dd>
                         </div>
                     </dl>
-                </div>
-
-                <div class="dtr-float block w-full mt-10 lg:mt-0" data-reveal="slide-right" style="--delay: 120ms;">
-                    <div class="dtr-perspective-wrap">
-                        <div class="dtr-3d-mockup">
-                            <!-- Video Browser Mockup Frame -->
-                            <div class="dtr-video-glow-wrap">
-                                <div class="dtr-video-mockup">
-                                    <!-- Browser Header Chrome -->
-                                    <div class="dtr-mockup-header">
-                                        <div class="dtr-mockup-dots">
-                                            <span class="dtr-mockup-dot dtr-mockup-dot--red"></span>
-                                            <span class="dtr-mockup-dot dtr-mockup-dot--yellow"></span>
-                                            <span class="dtr-mockup-dot dtr-mockup-dot--green"></span>
-                                        </div>
-                                        <div class="dtr-mockup-address">
-                                            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                                            </svg>
-                                            <span>drivertestroutes.com/Clinton-Route-1</span>
-                                        </div>
-                                        <div class="w-10"></div>
-                                    </div>
-
-                                    <!-- Browser Body containing Video -->
-                                    <div class="dtr-mockup-body">
-                                        <video 
-                                            class="dtr-mockup-video" 
-                                            src="{{ asset('images/hero.mp4') }}" 
-                                            autoplay 
-                                            muted 
-                                            loop 
-                                            playsinline
-                                            poster="{{ asset('images/home-hero.jpeg') }}"
-                                        >
-                                            Your browser does not support the video tag.
-                                        </video>
-
-                                        <!-- Heads-Up Display (HUD) Overlays -->
-                                        <div class="dtr-mockup-overlay-hud">
-                                            <div class="dtr-hud-top">
-                                                <!-- Objective HUD Card -->
-                                                <div class="dtr-hud-card">
-                                                    <p class="dtr-hud-card-title">Current Objective</p>
-                                                    <p class="dtr-hud-card-value">Parallel Parking Test</p>
-                                                </div>
-
-                                                <!-- Live Status Badge -->
-                                                <div class="dtr-hud-badge-live">
-                                                    <span class="dtr-hud-dot-pulse"></span>
-                                                    <span class="dtr-hud-badge-text">GPS SIMULATOR</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="dtr-hud-bottom">
-                                                <!-- Status message -->
-                                                <div class="dtr-hud-status">
-                                                    <svg class="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    <span class="dtr-hud-status-text">Route checkpoints active</span>
-                                                </div>
-
-                                                <!-- Metric Badge -->
-                                                <div class="dtr-hud-metric">
-                                                    Completion: 84%
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>

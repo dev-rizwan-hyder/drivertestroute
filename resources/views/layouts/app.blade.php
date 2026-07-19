@@ -644,6 +644,17 @@
                 transition: none !important;
             }
         }
+        .dtr-logo-text {
+            font-family: 'Inter', 'Instrument Sans', sans-serif;
+            font-weight: 900;
+            letter-spacing: -0.035em;
+            background: linear-gradient(135deg, #1d4ed8, #2563eb 54%, #0891b2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            display: inline-block;
+        }
     </style>
     @stack('styles')
     <style>
@@ -728,8 +739,12 @@
     <header id="public-header" data-transparent-header="true" class="public-header-glass">
         <nav
             class="public-header-nav mx-auto flex min-h-[4.75rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-            <a href="{{ route('home') }}" class="public-brand flex shrink-0 items-center">
-                <img src="{{ asset('images/Drivetestroute.png') }}" alt="Driver Test Routes" class="h-24 w-auto">
+            <a href="{{ route('home') }}" class="public-brand flex shrink-0 items-center gap-2.5">
+                <img src="{{ asset('images/Drivetestroute.png') }}" alt="Driver Test Routes" class="h-12 w-auto">
+                <div class="flex flex-col">
+                    <span class="dtr-logo-text font-black text-xl tracking-tight leading-none">DriveTest Route</span>
+                    <span class="dtr-logo-subtitle text-[9px] uppercase tracking-[0.15em] font-extrabold text-slate-500 mt-1 leading-none">Practice Platform</span>
+                </div>
             </a>
 
             <div class="hidden flex-1 items-center justify-center lg:flex">
@@ -900,8 +915,12 @@
     <footer class="border-t border-zinc-200 bg-[#f8f9fa] text-zinc-950">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr] lg:px-8">
             <div>
-                <a href="{{ route('home') }}" class="public-brand flex shrink-0 items-center">
-                    <img src="{{ asset('images/Drivetestroute.png') }}" alt="Driver Test Routes" class="h-28 w-auto">
+                <a href="{{ route('home') }}" class="public-brand flex shrink-0 items-center gap-2.5">
+                    <img src="{{ asset('images/Drivetestroute.png') }}" alt="Driver Test Routes" class="h-14 w-auto">
+                    <div class="flex flex-col">
+                        <span class="dtr-logo-text font-black text-2xl tracking-tight leading-none">DriveTest Route</span>
+                        <span class="text-[10px] uppercase tracking-[0.15em] font-extrabold text-slate-500 mt-1 leading-none">Practice Platform</span>
+                    </div>
                 </a>
                 <p class="mt-4 max-w-md text-sm leading-6 text-zinc-600">
                     Paid driving test route maps built for focused practice, clear route planning, and confident
