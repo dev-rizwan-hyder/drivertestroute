@@ -94,114 +94,65 @@
     </section>
 
     <section class="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
-        <h2 class="text-lg font-semibold text-stone-950">Start And Midpoint</h2>
+        <h2 class="text-lg font-bold text-stone-950">Visual Route Builder</h2>
+        <p class="mt-1 text-sm text-stone-600">Click on the map or search addresses below to add waypoints. Drag markers to adjust paths. Start and Midpoint details are updated automatically.</p>
 
+        <!-- Place Search Input -->
+        <div class="mt-4 flex gap-2">
+            <input type="text" id="map-search-input" placeholder="Search address, landmark, or street name to add a waypoint..." class="flex-1 rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+            <button type="button" id="btn-add-search-point" class="rounded-md bg-stone-900 hover:bg-stone-850 text-white px-4 py-2 font-semibold text-sm transition">Add Point</button>
+        </div>
+
+        <!-- Google Map Container -->
+        <div id="admin-route-map" class="mt-4 h-[500px] w-full rounded-lg border border-stone-200 shadow-inner z-0"></div>
+
+        <!-- Start & Destination Summary Info (Required by Backend) -->
         <div class="mt-5 grid gap-5 md:grid-cols-2">
-            <div class="rounded-md bg-stone-50 p-4">
-                <h3 class="font-semibold text-stone-950">Start Point</h3>
-                <div class="mt-4 grid gap-4">
+            <div class="rounded-md bg-stone-50 p-4 border border-stone-150 shadow-sm">
+                <h3 class="font-bold text-emerald-800 text-sm flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full bg-emerald-600"></span>
+                    Start Point (Waypoint 1)
+                </h3>
+                <div class="mt-3 grid gap-3">
                     <label class="block">
-                        <span class="text-sm font-medium text-stone-700">Label</span>
-                        <input type="text" name="start_label" value="{{ old('start_label', $route->start_label) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                        <span class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Start Label</span>
+                        <input type="text" id="route-start-label-input" name="start_label" value="{{ old('start_label', $route->start_label) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-sm text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none">
                     </label>
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Latitude</span>
-                            <input type="number" name="start_lat" value="{{ old('start_lat', $route->start_lat) }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Longitude</span>
-                            <input type="number" name="start_lng" value="{{ old('start_lng', $route->start_lng) }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-                    </div>
+                    <input type="hidden" id="route-start-lat-input" name="start_lat" value="{{ old('start_lat', $route->start_lat) }}">
+                    <input type="hidden" id="route-start-lng-input" name="start_lng" value="{{ old('start_lng', $route->start_lng) }}">
                 </div>
             </div>
 
-            <div class="rounded-md bg-stone-50 p-4">
-                <h3 class="font-semibold text-stone-950">Midpoint / End Point</h3>
-                <div class="mt-4 grid gap-4">
+            <div class="rounded-md bg-stone-50 p-4 border border-stone-150 shadow-sm">
+                <h3 class="font-bold text-orange-700 text-sm flex items-center gap-2">
+                    <span class="inline-block h-2 w-2 rounded-full bg-orange-600"></span>
+                    Midpoint / Destination
+                </h3>
+                <div class="mt-3 grid gap-3">
                     <label class="block">
-                        <span class="text-sm font-medium text-stone-700">Label</span>
-                        <input type="text" name="destination_label" value="{{ old('destination_label', $route->destination_label) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                        <span class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Destination Label</span>
+                        <input type="text" id="route-destination-label-input" name="destination_label" value="{{ old('destination_label', $route->destination_label) }}" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-sm text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none">
                     </label>
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Latitude</span>
-                            <input type="number" name="end_lat" value="{{ old('end_lat', $route->end_lat) }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Longitude</span>
-                            <input type="number" name="end_lng" value="{{ old('end_lng', $route->end_lng) }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-                    </div>
+                    <input type="hidden" id="route-end-lat-input" name="end_lat" value="{{ old('end_lat', $route->end_lat) }}">
+                    <input type="hidden" id="route-end-lng-input" name="end_lng" value="{{ old('end_lng', $route->end_lng) }}">
                 </div>
             </div>
         </div>
-    </section>
 
-    <section class="rounded-lg border border-stone-200 bg-white p-5 shadow-sm">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h2 class="text-lg font-semibold text-stone-950">Optional Manual Points</h2>
-                <p class="mt-1 text-sm text-stone-600">Leave this empty when Google should generate the road path and instructions from start to midpoint and back.</p>
+        <!-- Waypoints List -->
+        <h3 class="mt-6 font-extrabold text-stone-950 text-base">Route Waypoints & Turn Directions</h3>
+        <div id="route-builder-waypoints" class="mt-3 space-y-3">
+            <!-- Dynamically populated via JavaScript -->
+        </div>
+
+        <!-- Length & Duration sync helper -->
+        <div class="mt-5 flex flex-wrap justify-between items-center bg-stone-50 p-4 rounded-xl border border-stone-200 gap-3">
+            <div class="text-sm font-semibold text-stone-700">
+                Calculated driving path: <span id="auto-dist-text" class="text-stone-950 font-black">-- km</span> | <span id="auto-dur-text" class="text-stone-950 font-black">-- mins</span>
             </div>
-            <button type="button" id="add-point" class="rounded-md border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100">
-                Add Point
+            <button type="button" id="btn-sync-summary" class="rounded-md border border-blue-300 hover:bg-blue-50 px-3.5 py-1.5 text-xs font-black text-blue-700 transition">
+                Apply Distance & Duration
             </button>
-        </div>
-
-        <div id="points" class="mt-5 space-y-4">
-            @foreach($formPoints as $index => $point)
-                <div class="point-row rounded-md border border-stone-200 bg-stone-50 p-4" data-index="{{ $index }}">
-                    <div class="mb-4 flex items-center justify-between gap-3">
-                        <h3 class="font-semibold text-stone-950">Point <span class="point-number">{{ $loop->iteration }}</span></h3>
-                        <button type="button" class="remove-point rounded-md border border-red-200 px-3 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-50">
-                            Remove
-                        </button>
-                    </div>
-
-                    <div class="grid gap-4 lg:grid-cols-6">
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Order</span>
-                            <input type="number" name="points[{{ $index }}][sort_order]" value="{{ data_get($point, 'sort_order', $index + 1) }}" required min="1" class="sort-order mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Instruction</span>
-                            <select name="points[{{ $index }}][maneuver]" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                                <option value="continue" @selected(data_get($point, 'maneuver') === 'continue')>Continue</option>
-                                <option value="turn_left" @selected(data_get($point, 'maneuver') === 'turn_left')>Turn left</option>
-                                <option value="turn_right" @selected(data_get($point, 'maneuver') === 'turn_right')>Turn right</option>
-                            </select>
-                        </label>
-
-                        <label class="block lg:col-span-2">
-                            <span class="text-sm font-medium text-stone-700">Instruction Text</span>
-                            <input type="text" name="points[{{ $index }}][instruction]" value="{{ data_get($point, 'instruction') }}" placeholder="Turn right onto Main Street" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Latitude</span>
-                            <input type="number" name="points[{{ $index }}][lat]" value="{{ data_get($point, 'lat') }}" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Longitude</span>
-                            <input type="number" name="points[{{ $index }}][lng]" value="{{ data_get($point, 'lng') }}" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Distance km</span>
-                            <input type="number" name="points[{{ $index }}][distance_km]" value="{{ data_get($point, 'distance_km') }}" min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-
-                        <label class="block">
-                            <span class="text-sm font-medium text-stone-700">Duration</span>
-                            <input type="text" name="points[{{ $index }}][duration]" value="{{ data_get($point, 'duration') }}" placeholder="1 min" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        </label>
-                    </div>
-                </div>
-            @endforeach
         </div>
     </section>
 
@@ -215,91 +166,537 @@
     </div>
 </form>
 
-<template id="point-template">
-    <div class="point-row rounded-md border border-stone-200 bg-stone-50 p-4" data-index="__INDEX__">
-        <div class="mb-4 flex items-center justify-between gap-3">
-            <h3 class="font-semibold text-stone-950">Point <span class="point-number">__NUMBER__</span></h3>
-            <button type="button" class="remove-point rounded-md border border-red-200 px-3 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-50">
-                Remove
-            </button>
-        </div>
-
-        <div class="grid gap-4 lg:grid-cols-6">
-            <label class="block">
-                <span class="text-sm font-medium text-stone-700">Order</span>
-                <input type="number" name="points[__INDEX__][sort_order]" value="__NUMBER__" required min="1" class="sort-order mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-            </label>
-
-            <label class="block">
-                <span class="text-sm font-medium text-stone-700">Instruction</span>
-                <select name="points[__INDEX__][maneuver]" required class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                    <option value="continue">Continue</option>
-                    <option value="turn_left">Turn left</option>
-                    <option value="turn_right">Turn right</option>
-                </select>
-            </label>
-
-            <label class="block lg:col-span-2">
-                <span class="text-sm font-medium text-stone-700">Instruction Text</span>
-                <input type="text" name="points[__INDEX__][instruction]" placeholder="Turn right onto Main Street" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-            </label>
-
-            <label class="block">
-                <span class="text-sm font-medium text-stone-700">Latitude</span>
-                <input type="number" name="points[__INDEX__][lat]" step="0.0000001" min="-90" max="90" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-            </label>
-
-            <label class="block">
-                <span class="text-sm font-medium text-stone-700">Longitude</span>
-                <input type="number" name="points[__INDEX__][lng]" step="0.0000001" min="-180" max="180" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-            </label>
-
-            <label class="block">
-                <span class="text-sm font-medium text-stone-700">Distance km</span>
-                <input type="number" name="points[__INDEX__][distance_km]" min="0" step="0.01" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-            </label>
-
-            <label class="block">
-                <span class="text-sm font-medium text-stone-700">Duration</span>
-                <input type="text" name="points[__INDEX__][duration]" placeholder="1 min" class="mt-1 block w-full rounded-md border border-stone-300 px-3 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-            </label>
-        </div>
-    </div>
-</template>
-
+@push('scripts')
 <script>
-    const pointsContainer = document.getElementById('points');
-    const pointTemplate = document.getElementById('point-template');
-    const addPointButton = document.getElementById('add-point');
+    let map;
+    let directionsService;
+    let directionsRenderer;
+    let autocomplete;
+    let waypoints = @json($formPoints);
+    let markers = [];
+    let midpointIndex = null;
 
-    function renumberPoints() {
-        pointsContainer.querySelectorAll('.point-row').forEach((row, index) => {
-            row.querySelector('.point-number').textContent = index + 1;
-            const sortOrder = row.querySelector('.sort-order');
+    const endLat = parseFloat(document.getElementById('route-end-lat-input').value);
+    const endLng = parseFloat(document.getElementById('route-end-lng-input').value);
 
-            if (!sortOrder.value) {
-                sortOrder.value = index + 1;
+    function initRouteBuilderMap() {
+        const initialCenter = getInitialMapCenter();
+
+        map = new google.maps.Map(document.getElementById('admin-route-map'), {
+            center: initialCenter,
+            zoom: 14,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true,
+        });
+
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            suppressMarkers: true,
+            polylineOptions: {
+                strokeColor: '#2563eb',
+                strokeOpacity: 0.85,
+                strokeWeight: 6,
             }
+        });
+
+        // Set up search box
+        const searchInput = document.getElementById('map-search-input');
+        autocomplete = new google.maps.places.Autocomplete(searchInput);
+        autocomplete.bindTo('bounds', map);
+
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            if (place.geometry && place.geometry.location) {
+                addPlaceWaypoint(place);
+                searchInput.value = '';
+            }
+        });
+
+        document.getElementById('btn-add-search-point').addEventListener('click', () => {
+            const address = searchInput.value.trim();
+            if (address) {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ address: address }, (results, status) => {
+                    if (status === 'OK' && results?.[0]) {
+                        addPlaceWaypoint(results[0]);
+                        searchInput.value = '';
+                    } else {
+                        alert('Location not found.');
+                    }
+                });
+            }
+        });
+
+        // Click map listener
+        map.addListener('click', (event) => {
+            const lat = event.latLng.lat();
+            const lng = event.latLng.lng();
+            addCoordinateWaypoint(lat, lng);
+        });
+
+        // Set midpoint
+        if (Number.isFinite(endLat) && Number.isFinite(endLng)) {
+            let minDistance = Infinity;
+            waypoints.forEach((wp, idx) => {
+                const wpLat = parseFloat(wp.lat);
+                const wpLng = parseFloat(wp.lng);
+                if (Number.isFinite(wpLat) && Number.isFinite(wpLng)) {
+                    const dist = Math.hypot(wpLat - endLat, wpLng - endLng);
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        midpointIndex = idx;
+                    }
+                }
+            });
+        }
+        if (midpointIndex === null && waypoints.length > 0) {
+            midpointIndex = Math.floor(waypoints.length / 2);
+        }
+
+        renderWaypoints();
+        calculateRoute();
+    }
+
+    function getInitialMapCenter() {
+        for (const wp of waypoints) {
+            const lat = parseFloat(wp.lat);
+            const lng = parseFloat(wp.lng);
+            if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                return { lat, lng };
+            }
+        }
+        
+        const selectedCity = document.querySelector('select[name="city_id"]');
+        if (selectedCity && selectedCity.options[selectedCity.selectedIndex].text.includes('Karachi')) {
+            return { lat: 24.8916, lng: 67.1546 };
+        }
+        return { lat: 43.6532, lng: -79.3832 }; // Toronto default
+    }
+
+    function addPlaceWaypoint(place) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        const address = place.formatted_address || place.name;
+        
+        const newWaypoint = {
+            lat: lat,
+            lng: lng,
+            instruction: 'Continue onto ' + cleanAddress(address),
+            maneuver: 'continue',
+            distance_km: null,
+            duration: null,
+            sort_order: waypoints.length + 1
+        };
+
+        waypoints.push(newWaypoint);
+        if (waypoints.length === 1) {
+            midpointIndex = 0;
+        }
+        renderWaypoints();
+        calculateRoute();
+        map.panTo({ lat, lng });
+    }
+
+    function addCoordinateWaypoint(lat, lng) {
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+            let address = `Waypoint ${waypoints.length + 1}`;
+            if (status === 'OK' && results?.[0]) {
+                address = results[0].formatted_address;
+            }
+
+            const newWaypoint = {
+                lat: lat,
+                lng: lng,
+                instruction: 'Continue onto ' + cleanAddress(address),
+                maneuver: 'continue',
+                distance_km: null,
+                duration: null,
+                sort_order: waypoints.length + 1
+            };
+
+            waypoints.push(newWaypoint);
+            if (waypoints.length === 1) {
+                midpointIndex = 0;
+            }
+            renderWaypoints();
+            calculateRoute();
         });
     }
 
-    addPointButton.addEventListener('click', () => {
-        const index = Date.now();
-        const number = pointsContainer.querySelectorAll('.point-row').length + 1;
-        const html = pointTemplate.innerHTML
-            .replaceAll('__INDEX__', index)
-            .replaceAll('__NUMBER__', number);
+    function cleanAddress(fullAddress) {
+        if (!fullAddress) return '';
+        const parts = fullAddress.split(',');
+        if (parts.length >= 2) {
+            return (parts[0].trim() + ', ' + parts[1].trim());
+        }
+        return fullAddress;
+    }
 
-        pointsContainer.insertAdjacentHTML('beforeend', html);
-        renumberPoints();
-    });
+    function renderWaypoints() {
+        markers.forEach(m => m.setMap(null));
+        markers = [];
 
-    pointsContainer.addEventListener('click', (event) => {
-        if (!event.target.closest('.remove-point')) {
+        const container = document.getElementById('route-builder-waypoints');
+        container.innerHTML = '';
+
+        if (waypoints.length === 0) {
+            container.innerHTML = '<div class="text-sm text-stone-500 bg-stone-50 p-4 rounded-md border border-stone-200 text-center">No waypoints added yet. Click on the map or search above to add your first point.</div>';
+            updateStartMidpointInputs();
             return;
         }
 
-        event.target.closest('.point-row').remove();
-        renumberPoints();
-    });
+        if (midpointIndex === null || midpointIndex >= waypoints.length) {
+            midpointIndex = Math.floor(waypoints.length / 2);
+        }
+
+        waypoints.forEach((wp, index) => {
+            const lat = parseFloat(wp.lat);
+            const lng = parseFloat(wp.lng);
+            const instruction = wp.instruction || '';
+            const maneuver = wp.maneuver || 'continue';
+            const distanceKm = wp.distance_km || 0;
+            const duration = wp.duration || '';
+            
+            let address = wp.address || wp.instruction || `Waypoint at ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+            if (address.toLowerCase().startsWith('continue onto ') || address.toLowerCase().startsWith('turn left onto ') || address.toLowerCase().startsWith('turn right onto ')) {
+                address = address.replace(/^(continue|turn left|turn right) onto /i, '');
+            }
+
+            const isStart = index === 0;
+            const isMidpoint = index === midpointIndex;
+            
+            let markerColor = '#64748b';
+            let markerLabel = (index + 1).toString();
+            
+            if (isStart) {
+                markerColor = '#047857';
+                markerLabel = 'S';
+            } else if (isMidpoint) {
+                markerColor = '#ea580c';
+                markerLabel = 'M';
+            }
+
+            const marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                draggable: true,
+                label: {
+                    text: markerLabel,
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '11px'
+                },
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: markerColor,
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2,
+                    scale: 13,
+                }
+            });
+
+            marker.addListener('dragend', (event) => {
+                updateWaypointPosition(index, event.latLng.lat(), event.latLng.lng());
+            });
+
+            markers.push(marker);
+
+            const row = document.createElement('div');
+            row.className = `waypoint-row flex items-start gap-4 rounded-xl border border-stone-200 bg-white p-4 shadow-sm transition hover:shadow-md`;
+            
+            if (isStart) {
+                row.classList.add('border-emerald-300', 'bg-emerald-50/[.03]');
+            } else if (isMidpoint) {
+                row.classList.add('border-orange-300', 'bg-orange-50/[.03]');
+            }
+
+            row.innerHTML = `
+                <div class="flex flex-col items-center gap-1.5 pt-1 shrink-0">
+                    <div class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition ${
+                        isStart ? 'bg-emerald-700 text-white' : (isMidpoint ? 'bg-orange-600 text-white shadow-sm' : 'bg-stone-100 text-stone-700')
+                    }">
+                        ${markerLabel}
+                    </div>
+                    <button type="button" class="btn-move-up text-stone-400 hover:text-stone-700 disabled:opacity-30 transition" ${index === 0 ? 'disabled' : ''} title="Move Up">
+                        <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-move-down text-stone-400 hover:text-stone-700 disabled:opacity-30 transition" ${index === waypoints.length - 1 ? 'disabled' : ''} title="Move Down">
+                        <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex-1 grid gap-3 md:grid-cols-6 items-center">
+                    <div class="md:col-span-2 min-w-0">
+                        <span class="text-xs font-semibold text-stone-400 uppercase tracking-wider block">Address</span>
+                        <span class="font-bold text-sm text-stone-900 block truncate" title="${address}">${address}</span>
+                        <span class="text-[10px] text-stone-500 font-medium font-mono">${lat.toFixed(5)}, ${lng.toFixed(5)}</span>
+                        
+                        <input type="hidden" name="points[${index}][sort_order]" value="${index + 1}">
+                        <input type="hidden" name="points[${index}][lat]" value="${lat}">
+                        <input type="hidden" name="points[${index}][lng]" value="${lng}">
+                        <input type="hidden" name="points[${index}][distance_km]" value="${distanceKm}">
+                        <input type="hidden" name="points[${index}][duration]" value="${duration}">
+                    </div>
+
+                    <div class="md:col-span-1">
+                        <span class="text-xs font-semibold text-stone-400 uppercase tracking-wider block mb-1">Maneuver</span>
+                        <select name="points[${index}][maneuver]" class="w-full rounded-md border border-stone-300 px-2 py-1 text-sm text-stone-950 focus:outline-none">
+                            <option value="continue" ${maneuver === 'continue' ? 'selected' : ''}>Continue</option>
+                            <option value="turn_left" ${maneuver === 'turn_left' ? 'selected' : ''}>Turn left</option>
+                            <option value="turn_right" ${maneuver === 'turn_right' ? 'selected' : ''}>Turn right</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <span class="text-xs font-semibold text-stone-400 uppercase tracking-wider block mb-1">Instruction</span>
+                        <input type="text" name="points[${index}][instruction]" value="${instruction}" placeholder="Driving instruction..." required class="w-full rounded-md border border-stone-300 px-3 py-1 text-sm text-stone-950 focus:outline-none">
+                    </div>
+
+                    <div class="md:col-span-1 flex items-center justify-end gap-3 pt-4 md:pt-0">
+                        <button type="button" class="btn-set-midpoint flex h-8 w-8 items-center justify-center rounded-full border transition active:scale-90 ${
+                            isMidpoint 
+                                ? 'bg-orange-600 border-orange-600 text-white shadow-md shadow-orange-500/20' 
+                                : 'border-stone-200 hover:border-orange-200 bg-white hover:bg-orange-50 text-stone-400 hover:text-orange-500'
+                        }" title="${isMidpoint ? 'Current Midpoint' : 'Set as Midpoint'}">
+                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </button>
+
+                        <button type="button" class="btn-remove-wp flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 hover:border-red-200 bg-white hover:bg-red-50 text-stone-400 hover:text-red-500 transition active:scale-90" title="Delete Point">
+                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            row.querySelector('.btn-move-up').addEventListener('click', () => {
+                if (index > 0) {
+                    const temp = waypoints[index];
+                    waypoints[index] = waypoints[index - 1];
+                    waypoints[index - 1] = temp;
+                    
+                    if (midpointIndex === index) {
+                        midpointIndex = index - 1;
+                    } else if (midpointIndex === index - 1) {
+                        midpointIndex = index;
+                    }
+
+                    renderWaypoints();
+                    calculateRoute();
+                }
+            });
+
+            row.querySelector('.btn-move-down').addEventListener('click', () => {
+                if (index < waypoints.length - 1) {
+                    const temp = waypoints[index];
+                    waypoints[index] = waypoints[index + 1];
+                    waypoints[index + 1] = temp;
+
+                    if (midpointIndex === index) {
+                        midpointIndex = index + 1;
+                    } else if (midpointIndex === index + 1) {
+                        midpointIndex = index;
+                    }
+
+                    renderWaypoints();
+                    calculateRoute();
+                }
+            });
+
+            row.querySelector('.btn-set-midpoint').addEventListener('click', () => {
+                midpointIndex = index;
+                renderWaypoints();
+                calculateRoute();
+            });
+
+            row.querySelector('.btn-remove-wp').addEventListener('click', () => {
+                waypoints.splice(index, 1);
+                if (midpointIndex === index) {
+                    midpointIndex = Math.floor(waypoints.length / 2);
+                } else if (midpointIndex > index) {
+                    midpointIndex -= 1;
+                }
+                renderWaypoints();
+                calculateRoute();
+            });
+
+            row.querySelector('input[type="text"]').addEventListener('input', (e) => {
+                wp.instruction = e.target.value;
+            });
+
+            row.querySelector('select').addEventListener('change', (e) => {
+                wp.maneuver = e.target.value;
+            });
+
+            container.appendChild(row);
+        });
+
+        updateStartMidpointInputs();
+    }
+
+    function updateWaypointPosition(index, lat, lng) {
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+            let address = `Waypoint ${index + 1}`;
+            if (status === 'OK' && results?.[0]) {
+                address = results[0].formatted_address;
+            }
+
+            waypoints[index].lat = lat;
+            waypoints[index].lng = lng;
+            waypoints[index].address = address;
+            
+            if (waypoints[index].instruction.toLowerCase().startsWith('continue onto ') || waypoints[index].instruction.includes('Waypoint')) {
+                waypoints[index].instruction = 'Continue onto ' + cleanAddress(address);
+            }
+
+            renderWaypoints();
+            calculateRoute();
+        });
+    }
+
+    function updateStartMidpointInputs() {
+        const startLabelInput = document.getElementById('route-start-label-input');
+        const startLatInput = document.getElementById('route-start-lat-input');
+        const startLngInput = document.getElementById('route-start-lng-input');
+        
+        if (waypoints.length > 0) {
+            const startWp = waypoints[0];
+            let address = startWp.address || startWp.instruction || 'Start Point';
+            address = address.replace(/^(continue|turn left|turn right) onto /i, '');
+            
+            if (!startLabelInput.value || startLabelInput.value === 'Start Point') {
+                startLabelInput.value = address;
+            }
+            startLatInput.value = startWp.lat;
+            startLngInput.value = startWp.lng;
+        } else {
+            startLatInput.value = '';
+            startLngInput.value = '';
+        }
+
+        const destLabelInput = document.getElementById('route-destination-label-input');
+        const destLatInput = document.getElementById('route-end-lat-input');
+        const destLngInput = document.getElementById('route-end-lng-input');
+
+        if (waypoints.length > 0 && midpointIndex !== null && midpointIndex < waypoints.length) {
+            const midWp = waypoints[midpointIndex];
+            let address = midWp.address || midWp.instruction || 'Midpoint';
+            address = address.replace(/^(continue|turn left|turn right) onto /i, '');
+
+            if (!destLabelInput.value || destLabelInput.value === 'Midpoint') {
+                destLabelInput.value = address;
+            }
+            destLatInput.value = midWp.lat;
+            destLngInput.value = midWp.lng;
+        } else {
+            destLatInput.value = '';
+            destLngInput.value = '';
+        }
+    }
+
+    async function calculateRoute() {
+        if (waypoints.length < 2) {
+            if (directionsRenderer) directionsRenderer.setDirections({ routes: [] });
+            document.getElementById('auto-dist-text').textContent = '-- km';
+            document.getElementById('auto-dur-text').textContent = '-- mins';
+            return;
+        }
+
+        const segments = [];
+        const chunkSize = 20;
+        for (let i = 0; i < waypoints.length - 1; i += chunkSize - 1) {
+            const chunk = waypoints.slice(i, i + chunkSize);
+            if (chunk.length >= 2) {
+                segments.push(chunk);
+            }
+        }
+
+        const promises = segments.map(segment => {
+            const origin = { lat: parseFloat(segment[0].lat), lng: parseFloat(segment[0].lng) };
+            const destination = { lat: parseFloat(segment[segment.length - 1].lat), lng: parseFloat(segment[segment.length - 1].lng) };
+            const segmentWaypoints = segment.slice(1, -1).map(p => ({
+                location: { lat: parseFloat(p.lat), lng: parseFloat(p.lng) },
+                stopover: false
+            }));
+
+            return new Promise((resolve, reject) => {
+                directionsService.route({
+                    origin,
+                    destination,
+                    waypoints: segmentWaypoints,
+                    optimizeWaypoints: false,
+                    travelMode: google.maps.TravelMode.DRIVING
+                }, (result, status) => {
+                    if (status === 'OK' && result) {
+                        resolve(result);
+                    } else {
+                        reject(status);
+                    }
+                });
+            });
+        });
+
+        try {
+            const results = await Promise.all(promises);
+            directionsRenderer.setDirections(results[0]);
+            
+            // Draw additional segments if any (multiple renderer instances)
+            // But usually 1 segment is active.
+            
+            let totalDistanceMeters = 0;
+            let totalDurationSeconds = 0;
+
+            results.forEach((res, resIdx) => {
+                res.routes[0].legs.forEach(leg => {
+                    totalDistanceMeters += leg.distance?.value ?? 0;
+                    totalDurationSeconds += leg.duration?.value ?? 0;
+                });
+            });
+
+            const totalDistKm = (totalDistanceMeters / 1000).toFixed(1);
+            const totalDurMins = Math.max(1, Math.round(totalDurationSeconds / 60));
+
+            document.getElementById('auto-dist-text').textContent = totalDistKm + ' km';
+            document.getElementById('auto-dur-text').textContent = totalDurMins + ' mins';
+
+            // Sync button handler
+            const syncBtn = document.getElementById('btn-sync-summary');
+            const syncHandler = () => {
+                const durationField = document.querySelector('input[name="route_duration_minutes"]');
+                const lengthField = document.querySelector('input[name="route_length_km"]');
+                if (durationField) durationField.value = totalDurMins;
+                if (lengthField) lengthField.value = totalDistKm;
+                
+                syncBtn.textContent = 'Applied!';
+                syncBtn.classList.remove('text-blue-700', 'border-blue-300');
+                syncBtn.classList.add('text-emerald-700', 'border-emerald-300', 'bg-emerald-50');
+                setTimeout(() => {
+                    syncBtn.textContent = 'Apply Distance & Duration';
+                    syncBtn.classList.add('text-blue-700', 'border-blue-300');
+                    syncBtn.classList.remove('text-emerald-700', 'border-emerald-300', 'bg-emerald-50');
+                }, 2000);
+            };
+
+            syncBtn.replaceWith(syncBtn.cloneNode(true));
+            document.getElementById('btn-sync-summary').addEventListener('click', syncHandler);
+
+        } catch (e) {
+            console.error('Route calculation failed:', e);
+        }
+    }
 </script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}&libraries=places&loading=async&callback=initRouteBuilderMap"></script>
+@endpush
