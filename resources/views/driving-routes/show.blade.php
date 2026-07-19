@@ -606,23 +606,31 @@
             }
 
             async function resolveStopsAndCalculateRoute() {
+                console.log("resolveStopsAndCalculateRoute: manual points count:", pointsWithCoords.length);
                 if (pointsWithCoords.length >= 2) {
+                    console.log("resolveStopsAndCalculateRoute: Using manual route points:", pointsWithCoords);
                     calculateManualRoute();
                     return;
                 }
 
                 setActiveInstruction('Finding route stops...', 'Google is locating the start and midpoint.');
+                console.log("resolveStopsAndCalculateRoute: Resolving start stop:", routeData.start);
 
                 try {
                     resolvedStartLocation = await resolveStop(routeData.start);
+                    console.log("resolveStopsAndCalculateRoute: Resolved start location successfully:", resolvedStartLocation);
+                    console.log("resolveStopsAndCalculateRoute: Resolving midpoint stop:", routeData.midpoint);
                     resolvedMidpointLocation = await resolveStop(routeData.midpoint);
+                    console.log("resolveStopsAndCalculateRoute: Resolved midpoint location successfully:", resolvedMidpointLocation);
                     calculateRoundTrip();
                 } catch (status) {
+                    console.error("resolveStopsAndCalculateRoute caught error status:", status);
                     showRouteError(status, 'Google could not find one of these route stops. Use a real place name like "Star Gate Karachi" or add latitude/longitude in admin.');
                 }
             }
 
             function calculateRoundTrip() {
+                console.log("calculateRoundTrip: Starting route calculation between:", resolvedStartLocation, "and", resolvedMidpointLocation);
                 setActiveInstruction('Calculating route...', 'Google is choosing the best driving path.');
 
                 const directionsService = new google.maps.DirectionsService();
@@ -631,8 +639,14 @@
                     requestDirections(directionsService, resolvedStartLocation, resolvedMidpointLocation),
                     requestDirections(directionsService, resolvedMidpointLocation, resolvedStartLocation),
                 ])
-                    .then(renderDirections)
-                    .catch((status) => showRouteError(status, 'Google could not calculate a driving route for these stops.'));
+                    .then(results => {
+                        console.log("calculateRoundTrip: Both direction results received successfully", results);
+                        renderDirections(results);
+                    })
+                    .catch((status) => {
+                        console.error("calculateRoundTrip Directions Service failed, falling back to straight-line route.", status);
+                        renderFallbackRoundTripRoute();
+                    });
             }
 
             async function calculateManualRoute() {
@@ -655,7 +669,8 @@
                     const results = await Promise.all(promises);
                     renderManualDirections(results);
                 } catch (status) {
-                    showRouteError(status, 'Google could not calculate a driving route for these stops.');
+                    console.error("calculateManualRoute: Directions service failed, falling back to database points path.", status);
+                    renderFallbackManualRoute();
                 }
             }
 
@@ -681,19 +696,25 @@
 
             function resolveStop(stop) {
                 if (hasCoordinates(stop)) {
+                    console.log("resolveStop: stop has coordinates in DB:", stop);
                     return Promise.resolve(toPosition(stop));
                 }
 
                 return new Promise((resolve, reject) => {
                     const geocoder = new google.maps.Geocoder();
+                    const queryStr = stop.query || stop.label;
+                    console.log("resolveStop: Geocoding address query:", queryStr);
                     geocoder.geocode({
-                        address: stop.query || stop.label,
+                        address: queryStr,
                         componentRestrictions: routeData.start.query.includes('Karachi') || routeData.midpoint.query.includes('Karachi')
                             ? { country: 'PK' }
                             : undefined,
                     }, (results, status) => {
+                        console.log("resolveStop: Geocoder status response:", status, "results:", results);
                         if (status === 'OK' && results?.[0]) {
-                            resolve(results[0].geometry.location);
+                            const pos = latLngToPosition(results[0].geometry.location);
+                            console.log("resolveStop: Geocoded successfully to coords:", pos);
+                            resolve(pos);
                             return;
                         }
 
@@ -703,6 +724,7 @@
             }
 
             function showRouteError(status, message) {
+                console.error("showRouteError: status =", status, "message =", message);
                 const help = {
                     REQUEST_DENIED: 'Google rejected the request. Enable Maps JavaScript API, Directions API, Geocoding API, and billing for this key.',
                     ZERO_RESULTS: 'Google found no drivable route between these stops. Use clearer places or coordinates.',
@@ -711,8 +733,17 @@
                 }[status] ?? message;
 
                 setActiveInstruction('Route not available', `${help} Status: ${status}`);
-                document.getElementById('directions-list').innerHTML = `<li class="p-5 text-sm text-red-700">${help}<br><span class="mt-2 block text-xs text-red-500">Google status: ${status}</span></li>`;
-                routeStatus.textContent = `Route failed: ${status}`;
+                const listEl = document.getElementById('directions-list');
+                if (listEl) {
+                    listEl.innerHTML = `<li class="p-5 text-sm text-red-700">${help}<br><span class="mt-2 block text-xs text-red-500">Google status: ${status}</span></li>`;
+                } else {
+                    console.error("showRouteError: directions-list element not found in DOM.");
+                }
+                if (routeStatus) {
+                    routeStatus.textContent = `Route failed: ${status}`;
+                } else {
+                    console.warn("showRouteError: routeStatus is not initialized/found.");
+                }
             }
 
             function renderDirections(results) {
@@ -785,6 +816,216 @@
                 if (previewDist) previewDist.textContent = `(${(totalRouteDistance / 1000).toFixed(1)} km)`;
 
                 setActiveInstruction('Route ready', 'Use location, go to the start point, then start the drive.');
+            }
+
+            function renderFallbackRoundTripRoute() {
+                console.log("renderFallbackRoundTripRoute: Rendering straight line round trip.");
+                const bounds = new google.maps.LatLngBounds();
+                routePathPoints = [];
+
+                const points = [resolvedStartLocation, resolvedMidpointLocation, resolvedStartLocation];
+                points.forEach(pos => {
+                    bounds.extend(pos);
+                    routePathPoints.push(pos);
+                });
+
+                const fallbackPath = new google.maps.Polyline({
+                    path: routePathPoints,
+                    geodesic: true,
+                    strokeColor: '#047857',
+                    strokeOpacity: 0.85,
+                    strokeWeight: 6,
+                    map: map
+                });
+
+                routeStartPosition = resolvedStartLocation;
+                routeMidpointPosition = resolvedMidpointLocation;
+
+                new google.maps.Marker({
+                    position: routeStartPosition,
+                    map,
+                    title: routeData.start.label,
+                    icon: endpointIcon('#047857', 'S'),
+                });
+
+                new google.maps.Marker({
+                    position: routeMidpointPosition,
+                    map,
+                    title: routeData.midpoint.label,
+                    icon: endpointIcon('#dc2626', 'M'),
+                });
+
+                // Set up basic 2-step navigation directions
+                const distToMidpoint = distanceMeters(resolvedStartLocation, resolvedMidpointLocation);
+                directionSteps = [
+                    {
+                        legIndex: 0,
+                        html: `Drive from start to midpoint: ${routeData.midpoint.label}`,
+                        text: `Drive from start to midpoint: ${routeData.midpoint.label}`,
+                        distanceText: formatDistance(distToMidpoint),
+                        distanceMeters: distToMidpoint,
+                        durationText: '',
+                        start: resolvedStartLocation,
+                        end: resolvedMidpointLocation,
+                    },
+                    {
+                        legIndex: 1,
+                        html: `Return to start: ${routeData.start.label}`,
+                        text: `Return to start: ${routeData.start.label}`,
+                        distanceText: formatDistance(distToMidpoint),
+                        distanceMeters: distToMidpoint,
+                        durationText: '',
+                        start: resolvedMidpointLocation,
+                        end: resolvedStartLocation,
+                    }
+                ];
+
+                renderDirectionList(directionSteps);
+                initializeVehicle();
+                map.fitBounds(bounds, 72);
+
+                const totalRouteDistance = distToMidpoint * 2;
+                const totalRouteDuration = Math.round((totalRouteDistance / 1000) * 90); // 90 seconds per km
+
+                const durationVal = Math.max(1, Math.round(totalRouteDuration / 60));
+                document.getElementById('hud-duration-val').textContent = durationVal;
+                document.getElementById('hud-distance-val').textContent = (totalRouteDistance / 1000).toFixed(1) + ' km';
+                updateETA(totalRouteDuration);
+
+                // Update preview sheet values
+                const previewDur = document.getElementById('preview-duration');
+                const previewDist = document.getElementById('preview-distance');
+                if (previewDur) previewDur.textContent = durationVal + ' min';
+                if (previewDist) previewDist.textContent = `(${(totalRouteDistance / 1000).toFixed(1)} km)`;
+
+                setActiveInstruction('Route ready (fallback path)', 'Google Directions Service failed; showing straight path.');
+            }
+
+            function renderFallbackManualRoute() {
+                console.log("renderFallbackManualRoute: Rendering direct manual points path.");
+                const bounds = new google.maps.LatLngBounds();
+                routePathPoints = [];
+
+                // Connect coordinates with a solid polyline
+                const pathCoordinates = pointsWithCoords.map(p => {
+                    const pos = { lat: p.lat, lng: p.lng };
+                    bounds.extend(pos);
+                    routePathPoints.push(pos);
+                    return pos;
+                });
+
+                const fallbackPath = new google.maps.Polyline({
+                    path: pathCoordinates,
+                    geodesic: true,
+                    strokeColor: '#047857',
+                    strokeOpacity: 0.85,
+                    strokeWeight: 6,
+                    map: map
+                });
+
+                // Set positions
+                routeStartPosition = { lat: pointsWithCoords[0].lat, lng: pointsWithCoords[0].lng };
+                
+                let midpointIndex = 0;
+                if (hasCoordinates(routeData.midpoint)) {
+                    let minDistance = Infinity;
+                    pointsWithCoords.forEach((p, idx) => {
+                        const dist = distanceMeters({ lat: p.lat, lng: p.lng }, toPosition(routeData.midpoint));
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            midpointIndex = idx;
+                        }
+                    });
+                } else {
+                    midpointIndex = Math.floor(pointsWithCoords.length / 2);
+                }
+                routeMidpointPosition = { lat: pointsWithCoords[midpointIndex].lat, lng: pointsWithCoords[midpointIndex].lng };
+
+                new google.maps.Marker({
+                    position: routeStartPosition,
+                    map,
+                    title: routeData.start.label,
+                    icon: endpointIcon('#047857', 'S'),
+                });
+
+                new google.maps.Marker({
+                    position: routeMidpointPosition,
+                    map,
+                    title: routeData.midpoint.label,
+                    icon: endpointIcon('#dc2626', 'M'),
+                });
+
+                // Populate directionSteps from manual points
+                directionSteps = manualPoints.map((p, index) => {
+                    const nextPoint = manualPoints[index + 1] || null;
+                    const startPos = { lat: p.lat, lng: p.lng };
+                    const endPos = nextPoint ? { lat: nextPoint.lat, lng: nextPoint.lng } : startPos;
+
+                    let distMeters = 0;
+                    if (p.distance_km !== null) {
+                        distMeters = p.distance_km * 1000;
+                    } else if (nextPoint && Number.isFinite(p.lat) && Number.isFinite(p.lng) && Number.isFinite(nextPoint.lat) && Number.isFinite(nextPoint.lng)) {
+                        distMeters = distanceMeters(startPos, endPos);
+                    }
+
+                    const distText = p.distance_km !== null 
+                        ? (p.distance_km < 1 ? `${Math.round(p.distance_km * 1000)} m` : `${p.distance_km.toFixed(1)} km`)
+                        : (distMeters > 0 ? formatDistance(distMeters) : '');
+
+                    return {
+                        legIndex: index <= midpointIndex ? 0 : 1,
+                        html: p.instruction,
+                        text: stripHtml(p.instruction),
+                        distanceText: distText,
+                        distanceMeters: distMeters,
+                        durationText: p.duration || '',
+                        start: startPos,
+                        end: endPos,
+                    };
+                });
+
+                renderDirectionList(directionSteps);
+                initializeVehicle();
+                map.fitBounds(bounds, 72);
+
+                // Calculate total duration and distance
+                let totalRouteDistance = 0;
+                let totalRouteDuration = 0;
+                
+                manualPoints.forEach(p => {
+                    if (p.distance_km !== null) {
+                        totalRouteDistance += p.distance_km * 1000;
+                    }
+                    if (p.duration) {
+                        const parsedDuration = parseInt(p.duration);
+                        if (!isNaN(parsedDuration)) {
+                            totalRouteDuration += parsedDuration * 60;
+                        }
+                    }
+                });
+
+                if (totalRouteDistance === 0 && routePathPoints.length >= 2) {
+                    for (let i = 0; i < routePathPoints.length - 1; i++) {
+                        totalRouteDistance += distanceMeters(routePathPoints[i], routePathPoints[i+1]);
+                    }
+                }
+                if (totalRouteDuration === 0) {
+                    // Average driving speed fallback (~40 km/h)
+                    totalRouteDuration = Math.round((totalRouteDistance / 1000) * 90); // 90 seconds per km
+                }
+
+                const durationVal = Math.max(1, Math.round(totalRouteDuration / 60));
+                document.getElementById('hud-duration-val').textContent = durationVal;
+                document.getElementById('hud-distance-val').textContent = (totalRouteDistance / 1000).toFixed(1) + ' km';
+                updateETA(totalRouteDuration);
+
+                // Update preview sheet values
+                const previewDur = document.getElementById('preview-duration');
+                const previewDist = document.getElementById('preview-distance');
+                if (previewDur) previewDur.textContent = durationVal + ' min';
+                if (previewDist) previewDist.textContent = `(${(totalRouteDistance / 1000).toFixed(1)} km)`;
+
+                setActiveInstruction('Route ready (fallback path)', 'GPS route calculated from database points.');
             }
 
             function renderManualDirections(results) {
@@ -1475,7 +1716,7 @@
             }
 
             function hasCoordinates(position) {
-                return Number.isFinite(position.lat) && Number.isFinite(position.lng);
+                return position && Number.isFinite(position.lat) && Number.isFinite(position.lng);
             }
 
             function toPosition(position) {
