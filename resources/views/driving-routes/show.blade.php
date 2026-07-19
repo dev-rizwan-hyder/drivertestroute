@@ -1475,33 +1475,41 @@
 
             function beginLocationWatch() {
                 if (watchId !== null) {
-                    routeStatus.textContent = driveStarted
-                        ? 'Drive started. Live tracking is active.'
-                        : hasReachedStart
-                            ? 'You are on start point of route. Start the drive.'
-                            : 'Live location is already active.';
+                    if (routeStatus) {
+                        routeStatus.textContent = driveStarted
+                            ? 'Drive started. Live tracking is active.'
+                            : hasReachedStart
+                                ? 'You are on start point of route. Start the drive.'
+                                : 'Live location is already active.';
+                    }
                     return;
                 }
 
                 if (!navigator.geolocation) {
-                    routeStatus.textContent = 'Location is not supported by this browser.';
+                    if (routeStatus) routeStatus.textContent = 'Location is not supported by this browser.';
                     return;
                 }
 
-                locateButton.disabled = true;
-                locateButton.textContent = 'Locating...';
-                locateButton.className = 'ml-2 rounded-md border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-500';
-                routeStatus.textContent = 'Allow location permission to show your current location.';
+                if (locateButton) {
+                    locateButton.disabled = true;
+                    locateButton.textContent = 'Locating...';
+                    locateButton.className = 'ml-2 rounded-md border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-500';
+                }
+                if (routeStatus) routeStatus.textContent = 'Allow location permission to show your current location.';
 
                 watchId = navigator.geolocation.watchPosition(
                     handleLocationUpdate,
                     (error) => {
-                        locateButton.disabled = false;
-                        locateButton.textContent = 'Use location';
-                        locateButton.className = 'ml-2 rounded-md border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100';
-                        routeStatus.textContent = error.code === error.PERMISSION_DENIED
-                            ? 'Location permission was denied.'
-                            : 'Could not get your live location.';
+                        if (locateButton) {
+                            locateButton.disabled = false;
+                            locateButton.textContent = 'Use location';
+                            locateButton.className = 'ml-2 rounded-md border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100';
+                        }
+                        if (routeStatus) {
+                            routeStatus.textContent = error.code === error.PERMISSION_DENIED
+                                ? 'Location permission was denied.'
+                                : 'Could not get your live location.';
+                        }
                         watchId = null;
                     },
                     {
@@ -1586,20 +1594,22 @@
 
                 const distance = distanceMeters(position, routeStartPosition);
                 hasReachedStart = distance <= startDistanceThresholdMeters;
-                locateButton.disabled = false;
-                locateButton.textContent = 'Location on';
-                locateButton.className = 'ml-2 rounded-md border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-800';
+                if (locateButton) {
+                    locateButton.disabled = false;
+                    locateButton.textContent = 'Location on';
+                    locateButton.className = 'ml-2 rounded-md border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-800';
+                }
 
                 if (hasReachedStart) {
                     enableStartDrive();
-                    routeStatus.textContent = 'You are on start point of route. Start the drive.';
+                    if (routeStatus) routeStatus.textContent = 'You are on start point of route. Start the drive.';
                     setActiveInstruction('You are on the start point', 'Start the drive when ready.');
                     return;
                 }
 
                 disableStartDrive();
                 const accuracyText = Number.isFinite(accuracy) ? ` Accuracy ${Math.round(accuracy)} m.` : '';
-                routeStatus.textContent = `${formatDistance(distance)} from start point.${accuracyText}`;
+                if (routeStatus) routeStatus.textContent = `${formatDistance(distance)} from start point.${accuracyText}`;
                 setActiveInstruction('Go to start point', `${formatDistance(distance)} away from route start.`);
             }
 
