@@ -1169,14 +1169,21 @@
 
             <!-- Full Width Background Video -->
             <div class="absolute inset-0 z-0 overflow-hidden">
+                @php
+                    $videoPath = public_path('images/hero.mp4');
+                    $videoSrc = file_exists($videoPath) ? asset('images/hero.mp4') : asset('public/images/hero.mp4');
+                    
+                    $posterPath = public_path('images/home-hero.jpeg');
+                    $posterSrc = file_exists($posterPath) ? asset('images/home-hero.jpeg') : asset('public/images/home-hero.jpeg');
+                @endphp
                 <video 
                     class="w-full h-full object-cover" 
-                    src="{{ asset('images/hero.mp4') }}" 
+                    src="{{ $videoSrc }}" 
                     autoplay 
                     muted 
                     loop 
                     playsinline
-                    poster="{{ asset('images/home-hero.jpeg') }}"
+                    poster="{{ $posterSrc }}"
                 >
                     Your browser does not support the video tag.
                 </video>

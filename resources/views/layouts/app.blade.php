@@ -708,6 +708,13 @@
     @php
         $headerOverlaysContent = request()->routeIs('home');
         $currentUser = auth()->user();
+        
+        $logoPath = public_path('images/Drivetestroute.png');
+        $logoSrc = file_exists($logoPath) ? asset('images/Drivetestroute.png') : asset('public/images/Drivetestroute.png');
+        
+        $footerLogoPath = public_path('images/Drivetestroute.png');
+        $footerLogoSrc = file_exists($footerLogoPath) ? asset('images/Drivetestroute.png') : asset('public/images/Drivetestroute.png');
+
         $dashboardUrl = null;
         $userInitials = 'U';
 
@@ -740,7 +747,7 @@
         <nav
             class="public-header-nav mx-auto flex min-h-[4.75rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
             <a href="{{ route('home') }}" class="public-brand flex shrink-0 items-center gap-2.5">
-                <img src="{{ asset('images/Drivetestroute.png') }}" alt="Driver Test Routes" class="h-12 w-auto">
+                <img src="{{ $logoSrc }}" alt="Driver Test Routes" class="h-12 w-auto">
                 <div class="flex flex-col">
                     <span class="dtr-logo-text font-black text-xl tracking-tight leading-none">DriveTest Route</span>
                     <span class="dtr-logo-subtitle text-[9px] uppercase tracking-[0.15em] font-extrabold text-slate-500 mt-1 leading-none">Practice Platform</span>
@@ -916,7 +923,7 @@
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr] lg:px-8">
             <div>
                 <a href="{{ route('home') }}" class="public-brand flex shrink-0 items-center gap-2.5">
-                    <img src="{{ asset('images/Drivetestroute.png') }}" alt="Driver Test Routes" class="h-14 w-auto">
+                    <img src="{{ $footerLogoSrc }}" alt="Driver Test Routes" class="h-14 w-auto">
                     <div class="flex flex-col">
                         <span class="dtr-logo-text font-black text-2xl tracking-tight leading-none">DriveTest Route</span>
                         <span class="text-[10px] uppercase tracking-[0.15em] font-extrabold text-slate-500 mt-1 leading-none">Practice Platform</span>
