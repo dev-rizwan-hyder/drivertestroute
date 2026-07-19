@@ -425,9 +425,16 @@
 
         for (let i = 0; i < addresses.length; i++) {
             importBtn.textContent = `Importing (${i + 1}/${addresses.length})...`;
+            const addr = addresses[i];
+            const coordMatch = addr.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+
             try {
                 const result = await new Promise((resolve, reject) => {
-                    geocoder.geocode({ address: addresses[i] }, (results, status) => {
+                    const query = coordMatch
+                        ? { location: { lat: parseFloat(coordMatch[1]), lng: parseFloat(coordMatch[2]) } }
+                        : { address: addr };
+
+                    geocoder.geocode(query, (results, status) => {
                         if (status === 'OK' && results?.[0]) {
                             resolve(results[0]);
                         } else {
@@ -436,21 +443,35 @@
                     });
                 });
 
-                const lat = result.geometry.location.lat();
-                const lng = result.geometry.location.lng();
-                const address = result.formatted_address || addresses[i];
+                const lat = coordMatch ? parseFloat(coordMatch[1]) : result.geometry.location.lat();
+                const lng = coordMatch ? parseFloat(coordMatch[2]) : result.geometry.location.lng();
+                const addressText = result.formatted_address || addr;
 
                 newWaypoints.push({
                     lat: lat,
                     lng: lng,
-                    instruction: 'Continue onto ' + cleanAddress(address),
+                    instruction: 'Continue onto ' + cleanAddress(addressText),
                     maneuver: 'continue',
                     distance_km: null,
                     duration: null,
                     sort_order: newWaypoints.length + 1
                 });
             } catch (err) {
-                console.warn(`Could not geocode waypoint: ${addresses[i]}. Status: ${err}`);
+                console.warn(`Could not geocode waypoint: ${addr}. Status: ${err}`);
+                // Fallback to exact coordinates if geocoder lookup fails for a coord pair
+                if (coordMatch) {
+                    const lat = parseFloat(coordMatch[1]);
+                    const lng = parseFloat(coordMatch[2]);
+                    newWaypoints.push({
+                        lat: lat,
+                        lng: lng,
+                        instruction: `Waypoint at ${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+                        maneuver: 'continue',
+                        distance_km: null,
+                        duration: null,
+                        sort_order: newWaypoints.length + 1
+                    });
+                }
             }
         }
 
