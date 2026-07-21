@@ -25,6 +25,20 @@
             backdrop-filter: blur(16px);
         }
 
+        #map-wrapper:fullscreen,
+        #map-wrapper.is-fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 99999 !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+        }
+
         .route-detail-gradient-text {
             color: transparent;
             background: linear-gradient(100deg, #1e40af 0%, #2563eb 44%, #0891b2 100%);
@@ -177,11 +191,31 @@
             </div>
 
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
-                <div class="route-detail-glass overflow-hidden relative">
+                <div id="map-wrapper" class="relative w-full h-[70vh] min-h-[520px] overflow-hidden rounded-3xl route-detail-glass transition-all duration-300">
                 @if(config('services.google.maps_key') && $hasRouteStops)
                     <!-- Navigation HUD Overlays -->
-                    <!-- Navigation HUD Overlays -->
-                    <div id="nav-hud-overlay" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-4">
+                    <div id="nav-hud-overlay" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-3 sm:p-5">
+                        
+                        <!-- Fullscreen Recommendation Hint Banner -->
+                        <div id="fullscreen-hint-banner" class="w-full max-w-md mx-auto mb-2 flex items-center justify-between gap-3 rounded-2xl bg-slate-900/90 text-white px-3.5 py-2.5 shadow-xl backdrop-blur-md border border-slate-700/60 pointer-events-auto transition-all duration-300 shrink-0">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-blue-400">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                                <p class="text-xs font-semibold leading-tight text-slate-200 truncate">
+                                    For better experience, switch to <span class="font-bold text-white">Full Preview</span>
+                                </p>
+                            </div>
+                            <button id="btn-banner-fullscreen" type="button" class="shrink-0 flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 px-3 py-1.5 text-xs font-bold text-white shadow-md transition active:scale-95">
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                </svg>
+                                <span>Full Preview</span>
+                            </button>
+                        </div>
+
                         <!-- Preview Mode Search Header -->
                         <div id="preview-search-header" class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200/50 p-4 pointer-events-auto transition-all duration-350 transform translate-y-0 opacity-100 flex flex-col gap-2 shrink-0">
                             <div class="flex items-center gap-3.5">
@@ -211,21 +245,21 @@
                         </div>
 
                         <!-- Top Instruction Banner -->
-                        <div id="hud-top-banner" class="w-full flex flex-col gap-2 pointer-events-auto transform -translate-y-24 opacity-0 transition-all duration-500 ease-out">
-                            <div class="flex items-center gap-4 rounded-2xl bg-[#005c53] px-5 py-4 shadow-2xl border border-[#004841] text-white">
+                        <div id="hud-top-banner" class="w-full max-w-md mx-auto flex flex-col gap-2 pointer-events-auto transform -translate-y-24 opacity-0 transition-all duration-500 ease-out shrink-0">
+                            <div class="flex items-center gap-3.5 rounded-2xl bg-[#005c53] px-4 py-3.5 sm:px-5 sm:py-4 shadow-2xl border border-[#004841] text-white">
                                 <!-- Action Direction Icon -->
-                                <div id="hud-maneuver-icon" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
-                                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <div id="hud-maneuver-icon" class="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
+                                    <svg class="h-7 w-7 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                                     </svg>
                                 </div>
                                 <!-- Text Info -->
                                 <div class="flex-1 min-w-0">
-                                    <h3 id="hud-main-instruction" class="text-lg sm:text-xl font-black leading-tight truncate">Head north</h3>
+                                    <h3 id="hud-main-instruction" class="text-base sm:text-xl font-black leading-tight truncate">Head north</h3>
                                     <p id="hud-sub-instruction" class="text-xs sm:text-sm font-bold text-teal-200 leading-tight mt-0.5 truncate">Ottawa Street North</p>
                                 </div>
                                 <!-- Mic / Audio Indicator -->
-                                <button id="hud-mic-btn" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition active:scale-95">
+                                <button id="hud-mic-btn" class="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition active:scale-95">
                                     <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
                                         <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
@@ -240,27 +274,33 @@
                         </div>
 
                         <!-- Side Floaters Column (Google Maps Style) -->
-                        <div class="absolute right-4 top-[100px] flex flex-col items-end gap-3 pointer-events-auto z-20">
+                        <div class="absolute right-3 sm:right-4 top-[110px] sm:top-[120px] flex flex-col items-end gap-2.5 pointer-events-auto z-20">
                             <!-- Compass Needle Button -->
-                            <button id="btn-hud-compass" type="button" class="group flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Reset Map Heading (North Up)">
-                                <svg id="hud-compass-icon" class="h-6 w-6 text-red-500 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
+                            <button id="btn-hud-compass" type="button" class="group flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Reset Map Heading (North Up)">
+                                <svg id="hud-compass-icon" class="h-5.5 w-5.5 sm:h-6 sm:w-6 text-red-500 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
                                 </svg>
                             </button>
+                            <!-- Fullscreen Toggle Button -->
+                            <button id="btn-hud-fullscreen" type="button" class="group flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Toggle Fullscreen Preview">
+                                <svg id="hud-fullscreen-icon" class="h-5 w-5 text-slate-700 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                </svg>
+                            </button>
                             <!-- Search Along Route Button -->
-                            <button id="btn-hud-search" type="button" class="group flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Search Along Route">
+                            <button id="btn-hud-search" type="button" class="group flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Search Along Route">
                                 <svg class="h-5 w-5 text-slate-700 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </button>
                             <!-- Voice Guidance Toggle -->
-                            <button id="btn-hud-audio" type="button" class="group flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Toggle Voice Guidance">
+                            <button id="btn-hud-audio" type="button" class="group flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Toggle Voice Guidance">
                                 <svg id="hud-audio-svg" class="h-5 w-5 text-slate-700 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                                 </svg>
                             </button>
                             <!-- Report Hazard Button -->
-                            <button id="btn-hud-report" type="button" class="group flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-2.5 text-slate-800 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Report Traffic Hazard">
+                            <button id="btn-hud-report" type="button" class="group flex items-center gap-1.5 sm:gap-2 rounded-full bg-white/95 px-3 py-2 sm:px-3.5 sm:py-2.5 text-slate-800 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Report Traffic Hazard">
                                 <div class="flex h-5 w-5 items-center justify-center rounded-full bg-amber-50 text-amber-600 border border-amber-200">
                                     <svg class="h-3.5 w-3.5 text-amber-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -271,18 +311,18 @@
                         </div>
 
                         <!-- Speedometer bottom left -->
-                        <div class="absolute left-4 bottom-[100px] pointer-events-auto">
-                            <div class="flex h-16 w-16 flex-col items-center justify-center rounded-full border-4 border-slate-100/90 bg-white shadow-2xl">
-                                <span id="hud-speed-val" class="text-lg font-black text-slate-900 leading-none">--</span>
-                                <span class="text-[9px] font-extrabold text-slate-400 mt-0.5">km/h</span>
+                        <div class="absolute left-3 sm:left-4 bottom-[90px] sm:bottom-[100px] pointer-events-auto">
+                            <div class="flex h-14 w-14 sm:h-16 sm:w-16 flex-col items-center justify-center rounded-full border-4 border-slate-100/90 bg-white shadow-2xl">
+                                <span id="hud-speed-val" class="text-base sm:text-lg font-black text-slate-900 leading-none">--</span>
+                                <span class="text-[8px] sm:text-[9px] font-extrabold text-slate-400 mt-0.5">km/h</span>
                             </div>
                         </div>
 
                         <!-- Bottom HUD Panel (Navigation mode) -->
-                        <div id="hud-bottom-sheet" class="w-full bg-white rounded-3xl p-5 shadow-2xl border border-slate-100 pointer-events-auto mt-auto transform translate-y-36 opacity-0 transition-all duration-500 ease-out hidden">
+                        <div id="hud-bottom-sheet" class="w-full max-w-md mx-auto bg-white rounded-3xl p-4 sm:p-5 shadow-2xl border border-slate-100 pointer-events-auto mt-auto transform translate-y-36 opacity-0 transition-all duration-500 ease-out hidden shrink-0">
                             <div class="flex items-center justify-between gap-4">
                                 <!-- Exit Drive Button -->
-                                <button type="button" id="btn-hud-exit" class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition active:scale-90" title="Exit Navigation">
+                                <button type="button" id="btn-hud-exit" class="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition active:scale-90" title="Exit Navigation">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -290,8 +330,8 @@
                                 <!-- Stats Details -->
                                 <div class="text-center">
                                     <div class="flex items-baseline justify-center gap-0.5">
-                                        <span id="hud-duration-val" class="text-3xl font-black text-orange-600">--</span>
-                                        <span class="text-lg font-extrabold text-orange-600">min</span>
+                                        <span id="hud-duration-val" class="text-2xl sm:text-3xl font-black text-orange-600">--</span>
+                                        <span class="text-base sm:text-lg font-extrabold text-orange-600">min</span>
                                     </div>
                                     <div class="mt-1 text-xs sm:text-sm font-black text-slate-500 flex items-center justify-center gap-2">
                                         <span id="hud-distance-val">-- km</span>
@@ -300,7 +340,7 @@
                                     </div>
                                 </div>
                                 <!-- Directions drawer toggle -->
-                                <button type="button" id="btn-hud-list" class="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition active:scale-90" title="Toggle Directions List">
+                                <button type="button" id="btn-hud-list" class="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition active:scale-90" title="Toggle Directions List">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
@@ -309,38 +349,38 @@
                         </div>
 
                         <!-- Preview Mode Bottom Sheet -->
-                        <div id="preview-bottom-sheet" class="w-full bg-white rounded-3xl p-5 shadow-2xl border border-slate-150 pointer-events-auto mt-auto transform translate-y-0 opacity-100 transition-all duration-350 flex flex-col gap-4">
+                        <div id="preview-bottom-sheet" class="w-full max-w-md mx-auto bg-white rounded-3xl p-4 sm:p-5 shadow-2xl border border-slate-150 pointer-events-auto mt-auto transform translate-y-0 opacity-100 transition-all duration-350 flex flex-col gap-3.5 shrink-0">
                             <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto shrink-0"></div>
                             
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h3 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                                    <h3 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
                                         <span>Drive</span>
                                         <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 shrink-0">Best Route</span>
                                     </h3>
                                     <div class="mt-1 flex items-baseline gap-1.5">
-                                        <span id="preview-duration" class="text-2xl font-black text-emerald-600">-- min</span>
-                                        <span id="preview-distance" class="text-sm font-extrabold text-slate-500">(-- km)</span>
+                                        <span id="preview-duration" class="text-xl sm:text-2xl font-black text-emerald-600">-- min</span>
+                                        <span id="preview-distance" class="text-xs sm:text-sm font-extrabold text-slate-500">(-- km)</span>
                                     </div>
-                                    <p class="text-xs font-bold text-slate-500 mt-1">Fastest route, standard traffic</p>
+                                    <p class="text-xs font-bold text-slate-500 mt-0.5">Fastest route, standard traffic</p>
                                 </div>
                                 <!-- Voice guidance toggle in preview -->
-                                <button type="button" id="btn-preview-audio" class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:text-slate-800 transition active:scale-95" title="Toggle Voice Guidance">
-                                    <svg id="preview-audio-svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <button type="button" id="btn-preview-audio" class="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:text-slate-800 transition active:scale-95" title="Toggle Voice Guidance">
+                                    <svg id="preview-audio-svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                                     </svg>
                                 </button>
                             </div>
 
                             <div class="flex items-center gap-3">
-                                <button type="button" id="btn-preview-start" class="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-teal-800 hover:bg-teal-900 py-3.5 font-bold text-white shadow-lg transition active:scale-97">
+                                <button type="button" id="btn-preview-start" class="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-teal-800 hover:bg-teal-900 py-3 sm:py-3.5 font-bold text-white shadow-lg transition active:scale-97">
                                     <svg class="h-5 w-5 transform rotate-45" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
                                     </svg>
                                     <span id="btn-preview-start-text">Start drive</span>
                                 </button>
 
-                                <button type="button" id="btn-preview-steps" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition active:scale-95" title="Toggle Directions List">
+                                <button type="button" id="btn-preview-steps" class="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition active:scale-95" title="Toggle Directions List">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
@@ -349,7 +389,9 @@
                         </div>
                     </div>
 
-                    <div id="map" class="h-[70vh] min-h-[500px] w-full z-0"></div>
+                    <div id="map" class="h-full w-full z-0"></div>
+                @endif
+                </div>
 
                     <!-- GPS Simulation Dialog -->
                     <div id="sim-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
@@ -582,7 +624,7 @@
                     zoom: 14,
                     mapTypeControl: false,
                     streetViewControl: false,
-                    fullscreenControl: true,
+                    fullscreenControl: false,
                     rotateControl: true,
                     gestureHandling: 'greedy',
                     styles: [
@@ -2023,11 +2065,75 @@
                     window.speechSynthesis.cancel();
                 }
 
-                alertToast('Navigation ended');
+            function toggleMapFullscreen() {
+                const wrapper = document.getElementById('map-wrapper');
+                const icon = document.getElementById('hud-fullscreen-icon');
+                const hintBanner = document.getElementById('fullscreen-hint-banner');
+
+                if (!wrapper) return;
+
+                const isFull = !!(document.fullscreenElement || wrapper.classList.contains('is-fullscreen'));
+
+                if (isFull) {
+                    if (document.exitFullscreen && document.fullscreenElement) {
+                        document.exitFullscreen().catch(() => {});
+                    }
+                    wrapper.classList.remove('is-fullscreen');
+                    if (hintBanner) hintBanner.classList.remove('hidden');
+                    if (icon) {
+                        icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />`;
+                    }
+                    alertToast('Exited full preview');
+                } else {
+                    if (wrapper.requestFullscreen) {
+                        wrapper.requestFullscreen().catch(() => {
+                            wrapper.classList.add('is-fullscreen');
+                        });
+                    } else {
+                        wrapper.classList.add('is-fullscreen');
+                    }
+                    if (hintBanner) hintBanner.classList.add('hidden');
+                    if (icon) {
+                        icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M9 9L4 4m0 0v4m0-4h4m11 5l5-5m0 0v4m0-4h-4M9 15l-5 5m0 0v-4m0 4h4m11-5l5 5m0 0v-4m0 4h-4" />`;
+                    }
+                    alertToast('Full preview mode enabled');
+                }
+
+                setTimeout(() => {
+                    if (map) {
+                        google.maps.event.trigger(map, 'resize');
+                        const center = latestCurrentPosition || routeStartPosition;
+                        if (center) map.panTo(center);
+                    }
+                }, 200);
             }
+
+            document.addEventListener('fullscreenchange', () => {
+                const wrapper = document.getElementById('map-wrapper');
+                const icon = document.getElementById('hud-fullscreen-icon');
+                const hintBanner = document.getElementById('fullscreen-hint-banner');
+                const isFull = !!document.fullscreenElement;
+
+                if (wrapper) {
+                    wrapper.classList.toggle('is-fullscreen', isFull);
+                }
+                if (hintBanner) {
+                    hintBanner.classList.toggle('hidden', isFull);
+                }
+                if (icon) {
+                    icon.innerHTML = isFull
+                        ? `<path stroke-linecap="round" stroke-linejoin="round" d="M9 9L4 4m0 0v4m0-4h4m11 5l5-5m0 0v4m0-4h-4M9 15l-5 5m0 0v-4m0 4h4m11-5l5 5m0 0v-4m0 4h-4" />`
+                        : `<path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />`;
+                }
+                if (map) {
+                    google.maps.event.trigger(map, 'resize');
+                }
+            });
 
             document.addEventListener('DOMContentLoaded', () => {
                 const btnCompass = document.getElementById('btn-hud-compass');
+                const btnFullscreen = document.getElementById('btn-hud-fullscreen');
+                const btnBannerFullscreen = document.getElementById('btn-banner-fullscreen');
                 const btnSearch = document.getElementById('btn-hud-search');
                 const btnAudio = document.getElementById('btn-hud-audio');
                 const btnReport = document.getElementById('btn-hud-report');
@@ -2042,6 +2148,14 @@
                 const btnSimGps = document.getElementById('btn-sim-gps');
                 const btnSimCancel = document.getElementById('btn-sim-cancel');
                 const modal = document.getElementById('sim-modal');
+
+                if (btnFullscreen) {
+                    btnFullscreen.addEventListener('click', toggleMapFullscreen);
+                }
+
+                if (btnBannerFullscreen) {
+                    btnBannerFullscreen.addEventListener('click', toggleMapFullscreen);
+                }
 
                 if (btnCompass) {
                     btnCompass.addEventListener('click', () => {
