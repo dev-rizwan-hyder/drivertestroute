@@ -1206,37 +1206,99 @@
                 });
             }
 
+            let deviceHeading = null;
+
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (event) => {
+                    if (event.webkitCompassHeading) {
+                        deviceHeading = event.webkitCompassHeading;
+                    } else if (event.alpha !== null && event.absolute) {
+                        deviceHeading = (360 - event.alpha) % 360;
+                    }
+                }, true);
+            }
+
             function addRouteControls() {
-                // Map elements
                 startRouteButton = document.getElementById('btn-preview-start');
                 routeStatus = document.getElementById('preview-start-loc-label');
-                locateButton = null; // Locate is done automatically on page load
+                locateButton = null;
 
-                // Automatically watch location on load
                 beginLocationWatch();
             }
 
             function initializeVehicle() {
-                if (!routeStartPosition) {
+                const initialPos = latestCurrentPosition || routeStartPosition;
+                if (!initialPos) {
                     return;
                 }
 
                 const heading = directionSteps.length > 0 ? bearing(directionSteps[0].start, directionSteps[0].end) ?? 0 : 0;
                 vehicleMarker = new google.maps.Marker({
-                    position: routeStartPosition,
+                    position: initialPos,
                     map,
-                    title: 'Vehicle',
+                    title: 'Your Location Avatar',
                     icon: vehicleIcon(heading),
                     zIndex: 1000,
                 });
 
-                lastVehiclePosition = routeStartPosition;
+                lastVehiclePosition = initialPos;
                 lastVehicleHeading = heading;
+            }
+
+            function getClosestPointOnSegment(p, a, b) {
+                const latRad = degreesToRadians((a.lat + b.lat) / 2);
+                const cosLat = Math.cos(latRad);
+                const dx = (b.lng - a.lng) * cosLat;
+                const dy = b.lat - a.lat;
+                if (dx === 0 && dy === 0) return { point: a, t: 0 };
+                const px = (p.lng - a.lng) * cosLat;
+                const py = p.lat - a.lat;
+                let t = (px * dx + py * dy) / (dx * dx + dy * dy);
+                t = Math.max(0, Math.min(1, t));
+                return {
+                    point: { lat: a.lat + t * dy, lng: a.lng + (t * dx) / cosLat },
+                    t: t
+                };
+            }
+
+            function snapToRoute(position, maxSnapDistanceMeters = 50) {
+                if (!routePathPoints || routePathPoints.length < 2) {
+                    return { snapped: false, position: position, distance: 0, segmentIndex: 0 };
+                }
+                let closestPoint = position;
+                let minDistance = Infinity;
+                let closestSegmentIndex = 0;
+                for (let i = 0; i < routePathPoints.length - 1; i++) {
+                    const res = getClosestPointOnSegment(position, routePathPoints[i], routePathPoints[i + 1]);
+                    const dist = distanceMeters(position, res.point);
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        closestPoint = res.point;
+                        closestSegmentIndex = i;
+                    }
+                }
+                if (minDistance <= maxSnapDistanceMeters) {
+                    return { snapped: true, position: closestPoint, distance: minDistance, segmentIndex: closestSegmentIndex };
+                }
+                return { snapped: false, position: position, distance: minDistance, segmentIndex: closestSegmentIndex };
+            }
+
+            function computeEffectiveHeading(currentPos, reportedHeading) {
+                if (Number.isFinite(reportedHeading) && reportedHeading !== null && reportedHeading >= 0) {
+                    return reportedHeading;
+                }
+                if (lastVehiclePosition && distanceMeters(lastVehiclePosition, currentPos) > 1.2) {
+                    const calcBearing = bearing(lastVehiclePosition, currentPos);
+                    if (calcBearing !== null) return calcBearing;
+                }
+                if (deviceHeading !== null && Number.isFinite(deviceHeading)) {
+                    return deviceHeading;
+                }
+                return lastVehicleHeading ?? 0;
             }
 
             async function startLiveRoute(force = false) {
                 if (!hasReachedStart && !force) {
-                    // Open the simulation choices dialog modal
                     const modal = document.getElementById('sim-modal');
                     if (modal) {
                         modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -1266,7 +1328,6 @@
                 driveStarted = true;
                 removeCurrentLocationPreview();
 
-                // Hide preview elements
                 const searchHeader = document.getElementById('preview-search-header');
                 const previewSheet = document.getElementById('preview-bottom-sheet');
                 if (searchHeader) {
@@ -1278,7 +1339,6 @@
                     previewSheet.classList.add('translate-y-36', 'opacity-0', 'pointer-events-none');
                 }
 
-                // Show HUD overlays
                 const topBanner = document.getElementById('hud-top-banner');
                 const bottomSheet = document.getElementById('hud-bottom-sheet');
                 if (topBanner) topBanner.classList.add('hud-slide-down');
@@ -1287,11 +1347,9 @@
                     bottomSheet.classList.add('hud-slide-up');
                 }
 
-                // Hide legacy text guidance
                 const legacyCard = document.getElementById('active-instruction');
                 if (legacyCard) legacyCard.classList.add('hidden');
 
-                // Tilt and rotate map for navigation mode by switching to Hybrid map type
                 if (map) {
                     map.setMapTypeId(google.maps.MapTypeId.HYBRID);
                     map.setZoom(18);
@@ -1300,15 +1358,13 @@
                     }
                 }
 
-                if (latestCurrentPosition) {
-                    moveVehicle(latestCurrentPosition);
-                    map.panTo(latestCurrentPosition);
-                } else if (routeStartPosition) {
-                    moveVehicle(routeStartPosition);
-                    map.panTo(routeStartPosition);
+                const activeTarget = latestCurrentPosition || routeStartPosition;
+                if (activeTarget) {
+                    moveVehicle(activeTarget);
+                    map.panTo(activeTarget);
                 }
 
-                updateActiveDrivingInstruction(latestCurrentPosition ?? routeStartPosition);
+                updateActiveDrivingInstruction(activeTarget);
             }
 
             function interpolatePath(points, stepMeters = 3) {
@@ -1344,9 +1400,8 @@
 
             function startSimulationDrive() {
                 driveStarted = true;
-                accessConsumedForCurrentDrive = true; // Bypassed for demo simulation
+                accessConsumedForCurrentDrive = true;
                 
-                // Hide preview elements
                 const searchHeader = document.getElementById('preview-search-header');
                 const previewSheet = document.getElementById('preview-bottom-sheet');
                 if (searchHeader) {
@@ -1358,7 +1413,6 @@
                     previewSheet.classList.add('translate-y-36', 'opacity-0', 'pointer-events-none');
                 }
 
-                // Show HUD overlays
                 const topBanner = document.getElementById('hud-top-banner');
                 const bottomSheet = document.getElementById('hud-bottom-sheet');
                 if (topBanner) topBanner.classList.add('hud-slide-down');
@@ -1367,11 +1421,9 @@
                     bottomSheet.classList.add('hud-slide-up');
                 }
 
-                // Hide legacy text guidance
                 const legacyCard = document.getElementById('active-instruction');
                 if (legacyCard) legacyCard.classList.add('hidden');
 
-                // Tilt and rotate map for navigation mode by switching to Hybrid map type
                 if (map) {
                     map.setMapTypeId(google.maps.MapTypeId.HYBRID);
                     map.setZoom(18);
@@ -1380,10 +1432,8 @@
                     }
                 }
 
-                // Smooth path interpolation (spacing points by 3 meters)
                 const densePath = interpolatePath(routePathPoints, 3);
 
-                // Initialize vehicle position at path start
                 simIndex = 0;
                 if (densePath.length > 0) {
                     moveVehicle(densePath[0], lastVehicleHeading);
@@ -1411,20 +1461,16 @@
 
                     moveVehicle(currentPos, currentHeading);
                     map.panTo(currentPos);
-                    if (map && typeof map.setHeading === 'function') {
-                        map.setHeading(currentHeading);
-                    }
 
                     updateActiveDrivingInstruction(currentPos);
 
-                    // Speed HUD simulation
                     const speedValEl = document.getElementById('hud-speed-val');
                     if (speedValEl) {
                         speedValEl.textContent = Math.round(simulatedSpeed + (Math.random() * 4 - 2));
                     }
 
                     simIndex += 1;
-                }, 200); // 200ms updates for professional taxi app style movement
+                }, 200);
             }
 
             async function consumeMapStart() {
@@ -1521,17 +1567,16 @@
             }
 
             function handleLocationUpdate(position) {
-                const currentPosition = {
+                const rawPosition = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude,
                 };
-                latestCurrentPosition = currentPosition;
+                latestCurrentPosition = rawPosition;
 
-                // Update speedometer HUD
                 const speed = position.coords.speed;
                 const speedValEl = document.getElementById('hud-speed-val');
                 if (speedValEl) {
-                    if (speed !== null && speed !== undefined) {
+                    if (speed !== null && speed !== undefined && speed >= 0) {
                         speedValEl.textContent = Math.round(speed * 3.6);
                     } else if (driveStarted) {
                         const simulatedSpeed = Math.floor(Math.random() * 8) + 45;
@@ -1541,50 +1586,46 @@
                     }
                 }
 
+                const snapResult = snapToRoute(rawPosition, 50);
+                const activePosition = snapResult.snapped ? snapResult.position : rawPosition;
+                const heading = computeEffectiveHeading(activePosition, position.coords.heading);
+
                 if (!driveStarted) {
-                    updateCurrentLocationMarker(currentPosition, position.coords.accuracy);
-                    updateStartProximity(currentPosition, position.coords.accuracy);
+                    moveVehicle(activePosition, heading);
+                    updateCurrentLocationAccuracyCircle(rawPosition, position.coords.accuracy);
+                    updateStartProximity(rawPosition, position.coords.accuracy);
                     return;
                 }
 
-                moveVehicle(currentPosition, position.coords.heading);
-                updateActiveDrivingInstruction(currentPosition);
-                map.panTo(currentPosition);
+                moveVehicle(activePosition, heading);
+                updateActiveDrivingInstruction(activePosition);
+                map.panTo(activePosition);
 
                 if (map.getZoom() < 17) {
-                    map.setZoom(17);
+                    map.setZoom(18);
                 }
             }
 
-            function updateCurrentLocationMarker(position, accuracy) {
-                if (!currentLocationMarker) {
-                    currentLocationMarker = new google.maps.Marker({
-                        position,
-                        map,
-                        title: 'Your current location',
-                        icon: currentLocationIcon(),
-                        zIndex: 999,
-                    });
-                } else {
-                    currentLocationMarker.setPosition(position);
-                }
-
+            function updateCurrentLocationAccuracyCircle(position, accuracy) {
                 if (!currentAccuracyCircle) {
                     currentAccuracyCircle = new google.maps.Circle({
                         map,
                         center: position,
-                        radius: accuracy,
+                        radius: Number.isFinite(accuracy) ? accuracy : 20,
                         strokeColor: '#2563eb',
-                        strokeOpacity: 0.18,
-                        strokeWeight: 1,
+                        strokeOpacity: 0.25,
+                        strokeWeight: 1.5,
                         fillColor: '#2563eb',
-                        fillOpacity: 0.08,
+                        fillOpacity: 0.1,
+                        zIndex: 900,
                     });
                     return;
                 }
 
                 currentAccuracyCircle.setCenter(position);
-                currentAccuracyCircle.setRadius(accuracy);
+                if (Number.isFinite(accuracy)) {
+                    currentAccuracyCircle.setRadius(accuracy);
+                }
             }
 
             function updateStartProximity(position, accuracy) {
@@ -1618,20 +1659,18 @@
                     return;
                 }
 
-                while (currentStepIndex < directionSteps.length - 1 && distanceMeters(position, directionSteps[currentStepIndex].end) < 35) {
+                while (currentStepIndex < directionSteps.length - 1 && distanceMeters(position, directionSteps[currentStepIndex].end) < 25) {
                     currentStepIndex += 1;
                 }
 
                 const step = directionSteps[currentStepIndex];
                 const nextStep = directionSteps[currentStepIndex + 1] ?? null;
-                const distance = distanceMeters(position, step.end);
+                const distanceToStepEnd = distanceMeters(position, step.end);
 
-                // Update bottom sheet statistics dynamically
-                let remainingDistance = 0;
-                for (let i = currentStepIndex; i < directionSteps.length; i++) {
+                let remainingDistance = distanceToStepEnd;
+                for (let i = currentStepIndex + 1; i < directionSteps.length; i++) {
                     remainingDistance += directionSteps[i].distanceMeters;
                 }
-                // Convert distance to average travel duration (e.g. 40 km/h = ~1.5 min per km)
                 const remainingDurationMinutes = Math.max(1, Math.round((remainingDistance / 1000) * 1.5));
                 
                 const durValEl = document.getElementById('hud-duration-val');
@@ -1640,7 +1679,6 @@
                 if (distValEl) distValEl.textContent = (remainingDistance / 1000).toFixed(1) + ' km';
                 updateETA(remainingDurationMinutes * 60);
 
-                // Update Next Step banner
                 const nextStepEl = document.getElementById('hud-next-step');
                 const nextStepTextEl = document.getElementById('hud-next-step-text');
                 if (nextStepEl && nextStepTextEl) {
@@ -1652,52 +1690,47 @@
                     }
                 }
 
-                if (currentStepIndex === directionSteps.length - 1 && distance < 35) {
-                    setActiveInstruction('Route complete', 'You are back at the start point.');
-                    routeStatus.textContent = 'Route complete.';
+                if (currentStepIndex === directionSteps.length - 1 && distanceToStepEnd < 25) {
+                    setActiveInstruction('Route complete', 'You have arrived at your destination.');
+                    if (routeStatus) routeStatus.textContent = 'Route complete.';
                     highlightDirectionStep(currentStepIndex);
                     return;
                 }
 
-                const guidance = nextInstructionText(step, nextStep, distance);
-                setActiveInstruction(guidance, `${step.distanceText}${step.durationText ? ' / ' + step.durationText : ''}`);
+                const guidance = nextInstructionText(step, nextStep, distanceToStepEnd);
+                setActiveInstruction(guidance, `${formatDistance(distanceToStepEnd)} remaining in step`);
                 highlightDirectionStep(currentStepIndex);
-                routeStatus.textContent = 'Drive started. Live tracking is active.';
+                if (routeStatus) routeStatus.textContent = 'Drive started. Live tracking active.';
             }
 
             function nextInstructionText(step, nextStep, distance) {
                 const distanceText = formatDistance(distance);
 
-                if (nextStep && distance > 35) {
-                    return `${nextStep.text || 'Continue'} after ${distanceText}`;
+                if (distance <= 25) {
+                    return nextStep ? (nextStep.text || 'Turn now') : (step.text || 'Arriving at destination');
                 }
 
                 if (nextStep) {
-                    return nextStep.text || 'Continue';
+                    return `In ${distanceText}, ${nextStep.text || 'continue'}`;
                 }
 
-                const text = step.text || 'Continue';
+                const text = step.text || 'Continue on route';
 
                 if (/^(head|continue|keep|merge|go straight|drive)/i.test(text)) {
                     return `Drive straight for ${distanceText}`;
                 }
 
-                return `${text} after ${distanceText}`;
+                return `${text} in ${distanceText}`;
             }
 
             function moveVehicle(position, reportedHeading = null) {
-                const heading = Number.isFinite(reportedHeading)
-                    ? reportedHeading
-                    : bearing(lastVehiclePosition, position) ?? lastVehicleHeading;
+                const heading = computeEffectiveHeading(position, reportedHeading);
 
                 if (simIntervalId && vehicleMarker) {
                     vehicleMarker.setPosition(position);
                     vehicleMarker.setIcon(vehicleIcon(heading));
                     lastVehiclePosition = position;
                     lastVehicleHeading = heading;
-                    if (driveStarted && map && typeof map.setHeading === 'function') {
-                        map.setHeading(heading);
-                    }
                 } else {
                     animateVehicle(position, heading);
                 }
@@ -1768,7 +1801,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89" />
                     </svg>`;
                 }
-                // Straight / Continue
                 return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                 </svg>`;
@@ -1818,13 +1850,11 @@
             }
 
             function setActiveInstruction(title, detail) {
-                // Update legacy elements
                 const legacyTitle = document.getElementById('active-instruction-title');
                 const legacyDetail = document.getElementById('active-instruction-detail');
                 if (legacyTitle) legacyTitle.textContent = title;
                 if (legacyDetail) legacyDetail.textContent = detail;
 
-                // Update HUD overlays
                 const mainInstEl = document.getElementById('hud-main-instruction');
                 const subInstEl = document.getElementById('hud-sub-instruction');
                 const iconEl = document.getElementById('hud-maneuver-icon');
@@ -1848,7 +1878,6 @@
                     simIntervalId = null;
                 }
 
-                // Hide HUD overlays
                 const topBanner = document.getElementById('hud-top-banner');
                 const bottomSheet = document.getElementById('hud-bottom-sheet');
                 if (topBanner) topBanner.classList.remove('hud-slide-down');
@@ -1857,7 +1886,6 @@
                     bottomSheet.classList.add('hidden');
                 }
 
-                // Show preview elements
                 const searchHeader = document.getElementById('preview-search-header');
                 const previewSheet = document.getElementById('preview-bottom-sheet');
                 if (searchHeader) {
@@ -1869,12 +1897,10 @@
                     previewSheet.classList.add('translate-y-0', 'opacity-100');
                 }
 
-                // Restore start drive button text in preview
                 const btnText = document.getElementById('btn-preview-start-text');
                 if (btnText) btnText.textContent = 'Start drive';
                 if (startRouteButton) startRouteButton.disabled = false;
 
-                // Restore map view defaults
                 if (map) {
                     map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
                     if (typeof map.setTilt === 'function') map.setTilt(0);
@@ -1883,7 +1909,6 @@
                     if (routeStartPosition) map.panTo(routeStartPosition);
                 }
 
-                // Stop Speech
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
                 }
@@ -1891,7 +1916,6 @@
                 alertToast('Navigation ended');
             }
 
-            // Register HUD and Preview Interaction button listeners
             document.addEventListener('DOMContentLoaded', () => {
                 const btnCompass = document.getElementById('btn-hud-compass');
                 const btnAudio = document.getElementById('btn-hud-audio');
@@ -1910,10 +1934,9 @@
 
                 if (btnCompass) {
                     btnCompass.addEventListener('click', () => {
-                        if (latestCurrentPosition) {
-                            map.panTo(latestCurrentPosition);
-                        } else if (routeStartPosition) {
-                            map.panTo(routeStartPosition);
+                        const targetPos = latestCurrentPosition || routeStartPosition;
+                        if (targetPos) {
+                            map.panTo(targetPos);
                         }
                         if (typeof map.setHeading === 'function') {
                             map.setHeading(0);
@@ -2058,15 +2081,25 @@
             }
 
             function vehicleIcon(rotation = 0) {
+                const rot = Math.round((rotation % 360 + 360) % 360);
+                const svg = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+                        <defs>
+                            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.4"/>
+                            </filter>
+                        </defs>
+                        <circle cx="24" cy="24" r="20" fill="#3b82f6" fill-opacity="0.2"/>
+                        <g transform="rotate(${rot} 24 24)" filter="url(#shadow)">
+                            <path d="M 24 6 L 37 38 L 24 30 L 11 38 Z" fill="#2563eb" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+                        </g>
+                    </svg>
+                `;
+
                 return {
-                    path: 'M 0 -18 L 9 11 L 0 6 L -9 11 Z',
-                    fillColor: '#1e40af',
-                    fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2.5,
-                    scale: 1.25,
-                    rotation,
-                    anchor: new google.maps.Point(0, 0),
+                    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+                    scaledSize: new google.maps.Size(48, 48),
+                    anchor: new google.maps.Point(24, 24),
                 };
             }
 
@@ -2082,14 +2115,16 @@
                     vehicleMarker.setIcon(vehicleIcon(heading));
                     lastVehiclePosition = nextPosition;
                     lastVehicleHeading = heading;
-                    if (driveStarted && map && typeof map.setHeading === 'function') {
-                        map.setHeading(heading);
-                    }
                     return;
                 }
 
                 const startedAt = performance.now();
-                const duration = 700;
+                const duration = 500;
+                const startHeading = lastVehicleHeading ?? heading;
+
+                let deltaHeading = (heading - startHeading) % 360;
+                if (deltaHeading > 180) deltaHeading -= 360;
+                if (deltaHeading < -180) deltaHeading += 360;
 
                 function step(now) {
                     const progress = Math.min((now - startedAt) / duration, 1);
@@ -2097,9 +2132,10 @@
                         lat: start.lat + ((nextPosition.lat - start.lat) * progress),
                         lng: start.lng + ((nextPosition.lng - start.lng) * progress),
                     };
+                    const currentHeading = (startHeading + (deltaHeading * progress) + 360) % 360;
 
                     vehicleMarker.setPosition(position);
-                    vehicleMarker.setIcon(vehicleIcon(heading));
+                    vehicleMarker.setIcon(vehicleIcon(currentHeading));
 
                     if (progress < 1) {
                         requestAnimationFrame(step);
@@ -2108,11 +2144,6 @@
 
                     lastVehiclePosition = nextPosition;
                     lastVehicleHeading = heading;
-
-                    // Automatically rotate the map to face forward (360 rotation)
-                    if (driveStarted && map && typeof map.setHeading === 'function') {
-                        map.setHeading(heading);
-                    }
                 }
 
                 requestAnimationFrame(step);
