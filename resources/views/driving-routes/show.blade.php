@@ -2063,6 +2063,9 @@
                     window.speechSynthesis.cancel();
                 }
 
+                alertToast('Navigation ended');
+            }
+
             function toggleMapFullscreen() {
                 const wrapper = document.getElementById('map-wrapper');
                 const icon = document.getElementById('hud-fullscreen-icon');
