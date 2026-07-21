@@ -197,18 +197,18 @@
                     <div id="nav-hud-overlay" class="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-3 sm:p-5">
                         
                         <!-- Fullscreen Recommendation Hint Banner -->
-                        <div id="fullscreen-hint-banner" class="w-full max-w-md mx-auto mb-2 flex items-center justify-between gap-3 rounded-2xl bg-slate-900/90 text-white px-3.5 py-2.5 shadow-xl backdrop-blur-md border border-slate-700/60 pointer-events-auto transition-all duration-300 shrink-0">
+                        <div id="fullscreen-hint-banner" class="w-full max-w-md mx-auto mb-2 flex items-center justify-between gap-3 rounded-2xl bg-slate-900/95 text-white px-4 py-2.5 shadow-2xl backdrop-blur-xl border border-white/10 pointer-events-auto transition-all duration-300 shrink-0">
                             <div class="flex items-center gap-2.5 min-w-0">
-                                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-blue-400">
+                                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-blue-400 ring-2 ring-blue-500/30">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </span>
-                                <p class="text-xs font-semibold leading-tight text-slate-200 truncate">
-                                    For better experience, switch to <span class="font-bold text-white">Full Preview</span>
+                                <p class="text-xs font-semibold text-slate-200 leading-tight">
+                                    For better experience, switch to <span class="font-bold text-white whitespace-nowrap">Full Preview</span>
                                 </p>
                             </div>
-                            <button id="btn-banner-fullscreen" type="button" class="shrink-0 flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 px-3 py-1.5 text-xs font-bold text-white shadow-md transition active:scale-95">
+                            <button id="btn-banner-fullscreen" type="button" class="shrink-0 flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-3.5 py-1.5 text-xs font-bold text-white shadow-md transition active:scale-95">
                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                                 </svg>
@@ -389,7 +389,7 @@
                         </div>
                     </div>
 
-                    <div id="map" class="h-full w-full z-0"></div>
+                    <div id="map" class="absolute inset-0 h-full w-full z-0"></div>
 
                     <!-- GPS Simulation Dialog -->
                     <div id="sim-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
