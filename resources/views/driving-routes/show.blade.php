@@ -390,8 +390,6 @@
                     </div>
 
                     <div id="map" class="h-full w-full z-0"></div>
-                @endif
-                </div>
 
                     <!-- GPS Simulation Dialog -->
                     <div id="sim-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
