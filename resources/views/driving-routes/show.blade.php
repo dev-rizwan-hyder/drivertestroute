@@ -239,32 +239,34 @@
                             </div>
                         </div>
 
-                        <!-- Side Floaters Column -->
-                        <div class="absolute right-4 top-[100px] flex flex-col gap-3 pointer-events-auto">
-                            <!-- Compass -->
-                            <button id="btn-hud-compass" class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-xl border border-slate-100/80 hover:bg-slate-50 transition active:scale-90" title="Reset Map Angle">
-                                <svg class="h-6 w-6 text-red-500 transform transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+                        <!-- Side Floaters Column (Google Maps Style) -->
+                        <div class="absolute right-4 top-[100px] flex flex-col items-end gap-3 pointer-events-auto z-20">
+                            <!-- Compass Needle Button -->
+                            <button id="btn-hud-compass" type="button" class="group flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Reset Map Heading (North Up)">
+                                <svg id="hud-compass-icon" class="h-6 w-6 text-red-500 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
                                 </svg>
                             </button>
-                            <!-- Search -->
-                            <button class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-xl border border-slate-100/80 hover:bg-slate-50 transition active:scale-90">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <!-- Search Along Route Button -->
+                            <button id="btn-hud-search" type="button" class="group flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Search Along Route">
+                                <svg class="h-5 w-5 text-slate-700 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </button>
-                            <!-- Audio Speaker Toggle -->
-                            <button id="btn-hud-audio" class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-xl border border-slate-100/80 hover:bg-slate-50 transition active:scale-90" title="Toggle Voice Guidance">
-                                <svg id="hud-audio-svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <!-- Voice Guidance Toggle -->
+                            <button id="btn-hud-audio" type="button" class="group flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Toggle Voice Guidance">
+                                <svg id="hud-audio-svg" class="h-5 w-5 text-slate-700 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                                 </svg>
                             </button>
-                            <!-- Report Button -->
-                            <button id="btn-hud-report" class="flex items-center gap-2 rounded-full bg-white px-4 py-3 text-slate-700 shadow-xl border border-slate-100/80 hover:bg-slate-50 transition active:scale-90">
-                                <svg class="h-5 w-5 text-amber-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                                <span class="text-sm font-black text-slate-800">Report</span>
+                            <!-- Report Hazard Button -->
+                            <button id="btn-hud-report" type="button" class="group flex items-center gap-2 rounded-full bg-white/95 px-3.5 py-2.5 text-slate-800 shadow-lg border border-slate-200/80 hover:bg-white hover:shadow-xl transition-all duration-200 active:scale-90 backdrop-blur-md" title="Report Traffic Hazard">
+                                <div class="flex h-5 w-5 items-center justify-center rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                                    <svg class="h-3.5 w-3.5 text-amber-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-black text-slate-800 tracking-tight">Report</span>
                             </button>
                         </div>
 
@@ -1204,9 +1206,9 @@
                 document.querySelectorAll('[data-step-index]').forEach((item) => {
                     item.classList.toggle('bg-emerald-50', Number(item.dataset.stepIndex) === index);
                 });
-            }
-
-            let deviceHeading = null;
+            }            let deviceHeading = null;
+            let activeRemainingPolyline = null;
+            let traveledPolyline = null;
 
             if (window.DeviceOrientationEvent) {
                 window.addEventListener('deviceorientation', (event) => {
@@ -1214,6 +1216,12 @@
                         deviceHeading = event.webkitCompassHeading;
                     } else if (event.alpha !== null && event.absolute) {
                         deviceHeading = (360 - event.alpha) % 360;
+                    }
+
+                    // Rotate compass needle UI if active
+                    const compassIcon = document.getElementById('hud-compass-icon');
+                    if (compassIcon && deviceHeading !== null) {
+                        compassIcon.style.transform = `rotate(${Math.round(deviceHeading)}deg)`;
                     }
                 }, true);
             }
@@ -1236,7 +1244,7 @@
                 vehicleMarker = new google.maps.Marker({
                     position: initialPos,
                     map,
-                    title: 'Your Location Avatar',
+                    title: 'Your Navigation Avatar',
                     icon: vehicleIcon(heading),
                     zIndex: 1000,
                 });
@@ -1259,6 +1267,52 @@
                     point: { lat: a.lat + t * dy, lng: a.lng + (t * dx) / cosLat },
                     t: t
                 };
+            }
+
+            function getAheadCameraCenter(vehiclePos, heading, distanceMeters = 65) {
+                if (!vehiclePos) return vehiclePos;
+                const headingRad = degreesToRadians(heading);
+                const latOffset = (distanceMeters * Math.cos(headingRad)) / 111111;
+                const lngOffset = (distanceMeters * Math.sin(headingRad)) / (111111 * Math.cos(degreesToRadians(vehiclePos.lat)));
+                return {
+                    lat: vehiclePos.lat + latOffset,
+                    lng: vehiclePos.lng + lngOffset,
+                };
+            }
+
+            function updateRoutePolylines(activePosition, segmentIndex) {
+                if (!routePathPoints || routePathPoints.length < 2) return;
+
+                const remainingPath = [activePosition, ...routePathPoints.slice(segmentIndex + 1)];
+                const traveledPath = [...routePathPoints.slice(0, segmentIndex + 1), activePosition];
+
+                if (!activeRemainingPolyline) {
+                    activeRemainingPolyline = new google.maps.Polyline({
+                        path: remainingPath,
+                        geodesic: true,
+                        strokeColor: '#2563eb',
+                        strokeOpacity: 0.95,
+                        strokeWeight: 8,
+                        zIndex: 20,
+                        map: map,
+                    });
+                } else {
+                    activeRemainingPolyline.setPath(remainingPath);
+                }
+
+                if (!traveledPolyline) {
+                    traveledPolyline = new google.maps.Polyline({
+                        path: traveledPath,
+                        geodesic: true,
+                        strokeColor: '#94a3b8',
+                        strokeOpacity: 0.45,
+                        strokeWeight: 5,
+                        zIndex: 10,
+                        map: map,
+                    });
+                } else {
+                    traveledPolyline.setPath(traveledPath);
+                }
             }
 
             function snapToRoute(position, maxSnapDistanceMeters = 50) {
@@ -1361,7 +1415,6 @@
                 const activeTarget = latestCurrentPosition || routeStartPosition;
                 if (activeTarget) {
                     moveVehicle(activeTarget);
-                    map.panTo(activeTarget);
                 }
 
                 updateActiveDrivingInstruction(activeTarget);
@@ -1437,7 +1490,6 @@
                 simIndex = 0;
                 if (densePath.length > 0) {
                     moveVehicle(densePath[0], lastVehicleHeading);
-                    map.panTo(densePath[0]);
                 }
 
                 updateActiveDrivingInstruction(densePath[0]);
@@ -1460,7 +1512,6 @@
                     const currentHeading = bearing(currentPos, nextPos) ?? lastVehicleHeading;
 
                     moveVehicle(currentPos, currentHeading);
-                    map.panTo(currentPos);
 
                     updateActiveDrivingInstruction(currentPos);
 
@@ -1470,7 +1521,7 @@
                     }
 
                     simIndex += 1;
-                }, 200);
+                }, 180);
             }
 
             async function consumeMapStart() {
@@ -1599,11 +1650,6 @@
 
                 moveVehicle(activePosition, heading);
                 updateActiveDrivingInstruction(activePosition);
-                map.panTo(activePosition);
-
-                if (map.getZoom() < 17) {
-                    map.setZoom(18);
-                }
             }
 
             function updateCurrentLocationAccuracyCircle(position, accuracy) {
@@ -1725,14 +1771,27 @@
 
             function moveVehicle(position, reportedHeading = null) {
                 const heading = computeEffectiveHeading(position, reportedHeading);
+                const snapResult = snapToRoute(position, 50);
+                const activePos = snapResult.snapped ? snapResult.position : position;
 
                 if (simIntervalId && vehicleMarker) {
-                    vehicleMarker.setPosition(position);
+                    vehicleMarker.setPosition(activePos);
                     vehicleMarker.setIcon(vehicleIcon(heading));
-                    lastVehiclePosition = position;
+                    lastVehiclePosition = activePos;
                     lastVehicleHeading = heading;
+                    updateRoutePolylines(activePos, snapResult.segmentIndex);
+                    updateCameraFollow(activePos, heading);
                 } else {
-                    animateVehicle(position, heading);
+                    animateVehicle(activePos, heading, snapResult.segmentIndex);
+                }
+            }
+
+            function updateCameraFollow(position, heading) {
+                if (!driveStarted || !map) return;
+                const aheadTarget = getAheadCameraCenter(position, heading, 65);
+                map.panTo(aheadTarget);
+                if (typeof map.setHeading === 'function') {
+                    map.setHeading(heading);
                 }
             }
 
@@ -1781,9 +1840,31 @@
 
             function getManeuverIcon(text) {
                 const lower = text.toLowerCase();
+                
+                if (lower.includes('sharp left')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 19V10a4 4 0 00-4-4H5m0 0l5-5m-5 5l5 5" />
+                    </svg>`;
+                }
+                if (lower.includes('slight left')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 19l-8-14M9 5H4v5" />
+                    </svg>`;
+                }
                 if (lower.includes('left')) {
                     return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>`;
+                }
+
+                if (lower.includes('sharp right')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 19V10a4 4 0 014-4h10m0 0l-5-5m5 5l-5 5" />
+                    </svg>`;
+                }
+                if (lower.includes('slight right')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 19l8-14M15 5h5v5" />
                     </svg>`;
                 }
                 if (lower.includes('right')) {
@@ -1791,16 +1872,36 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>`;
                 }
+
+                if (lower.includes('u-turn') || lower.includes('uturn') || lower.includes('reverse')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 11l-4 4m0 0l4 4m-4-4h8a5 5 0 005-5V5" />
+                    </svg>`;
+                }
+
+                if (lower.includes('keep left') || lower.includes('fork left')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 5v14M8 5L4 9m12-4v14" />
+                    </svg>`;
+                }
+                if (lower.includes('keep right') || lower.includes('fork right')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 5v14M16 5l4 4M8 5v14" />
+                    </svg>`;
+                }
+
+                if (lower.includes('roundabout') || lower.includes('rotary')) {
+                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89" />
+                    </svg>`;
+                }
+
                 if (lower.includes('merge') || lower.includes('exit') || lower.includes('highway') || lower.includes('ramp')) {
                     return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H8m0 0l4-4m-4 4l4 4" />
                     </svg>`;
                 }
-                if (lower.includes('roundabout')) {
-                    return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89" />
-                    </svg>`;
-                }
+
                 return `<svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                 </svg>`;
@@ -1878,6 +1979,15 @@
                     simIntervalId = null;
                 }
 
+                if (activeRemainingPolyline) {
+                    activeRemainingPolyline.setMap(null);
+                    activeRemainingPolyline = null;
+                }
+                if (traveledPolyline) {
+                    traveledPolyline.setMap(null);
+                    traveledPolyline = null;
+                }
+
                 const topBanner = document.getElementById('hud-top-banner');
                 const bottomSheet = document.getElementById('hud-bottom-sheet');
                 if (topBanner) topBanner.classList.remove('hud-slide-down');
@@ -1918,6 +2028,7 @@
 
             document.addEventListener('DOMContentLoaded', () => {
                 const btnCompass = document.getElementById('btn-hud-compass');
+                const btnSearch = document.getElementById('btn-hud-search');
                 const btnAudio = document.getElementById('btn-hud-audio');
                 const btnReport = document.getElementById('btn-hud-report');
                 const btnExit = document.getElementById('btn-hud-exit');
@@ -1941,12 +2052,18 @@
                         if (typeof map.setHeading === 'function') {
                             map.setHeading(0);
                         }
-                        const svg = btnCompass.querySelector('svg');
-                        if (svg) {
-                            svg.style.transform = 'rotate(360deg)';
-                            setTimeout(() => svg.style.transform = 'rotate(0deg)', 300);
+                        const icon = document.getElementById('hud-compass-icon');
+                        if (icon) {
+                            icon.style.transform = 'rotate(360deg)';
+                            setTimeout(() => icon.style.transform = 'rotate(0deg)', 300);
                         }
-                        alertToast('Map alignment reset');
+                        alertToast('Map heading reset to North');
+                    });
+                }
+
+                if (btnSearch) {
+                    btnSearch.addEventListener('click', () => {
+                        alertToast('Searching along route...');
                     });
                 }
 
@@ -2083,27 +2200,27 @@
             function vehicleIcon(rotation = 0) {
                 const rot = Math.round((rotation % 360 + 360) % 360);
                 const svg = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 52 52">
                         <defs>
-                            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.4"/>
+                            <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+                                <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.38"/>
                             </filter>
                         </defs>
-                        <circle cx="24" cy="24" r="20" fill="#3b82f6" fill-opacity="0.2"/>
-                        <g transform="rotate(${rot} 24 24)" filter="url(#shadow)">
-                            <path d="M 24 6 L 37 38 L 24 30 L 11 38 Z" fill="#2563eb" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+                        <circle cx="26" cy="26" r="22" fill="#2563eb" fill-opacity="0.18"/>
+                        <g transform="rotate(${rot} 26 26)" filter="url(#shadow)">
+                            <path d="M 26 6 L 40 40 L 26 31 L 12 40 Z" fill="#2563eb" stroke="#ffffff" stroke-width="3.5" stroke-linejoin="round"/>
                         </g>
                     </svg>
                 `;
 
                 return {
                     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-                    scaledSize: new google.maps.Size(48, 48),
-                    anchor: new google.maps.Point(24, 24),
+                    scaledSize: new google.maps.Size(52, 52),
+                    anchor: new google.maps.Point(26, 26),
                 };
             }
 
-            function animateVehicle(nextPosition, heading) {
+            function animateVehicle(nextPosition, heading, segmentIndex = 0) {
                 if (!vehicleMarker) {
                     return;
                 }
@@ -2115,11 +2232,13 @@
                     vehicleMarker.setIcon(vehicleIcon(heading));
                     lastVehiclePosition = nextPosition;
                     lastVehicleHeading = heading;
+                    updateRoutePolylines(nextPosition, segmentIndex);
+                    updateCameraFollow(nextPosition, heading);
                     return;
                 }
 
                 const startedAt = performance.now();
-                const duration = 500;
+                const duration = 400;
                 const startHeading = lastVehicleHeading ?? heading;
 
                 let deltaHeading = (heading - startHeading) % 360;
@@ -2136,6 +2255,8 @@
 
                     vehicleMarker.setPosition(position);
                     vehicleMarker.setIcon(vehicleIcon(currentHeading));
+                    updateRoutePolylines(position, segmentIndex);
+                    updateCameraFollow(position, currentHeading);
 
                     if (progress < 1) {
                         requestAnimationFrame(step);
