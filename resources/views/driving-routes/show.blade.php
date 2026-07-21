@@ -567,7 +567,7 @@
             let startRouteButton = null;
             let locateButton = null;
             let routeStatus = null;
-            let accessConsumedForCurrentDrive = false;
+            let accessConsumedForCurrentDrive = true;
             const startDistanceThresholdMeters = 60;
             let routePathPoints = [];
             let simIntervalId = null;

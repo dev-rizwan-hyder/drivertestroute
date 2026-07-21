@@ -18,6 +18,7 @@ Route::view('/about', 'pages.about')->name('about');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::view('/contact', 'pages.contact')->name('contact');
+Route::view('/terms', 'pages.terms')->name('terms');
 Route::post('/contact', function (Request $request) {
     $request->validate([
         'name' => ['required', 'string', 'max:255'],

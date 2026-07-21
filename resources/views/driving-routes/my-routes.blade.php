@@ -81,7 +81,9 @@
 
                         <div class="mt-5 flex flex-wrap gap-2">
                             @if($remainingStarts > 0)
-                                <a href="{{ route('driving-routes.show', $drivingRoute) }}" class="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800">
+                                <a href="{{ route('driving-routes.show', $drivingRoute) }}" 
+                                   onclick="return confirmOpenMap(event, {{ $remainingStarts }});"
+                                   class="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800">
                                     Open Map
                                 </a>
                             @else
@@ -103,3 +105,19 @@
     </section>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function confirmOpenMap(event, remainingStarts) {
+            if (@json(auth()->user()?->is_admin ?? false)) {
+                return true;
+            }
+            const message = `Opening this map will consume 1 of your map starts. You have ${remainingStarts} starts remaining.\n\nOnce opened, this page counts as accessed. If you refresh or exit, you will need another start to open it again.\n\nDo you want to proceed?`;
+            if (!confirm(message)) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+    </script>
+@endpush

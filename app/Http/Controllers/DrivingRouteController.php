@@ -559,6 +559,14 @@ class DrivingRouteController extends Controller
             }
 
             $remainingStarts = $purchase->remainingStarts();
+
+            DB::transaction(function () use ($purchase) {
+                $purchase->lockForUpdate();
+                $purchase->update([
+                    'access_used' => (int) $purchase->access_used + 1,
+                    'last_accessed_at' => now(),
+                ]);
+            });
         }
 
         if (auth()->user()->is_admin) {

@@ -939,6 +939,8 @@
                     <a href="{{ route('blog') }}" class="block text-zinc-600 transition hover:text-blue-700">Blog</a>
                     <a href="{{ route('contact') }}"
                         class="block text-zinc-600 transition hover:text-blue-700">Contact Us</a>
+                    <a href="{{ route('terms') }}"
+                        class="block text-zinc-600 transition hover:text-blue-700">Terms & Conditions</a>
                 </div>
             </div>
 

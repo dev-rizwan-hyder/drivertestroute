@@ -368,7 +368,9 @@
 
                                 <div class="mt-auto flex flex-wrap items-center gap-2 pt-5">
                                     @if($canOpenMap)
-                                        <a href="{{ route('driving-routes.show', $drivingRoute) }}" class="routes-button routes-button-primary flex-1">
+                                        <a href="{{ route('driving-routes.show', $drivingRoute) }}" 
+                                           onclick="return confirmOpenMap(event, {{ $remainingStarts }});"
+                                           class="routes-button routes-button-primary flex-1">
                                             Open Map
                                         </a>
                                         @if(! auth()->user()?->is_admin)
@@ -465,5 +467,17 @@
                 }
             });
         });
+
+        function confirmOpenMap(event, remainingStarts) {
+            if (@json(auth()->user()?->is_admin ?? false)) {
+                return true;
+            }
+            const message = `Opening this map will consume 1 of your map starts. You have ${remainingStarts} starts remaining.\n\nOnce opened, this page counts as accessed. If you refresh or exit, you will need another start to open it again.\n\nDo you want to proceed?`;
+            if (!confirm(message)) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
     </script>
 @endpush
