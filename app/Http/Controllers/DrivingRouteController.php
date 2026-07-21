@@ -335,7 +335,7 @@ class DrivingRouteController extends Controller
         });
 
         return redirect()
-            ->route('driving-routes.my-routes')
+            ->route('driving-routes.my')
             ->with('success', 'Checkout complete. Your route is ready under My Routes.');
     }
 
