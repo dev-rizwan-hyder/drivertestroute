@@ -9,7 +9,7 @@
     <style>
         html, body {
             overflow-x: hidden !important;
-            max-w: 100vw;
+            max-width: 100vw;
         }
 
         .route-detail-page {
@@ -73,7 +73,7 @@
         /* Top Google Maps Navigation Light Instruction HUD */
         .nav-hud-light-top {
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 12px 32px rgba(15, 118, 110, 0.35);
             backdrop-filter: blur(16px);
         }
@@ -180,7 +180,7 @@
                     <!-- Interactive Map Container -->
                     <div id="map-wrapper" class="route-card-light relative overflow-hidden p-1.5 sm:p-2 transition-all max-w-full">
                         
-                        <!-- Top Navigation Upward Instruction Header (Responsive & Compact) -->
+                        <!-- Top Navigation Upward Instruction Header (Bold Pure White Text) -->
                         <div id="nav-instruction-banner" class="nav-hud-light-top absolute top-2.5 left-2.5 right-2.5 z-30 rounded-2xl p-3 sm:p-4 text-white transition-all max-w-3xl mx-auto">
                             <div class="flex items-center justify-between gap-2.5">
                                 <div class="flex items-center gap-2.5 min-w-0 flex-1">
@@ -191,7 +191,7 @@
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <div id="nav-step-distance" class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-teal-200 truncate">HEAD TO START POINT</div>
+                                        <div id="nav-step-distance" class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-teal-100 truncate">HEAD TO START POINT</div>
                                         <h3 id="nav-step-title" class="text-xs sm:text-base font-black leading-tight text-white line-clamp-1 sm:line-clamp-2">
                                             📍 Head toward {{ $route->start_label ?: 'Start Point' }}
                                         </h3>
@@ -239,27 +239,11 @@
                                 </div>
                             </div>
 
-                            <!-- Travel Modes Bar -->
-                            <div class="flex items-center gap-4 sm:gap-6 py-2.5 border-b border-slate-100 overflow-x-auto text-xs sm:text-sm font-bold no-scrollbar max-w-full">
-                                <button type="button" class="flex items-center gap-1 text-teal-800 border-b-2 border-teal-800 pb-1.5 font-black shrink-0">
-                                    <span>🚗</span> <span>{{ $route->route_duration_minutes ?: 18 }} min</span>
-                                </button>
-                                <button type="button" class="flex items-center gap-1 text-slate-500 hover:text-slate-900 pb-1.5 shrink-0">
-                                    <span>🏍️</span> <span>{{ $route->route_duration_minutes ?: 18 }} min</span>
-                                </button>
-                                <button type="button" class="flex items-center gap-1 text-slate-500 hover:text-slate-900 pb-1.5 shrink-0">
-                                    <span>🚆</span> <span>{{ round(($route->route_duration_minutes ?: 20) * 2.5) }} min</span>
-                                </button>
-                                <button type="button" class="flex items-center gap-1 text-slate-500 hover:text-slate-900 pb-1.5 shrink-0">
-                                    <span>🚶</span> <span>{{ round(($route->route_length_km ?: 8) * 12) }} min</span>
-                                </button>
-                            </div>
-
                             <!-- Duration & Distance Line -->
                             <div class="pt-3 pb-2 max-w-full">
                                 <div class="flex items-baseline gap-2 flex-wrap">
-                                    <span class="text-xl sm:text-3xl font-black text-emerald-700 tracking-tight">{{ $route->route_duration_minutes ?: 18 }} min</span>
-                                    <span class="text-base sm:text-xl font-bold text-slate-700">({{ $route->route_length_km ?: 16 }} km)</span>
+                                    <span class="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight">{{ $route->route_duration_minutes ?: 18 }} min</span>
+                                    <span class="text-lg sm:text-xl font-bold text-slate-700">({{ $route->route_length_km ?: 16 }} km)</span>
                                 </div>
                                 <p class="text-xs sm:text-sm font-medium text-slate-600 mt-0.5">Fastest route, typical test traffic</p>
                                 <div class="flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-emerald-700 mt-0.5">
@@ -269,16 +253,16 @@
 
                             <!-- Google Maps Iconic Action Buttons Row -->
                             <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 pt-2 max-w-full">
-                                <!-- Big Dark Teal Start Button (Exact Google Maps Style) -->
-                                <button type="button" id="btn-gmaps-start" class="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-teal-800 hover:bg-teal-900 text-white font-black px-6 py-3 shadow-lg shadow-teal-900/20 transition transform active:scale-95">
+                                <!-- Big Dark Teal Start Button (Bold White Text) -->
+                                <button type="button" id="btn-gmaps-start" class="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-teal-800 hover:bg-teal-900 text-white font-black px-6 py-3.5 shadow-lg shadow-teal-900/20 transition transform active:scale-95">
                                     <svg class="h-5 w-5 text-white transform rotate-45 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                     </svg>
-                                    <span id="gmaps-btn-start-label" class="text-sm sm:text-base font-black">Start Navigation</span>
+                                    <span id="gmaps-btn-start-label" class="text-base sm:text-lg font-black text-white">Start Navigation</span>
                                 </button>
 
                                 <!-- Light Cyan Add Stops / Waypoints Button -->
-                                <button type="button" id="btn-gmaps-stops" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-4 py-3 text-xs sm:text-sm transition">
+                                <button type="button" id="btn-gmaps-stops" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-4 py-3.5 text-xs sm:text-sm transition">
                                     <svg class="h-4 w-4 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     </svg>
@@ -286,7 +270,7 @@
                                 </button>
 
                                 <!-- Light Cyan Share Button -->
-                                <button type="button" id="btn-gmaps-share" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-4 py-3 text-xs sm:text-sm transition">
+                                <button type="button" id="btn-gmaps-share" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-4 py-3.5 text-xs sm:text-sm transition">
                                     <svg class="h-4 w-4 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                     </svg>
@@ -491,6 +475,16 @@
             });
         }
 
+        // Lock Reload & Prevent Accidental Page Exit Confirmation Prompt
+        window.addEventListener('beforeunload', (event) => {
+            if (!routeAccess.isAdmin) {
+                const warningMsg = '⚠️ Reloading or leaving this page will end your active session and consume another route start limit to reopen. Are you sure you want to exit?';
+                event.preventDefault();
+                event.returnValue = warningMsg;
+                return warningMsg;
+            }
+        });
+
         // Initialize Google Maps / Leaflet Engine
         let map, userArrowMarker, routePolyline;
 
@@ -609,6 +603,58 @@
             btnRecenter.addEventListener('click', () => recenterMap());
         }
 
+        // Real-Time Hardware Magnetic Compass Listener (North/South/East/West Phone Rotation)
+        let deviceCompassHeading = 0;
+
+        function initDeviceOrientationCompass() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        window.addEventListener('deviceorientation', handleOrientationEvent, true);
+                    }
+                }).catch(console.error);
+            } else {
+                if ('ondeviceorientationabsolute' in window) {
+                    window.addEventListener('deviceorientationabsolute', handleOrientationEvent, true);
+                } else if ('ondeviceorientation' in window) {
+                    window.addEventListener('deviceorientation', handleOrientationEvent, true);
+                }
+            }
+        }
+
+        function handleOrientationEvent(event) {
+            let heading = null;
+
+            if (event.webkitCompassHeading !== undefined && event.webkitCompassHeading !== null) {
+                // iOS Safari magnetic compass
+                heading = event.webkitCompassHeading;
+            } else if (event.alpha !== null && event.alpha !== undefined) {
+                // Android Chrome / Standard device orientation absolute alpha
+                heading = (360 - event.alpha) % 360;
+            }
+
+            if (heading !== null && !isNaN(heading)) {
+                deviceCompassHeading = Math.round(heading);
+                // Update marker & map heading instantly on phone rotation
+                applyHeadingRotation(deviceCompassHeading);
+            }
+        }
+
+        initDeviceOrientationCompass();
+
+        function applyHeadingRotation(headingDeg) {
+            if (userArrowMarker && typeof google !== 'undefined' && google.maps) {
+                const icon = userArrowMarker.getIcon();
+                if (icon) {
+                    icon.rotation = headingDeg;
+                    userArrowMarker.setIcon(icon);
+                }
+            }
+            if (map && typeof map.setHeading === 'function') {
+                map.setHeading(headingDeg);
+            }
+        }
+
         function recenterMap() {
             if (startPoint && map) {
                 if (typeof google !== 'undefined' && google.maps && map instanceof google.maps.Map) {
@@ -627,7 +673,9 @@
                         const userLat = pos.coords.latitude;
                         const userLng = pos.coords.longitude;
                         const speed = pos.coords.speed ? Math.round(pos.coords.speed * 3.6) : 0;
-                        const heading = pos.coords.heading || 0;
+                        const heading = (pos.coords.heading !== null && pos.coords.heading !== undefined && !isNaN(pos.coords.heading)) 
+                                        ? pos.coords.heading 
+                                        : deviceCompassHeading;
 
                         handleUserLocationUpdate(userLat, userLng, heading, speed);
                     },
@@ -664,7 +712,7 @@
                 speakInstruction('Arrived at start location. Driving test practice starting now.');
             }
 
-            updateArrowPosition(userLat, userLng, heading);
+            updateArrowPosition(userLat, userLng, heading, speed);
         }
 
         function startSimulatedDrive() {
@@ -690,13 +738,17 @@
         }
 
         function updateArrowPosition(lat, lng, heading = 0, speed = 0) {
+            const activeHeading = (heading !== undefined && heading !== null && !isNaN(heading) && heading !== 0) 
+                                ? heading 
+                                : deviceCompassHeading;
+
             if (map) {
                 if (typeof google !== 'undefined' && google.maps && map instanceof google.maps.Map) {
                     map.panTo({ lat: lat, lng: lng });
                     map.setZoom(19);
 
                     if (map.setHeading && typeof map.setHeading === 'function') {
-                        map.setHeading(heading);
+                        map.setHeading(activeHeading);
                     }
 
                     if (!userArrowMarker) {
@@ -710,14 +762,14 @@
                                 fillOpacity: 1,
                                 strokeColor: '#ffffff',
                                 strokeWeight: 2,
-                                rotation: heading,
+                                rotation: activeHeading,
                             },
                         });
                     } else {
                         userArrowMarker.setPosition({ lat: lat, lng: lng });
                         const icon = userArrowMarker.getIcon();
                         if (icon) {
-                            icon.rotation = heading;
+                            icon.rotation = activeHeading;
                             userArrowMarker.setIcon(icon);
                         }
                     }

@@ -112,7 +112,7 @@
             if (@json(auth()->user()?->is_admin ?? false)) {
                 return true;
             }
-            const message = `Opening this map will consume 1 of your map starts. You have ${remainingStarts} starts remaining.\n\nOnce opened, this page counts as accessed. If you refresh or exit, you will need another start to open it again.\n\nDo you want to proceed?`;
+            const message = `🚗 Ready to practice this test route?\n\nOpening this map will use 1 map start (${remainingStarts} ${remainingStarts === 1 ? 'start' : 'starts'} remaining).\n\n⚠️ IMPORTANT: Keep this page open while driving. Refreshing or exiting the page will end your active session and require another start limit to reopen.\n\nWould you like to proceed and open the map now?`;
             if (!confirm(message)) {
                 event.preventDefault();
                 return false;
