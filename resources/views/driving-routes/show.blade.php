@@ -254,7 +254,7 @@
         const routeAccess = {
             isAdmin: @json(auth()->user()->is_admin),
             remainingStarts: @json($remainingStarts),
-            mapsUrl: @json($googleMapsUrl ?: $route->google_maps_url),
+            mapsUrl: @json($route->google_maps_url),
             startUrl: @json(route('driving-routes.start', $route)),
             csrfToken: @json(csrf_token()),
         };

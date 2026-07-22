@@ -84,7 +84,7 @@ class DrivingRoute extends Model
         }
 
         if ($origin && $destination) {
-            $url = "https://www.google.com/maps/dir/?api=1&origin=" . urlencode($origin) . "&destination=" . urlencode($destination) . "&travelmode=driving";
+            $url = "https://www.google.com/maps/dir/?api=1&origin=" . urlencode($origin) . "&destination=" . urlencode($destination) . "&travelmode=driving&dir_action=navigate";
             if (! empty($waypoints)) {
                 $midWaypoints = array_slice($waypoints, 0, 9);
                 $url .= "&waypoints=" . urlencode(implode('|', $midWaypoints));
@@ -95,6 +95,9 @@ class DrivingRoute extends Model
 
         // Fallback to custom URL if present
         if (! empty($customUrl)) {
+            if (str_contains($customUrl, 'api=1') && ! str_contains($customUrl, 'dir_action=')) {
+                return $customUrl . '&dir_action=navigate';
+            }
             return $customUrl;
         }
 
