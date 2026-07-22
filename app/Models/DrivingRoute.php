@@ -131,6 +131,66 @@ class DrivingRoute extends Model
         ]);
     }
 
+    public function getParsedWaypointsAttribute(): array
+    {
+        if ($this->relationLoaded('points') && $this->points->count() > 0) {
+            return $this->points->map(function ($p, $idx) {
+                return [
+                    'sort_order' => $p->sort_order ?? ($idx + 1),
+                    'lat' => $p->lat !== null ? (float) $p->lat : null,
+                    'lng' => $p->lng !== null ? (float) $p->lng : null,
+                    'instruction' => $p->instruction ?: 'Turn / Maneuver',
+                    'maneuver' => $p->maneuver ?: 'continue',
+                ];
+            })->values()->all();
+        }
+
+        $url = $this->google_maps_url;
+        $parsed = [];
+
+        if (! empty($url)) {
+            if (preg_match('#/maps/dir/(.+)#i', $url, $matches)) {
+                $path = explode('?', $matches[1])[0];
+                $path = explode('/@', $path)[0];
+                $segments = array_filter(explode('/', $path), function ($s) {
+                    $s = trim($s);
+                    return ! empty($s) && ! str_starts_with($s, 'data=') && ! str_starts_with($s, 'am=') && ! str_starts_with($s, 'entry=');
+                });
+
+                $idx = 1;
+                foreach ($segments as $seg) {
+                    $decoded = urldecode($seg);
+                    $lat = null;
+                    $lng = null;
+
+                    if (preg_match('/^(-?\d+\.\d+),\s*(-?\d+\.\d+)$/', $decoded, $coordMatch)) {
+                        $lat = (float) $coordMatch[1];
+                        $lng = (float) $coordMatch[2];
+                        $instruction = "Waypoint {$idx} (" . number_format($lat, 4) . ", " . number_format($lng, 4) . ")";
+                    } else {
+                        $instruction = "Stop {$idx}: " . str_replace('+', ' ', $decoded);
+                    }
+
+                    $parsed[] = [
+                        'sort_order' => $idx,
+                        'lat' => $lat,
+                        'lng' => $lng,
+                        'instruction' => $instruction,
+                        'maneuver' => ($idx === 1) ? 'start' : 'continue',
+                    ];
+                    $idx++;
+                }
+            }
+        }
+
+        return $parsed;
+    }
+
+    public function getWaypointsCountAttribute(): int
+    {
+        return count($this->parsed_waypoints);
+    }
+
     public function points()
     {
         return $this->hasMany(DrivingRoutePoint::class)->orderBy('sort_order');

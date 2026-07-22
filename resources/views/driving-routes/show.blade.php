@@ -61,17 +61,7 @@
         $cityAddress = $routeCity?->address;
         $googleMapsUrl = $route->google_maps_url;
 
-        $mappedPoints = $points->map(function($p, $idx) {
-            return [
-                'id' => $p->id ?? ($idx + 1),
-                'sort_order' => $p->sort_order ?? ($idx + 1),
-                'lat' => $p->lat !== null ? (float) $p->lat : null,
-                'lng' => $p->lng !== null ? (float) $p->lng : null,
-                'instruction' => $p->instruction ?: 'Turn / Maneuver',
-                'maneuver' => $p->maneuver ?: 'continue',
-                'distance_km' => $p->distance_km !== null ? (float) $p->distance_km : null,
-            ];
-        });
+        $mappedPoints = collect($route->parsed_waypoints);
     @endphp
 
     <div class="route-detail-page min-h-screen py-10">
