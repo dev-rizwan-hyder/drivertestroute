@@ -56,7 +56,6 @@
             backdrop-filter: blur(16px);
         }
 
-        /* Line Clamp helper for text truncation */
         .line-clamp-1 {
             display: -webkit-box;
             -webkit-line-clamp: 1;
@@ -70,7 +69,7 @@
             overflow: hidden;
         }
 
-        /* Custom Pins & Floating Navigation Arrow */
+        /* Custom Pins */
         .custom-map-pin {
             display: flex;
             align-items: center;
@@ -153,13 +152,13 @@
             <!-- Main Content Grid -->
             <div class="grid gap-8 lg:grid-cols-3">
 
-                <!-- Left Column (Clean Light Navigation Engine) -->
+                <!-- Left Column (Google Maps Interactive Navigation Engine) -->
                 <div class="lg:col-span-2 space-y-6">
 
                     <!-- Interactive Map Container -->
                     <div id="map-wrapper" class="route-card-light relative overflow-hidden p-1.5 sm:p-2 transition-all">
                         
-                        <!-- Top Navigation Upward Instruction Header (Responsive & Compact Light Theme) -->
+                        <!-- Top Navigation Upward Instruction Header (Responsive & Compact) -->
                         <div id="nav-instruction-banner" class="nav-hud-light-top absolute top-3 left-3 right-3 z-30 rounded-2xl p-3.5 sm:p-4 text-white transition-all max-w-3xl mx-auto">
                             <div class="flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -193,48 +192,92 @@
                             </div>
                         </div>
 
-                        <!-- Interactive Navigation Map Canvas (Light Google Maps Standard Tiles, Full Size for Laptops) -->
-                        <div id="navigation-map" class="h-[480px] sm:h-[540px] lg:h-[640px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
+                        <!-- Interactive Navigation Map Canvas (Full Size for Laptops) -->
+                        <div id="navigation-map" class="h-[480px] sm:h-[540px] lg:h-[620px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
 
-                        <!-- Google Maps Style Floating Navigation Action Button -->
-                        <button type="button" id="btn-floating-start" class="absolute bottom-20 right-4 sm:right-6 z-30 flex items-center gap-2.5 rounded-full bg-gradient-to-r from-teal-700 to-teal-800 hover:from-teal-800 hover:to-teal-900 text-white font-black px-5 py-3 sm:px-6 sm:py-3.5 shadow-2xl transition transform hover:scale-105 active:scale-95 border-2 border-white">
-                            <svg class="h-5 w-5 text-white transform rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                            </svg>
-                            <span id="floating-btn-label" class="text-sm font-black">Start Navigation</span>
-                        </button>
-
-                        <!-- Bottom Controls HUD Bar -->
-                        <div class="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-white/95 border border-slate-200/80 shadow-md z-20">
+                        <!-- Google Maps Mobile Bottom Sheet Drive Card (Exact Google Maps Style) -->
+                        <div id="gmaps-bottom-sheet" class="mt-3 rounded-3xl bg-white border border-slate-200 p-5 shadow-2xl z-20">
                             
-                            <!-- Drive Speed & ETA -->
-                            <div class="flex items-center gap-3.5">
-                                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-white font-black text-sm">
-                                    <span id="nav-speed">0</span>
-                                    <span class="text-[9px] font-normal block ml-0.5">km/h</span>
+                            <!-- Top Drag Handle & Title Bar -->
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-2xl font-black text-slate-900">Drive</h3>
                                 </div>
-                                <div>
-                                    <div class="text-xs font-bold text-slate-500">
-                                        Remaining: <span id="nav-rem-dist" class="text-slate-900 font-black">{{ $route->route_length_km ?: '8.5' }} km</span>
-                                    </div>
-                                    <div class="text-xs sm:text-sm font-black text-teal-800">
-                                        Est. Duration: <span id="nav-rem-time">{{ $route->route_duration_minutes ?: '15-20' }} mins</span>
-                                    </div>
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" id="btn-recenter" class="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Recenter Map">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
+                                        </svg>
+                                    </button>
+                                    <button type="button" id="btn-share-route" class="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Share Route">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Navigation Recenter Control -->
-                            <div class="flex items-center gap-2">
-                                <button type="button" id="btn-recenter" class="w-full sm:w-auto rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition flex items-center justify-center gap-1.5">
-                                    <span>🎯</span> Recenter Map
+                            <!-- Travel Modes Bar -->
+                            <div class="flex items-center gap-6 py-3 border-b border-slate-100 overflow-x-auto text-sm font-bold">
+                                <button type="button" class="flex items-center gap-1.5 text-teal-800 border-b-2 border-teal-800 pb-2 font-black shrink-0">
+                                    <span>🚗</span> <span>{{ $route->route_duration_minutes ?: 18 }} min</span>
+                                </button>
+                                <button type="button" class="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 pb-2 shrink-0">
+                                    <span>🏍️</span> <span>{{ $route->route_duration_minutes ?: 18 }} min</span>
+                                </button>
+                                <button type="button" class="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 pb-2 shrink-0">
+                                    <span>🚆</span> <span>{{ round(($route->route_duration_minutes ?: 20) * 2.5) }} min</span>
+                                </button>
+                                <button type="button" class="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 pb-2 shrink-0">
+                                    <span>🚶</span> <span>{{ round(($route->route_length_km ?: 8) * 12) }} min</span>
+                                </button>
+                            </div>
+
+                            <!-- Duration & Distance Line -->
+                            <div class="pt-4 pb-3">
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight">{{ $route->route_duration_minutes ?: 18 }} min</span>
+                                    <span class="text-lg sm:text-xl font-bold text-slate-700">({{ $route->route_length_km ?: 16 }} km)</span>
+                                </div>
+                                <p class="text-xs sm:text-sm font-medium text-slate-600 mt-1">Fastest route, typical test traffic</p>
+                                <div class="flex items-center gap-1 text-xs font-semibold text-emerald-700 mt-1">
+                                    <span>🍃</span> <span>Saves gas & optimal practice path</span>
+                                </div>
+                            </div>
+
+                            <!-- Google Maps Iconic Action Buttons Row -->
+                            <div class="flex items-center gap-3 pt-2 overflow-x-auto pb-1">
+                                <!-- Big Dark Teal Start Button (Exact Google Maps Style) -->
+                                <button type="button" id="btn-gmaps-start" class="flex items-center gap-2.5 rounded-full bg-teal-800 hover:bg-teal-900 text-white font-black px-6 py-3.5 shadow-lg shadow-teal-900/20 transition transform active:scale-95 shrink-0">
+                                    <svg class="h-5 w-5 text-white transform rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                    </svg>
+                                    <span id="gmaps-btn-start-label" class="text-base font-black">Start Navigation</span>
+                                </button>
+
+                                <!-- Light Cyan Add Stops / Waypoints Button -->
+                                <button type="button" id="btn-gmaps-stops" class="flex items-center gap-2 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-5 py-3.5 transition shrink-0">
+                                    <svg class="h-5 w-5 text-teal-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    </svg>
+                                    <span>{{ count($mappedPoints) }} Waypoints</span>
+                                </button>
+
+                                <!-- Light Cyan Share Button -->
+                                <button type="button" id="btn-gmaps-share" class="flex items-center gap-2 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-5 py-3.5 transition shrink-0">
+                                    <svg class="h-5 w-5 text-teal-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                    </svg>
+                                    <span>Share</span>
                                 </button>
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Stops Breakdown Card -->
                     @if(count($mappedPoints) > 0)
-                        <div class="route-card-light p-6 sm:p-8">
+                        <div id="stops-breakdown-card" class="route-card-light p-6 sm:p-8">
                             <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
                                 <h3 class="text-xl font-black text-slate-900">Test Waypoints & Maneuvers</h3>
                                 <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
@@ -367,8 +410,10 @@
         let watchId = null;
         let simulationInterval = null;
 
-        const btnFloatingStart = document.getElementById('btn-floating-start');
-        const floatingBtnLabel = document.getElementById('floating-btn-label');
+        const btnGmapsStart = document.getElementById('btn-gmaps-start');
+        const gmapsBtnLabel = document.getElementById('gmaps-btn-start-label');
+        const btnGmapsStops = document.getElementById('btn-gmaps-stops');
+        const btnGmapsShare = document.getElementById('btn-gmaps-share');
         const btnRecenter = document.getElementById('btn-recenter');
         const btnVoice = document.getElementById('btn-toggle-voice');
         const voiceIcon = document.getElementById('voice-icon');
@@ -408,7 +453,23 @@
             });
         }
 
-        // Initialize Google Maps / Leaflet Engine (Light Mode Standard Google Maps Tiles)
+        if (btnGmapsStops) {
+            btnGmapsStops.addEventListener('click', () => {
+                const card = document.getElementById('stops-breakdown-card');
+                if (card) card.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+
+        if (btnGmapsShare) {
+            btnGmapsShare.addEventListener('click', () => {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Route link copied to clipboard!');
+                }
+            });
+        }
+
+        // Initialize Google Maps / Leaflet Engine
         let map, userArrowMarker, routePolyline;
 
         function initNavigationEngine() {
@@ -420,10 +481,9 @@
             }
 
             if (typeof google !== 'undefined' && google.maps) {
-                // Google Maps JS API Engine with Light Daytime Style
                 map = new google.maps.Map(mapContainer, {
                     center: center,
-                    zoom: 16,
+                    zoom: 19,
                     mapTypeId: 'roadmap',
                     disableDefaultUI: false,
                     heading: 0,
@@ -454,8 +514,7 @@
                     });
                 }
             } else if (typeof L !== 'undefined') {
-                // Leaflet Fallback Engine (Light Tiles)
-                map = L.map('navigation-map').setView([center.lat, center.lng], 16);
+                map = L.map('navigation-map').setView([center.lat, center.lng], 19);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap contributors'
@@ -495,8 +554,9 @@
             return R * c;
         }
 
-        if (btnFloatingStart) {
-            btnFloatingStart.addEventListener('click', async () => {
+        // Exact Google Maps Start Button Action
+        if (btnGmapsStart) {
+            btnGmapsStart.addEventListener('click', async () => {
                 if (!isDriving) {
                     if (!routeAccess.isAdmin) {
                         try {
@@ -513,10 +573,13 @@
                     }
 
                     isDriving = true;
-                    if (floatingBtnLabel) floatingBtnLabel.textContent = 'Re-center';
+                    if (gmapsBtnLabel) gmapsBtnLabel.textContent = 'Pause Navigation';
                     startRealTimeLocationNavigation();
                 } else {
-                    recenterMap();
+                    isDriving = false;
+                    if (gmapsBtnLabel) gmapsBtnLabel.textContent = 'Resume Navigation';
+                    if (simulationInterval) clearInterval(simulationInterval);
+                    if (watchId) navigator.geolocation.clearWatch(watchId);
                 }
             });
         }
@@ -529,9 +592,9 @@
             if (startPoint && map) {
                 if (typeof google !== 'undefined' && google.maps && map instanceof google.maps.Map) {
                     map.panTo({ lat: startPoint.lat, lng: startPoint.lng });
-                    map.setZoom(17);
+                    map.setZoom(19);
                 } else if (typeof L !== 'undefined' && map.panTo) {
-                    map.panTo([startPoint.lat, startPoint.lng]);
+                    map.setView([startPoint.lat, startPoint.lng], 19);
                 }
             }
         }
@@ -559,9 +622,6 @@
         }
 
         function handleUserLocationUpdate(userLat, userLng, heading, speed) {
-            const speedEl = document.getElementById('nav-speed');
-            if (speedEl) speedEl.textContent = speed;
-
             if (!startPoint) return;
 
             const distToStart = calculateDistanceMeters(userLat, userLng, startPoint.lat, startPoint.lng);
@@ -572,7 +632,7 @@
                 if (stepTitle) stepTitle.textContent = `📍 Drive to ${startPoint.instruction || 'Start Point'}`;
 
                 speakInstruction(`Please drive to the start location: ${startPoint.instruction || 'Test Center'}`);
-                updateArrowPosition(userLat, userLng, heading);
+                updateArrowPosition(userLat, userLng, heading, speed);
                 return;
             }
 
@@ -583,7 +643,7 @@
                 speakInstruction('Arrived at start location. Driving test practice starting now.');
             }
 
-            updateArrowPosition(userLat, userLng, heading);
+            updateArrowPosition(userLat, userLng, heading, speed);
         }
 
         function startSimulatedDrive() {
@@ -609,14 +669,11 @@
         }
 
         function updateArrowPosition(lat, lng, heading = 0, speed = 0) {
-            const speedEl = document.getElementById('nav-speed');
-            if (speedEl) speedEl.textContent = speed;
-
             if (map) {
                 if (typeof google !== 'undefined' && google.maps && map instanceof google.maps.Map) {
                     map.panTo({ lat: lat, lng: lng });
+                    map.setZoom(19);
 
-                    // 360° Map Rotation & Heading
                     if (map.setHeading && typeof map.setHeading === 'function') {
                         map.setHeading(heading);
                     }
@@ -644,7 +701,7 @@
                         }
                     }
                 } else if (typeof L !== 'undefined' && map.panTo) {
-                    map.panTo([lat, lng]);
+                    map.setView([lat, lng], 19);
                 }
             }
         }
