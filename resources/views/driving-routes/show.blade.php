@@ -56,6 +56,20 @@
             border: none !important;
         }
 
+        #map-wrapper:fullscreen #gmaps-bottom-sheet,
+        #map-wrapper.is-fullscreen #gmaps-bottom-sheet {
+            position: absolute !important;
+            bottom: 1rem !important;
+            left: 1rem !important;
+            right: 1rem !important;
+            max-width: 36rem !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            z-index: 9999 !important;
+            margin-top: 0 !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+        }
+
         /* Top Google Maps Navigation Light Instruction HUD */
         .nav-hud-light-top {
             background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%);
