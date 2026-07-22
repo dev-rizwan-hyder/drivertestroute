@@ -59,9 +59,9 @@
         #map-wrapper:fullscreen #gmaps-bottom-sheet,
         #map-wrapper.is-fullscreen #gmaps-bottom-sheet {
             position: absolute !important;
-            bottom: 1rem !important;
-            left: 1rem !important;
-            right: 1rem !important;
+            bottom: 0.75rem !important;
+            left: 0.75rem !important;
+            right: 0.75rem !important;
             max-width: 36rem !important;
             margin-left: auto !important;
             margin-right: auto !important;
@@ -76,6 +76,21 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 12px 32px rgba(15, 118, 110, 0.35);
             backdrop-filter: blur(16px);
+        }
+
+        /* STRICT PURE WHITE TEXT OVERRIDES */
+        #nav-step-title,
+        #nav-step-distance,
+        #nav-instruction-banner,
+        #nav-instruction-banner h3,
+        #nav-instruction-banner div,
+        #nav-instruction-banner span,
+        #gmaps-btn-start-label,
+        #btn-gmaps-start,
+        #btn-gmaps-start span,
+        #btn-gmaps-start svg {
+            color: #ffffff !important;
+            fill: #ffffff !important;
         }
 
         .line-clamp-1 {
@@ -180,19 +195,19 @@
                     <!-- Interactive Map Container -->
                     <div id="map-wrapper" class="route-card-light relative overflow-hidden p-1.5 sm:p-2 transition-all max-w-full">
                         
-                        <!-- Top Navigation Upward Instruction Header (Bold Pure White Text) -->
-                        <div id="nav-instruction-banner" class="nav-hud-light-top absolute top-2.5 left-2.5 right-2.5 z-30 rounded-2xl p-3 sm:p-4 text-white transition-all max-w-3xl mx-auto">
+                        <!-- Top Navigation Upward Instruction Header (Pure White Text) -->
+                        <div id="nav-instruction-banner" class="nav-hud-light-top absolute top-2.5 left-2.5 right-2.5 z-30 rounded-2xl p-2.5 sm:p-3.5 !text-white transition-all max-w-3xl mx-auto">
                             <div class="flex items-center justify-between gap-2.5">
                                 <div class="flex items-center gap-2.5 min-w-0 flex-1">
                                     <!-- Maneuver Icon -->
-                                    <div id="nav-maneuver-icon-container" class="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
-                                        <svg id="nav-maneuver-icon" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <div id="nav-maneuver-icon-container" class="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
+                                        <svg id="nav-maneuver-icon" class="h-5 w-5 sm:h-6 sm:w-6 !text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <div id="nav-step-distance" class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-teal-100 truncate">HEAD TO START POINT</div>
-                                        <h3 id="nav-step-title" class="text-xs sm:text-base font-black leading-tight text-white line-clamp-1 sm:line-clamp-2">
+                                        <div id="nav-step-distance" class="text-[9px] sm:text-xs font-black uppercase tracking-wider !text-white truncate">HEAD TO START POINT</div>
+                                        <h3 id="nav-step-title" class="text-xs sm:text-base font-black leading-tight !text-white line-clamp-1 sm:line-clamp-2">
                                             📍 Head toward {{ $route->start_label ?: 'Start Point' }}
                                         </h3>
                                     </div>
@@ -215,63 +230,60 @@
                         </div>
 
                         <!-- Interactive Navigation Map Canvas (Full Size for Laptops) -->
-                        <div id="navigation-map" class="h-[360px] sm:h-[480px] lg:h-[620px] w-full max-w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
+                        <div id="navigation-map" class="h-[380px] sm:h-[500px] lg:h-[640px] w-full max-w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
 
-                        <!-- Google Maps Mobile Bottom Sheet Drive Card (Exact Google Maps Style) -->
-                        <div id="gmaps-bottom-sheet" class="mt-3 rounded-3xl bg-white border border-slate-200 p-4 sm:p-5 shadow-2xl z-20 max-w-full overflow-hidden">
+                        <!-- Google Maps Mobile Bottom Sheet Drive Card (Ultra Compact Height) -->
+                        <div id="gmaps-bottom-sheet" class="mt-2 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 p-2.5 sm:p-3.5 shadow-xl z-20 max-w-full overflow-hidden">
                             
                             <!-- Top Drag Handle & Title Bar -->
-                            <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
                                 <div class="flex items-center gap-2">
-                                    <h3 class="text-xl sm:text-2xl font-black text-slate-900">Drive</h3>
+                                    <h3 class="text-base sm:text-lg font-black text-slate-900">Drive</h3>
                                 </div>
                                 <div class="flex items-center gap-1">
-                                    <button type="button" id="btn-recenter" class="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Recenter Map">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <button type="button" id="btn-recenter" class="p-1.5 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Recenter Map">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
                                         </svg>
                                     </button>
-                                    <button type="button" id="btn-share-route" class="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Share Route">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <button type="button" id="btn-share-route" class="p-1.5 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Share Route">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                         </svg>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Duration & Distance Line -->
-                            <div class="pt-3 pb-2 max-w-full">
-                                <div class="flex items-baseline gap-2 flex-wrap">
-                                    <span class="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight">{{ $route->route_duration_minutes ?: 18 }} min</span>
-                                    <span class="text-lg sm:text-xl font-bold text-slate-700">({{ $route->route_length_km ?: 16 }} km)</span>
+                            <!-- Compact Duration & Distance Summary -->
+                            <div class="py-1.5 max-w-full flex items-baseline justify-between">
+                                <div class="flex items-baseline gap-1.5 flex-wrap">
+                                    <span class="text-lg sm:text-xl font-black text-emerald-700 tracking-tight">{{ $route->route_duration_minutes ?: 18 }} min</span>
+                                    <span class="text-xs sm:text-sm font-bold text-slate-600">({{ $route->route_length_km ?: 16 }} km)</span>
                                 </div>
-                                <p class="text-xs sm:text-sm font-medium text-slate-600 mt-0.5">Fastest route, typical test traffic</p>
-                                <div class="flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-emerald-700 mt-0.5">
-                                    <span>🍃</span> <span>Saves gas & optimal practice path</span>
-                                </div>
+                                <span class="text-[10px] font-semibold text-emerald-700">🍃 Practice Route</span>
                             </div>
 
                             <!-- Google Maps Iconic Action Buttons Row -->
-                            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 pt-2 max-w-full">
-                                <!-- Big Dark Teal Start Button (Bold White Text) -->
-                                <button type="button" id="btn-gmaps-start" class="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-teal-800 hover:bg-teal-900 text-white font-black px-6 py-3.5 shadow-lg shadow-teal-900/20 transition transform active:scale-95">
-                                    <svg class="h-5 w-5 text-white transform rotate-45 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-1 max-w-full">
+                                <!-- Big Dark Teal Start Button (STRICT PURE WHITE TEXT) -->
+                                <button type="button" id="btn-gmaps-start" class="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-teal-800 hover:bg-teal-900 !text-white font-black px-5 py-2.5 shadow-md shadow-teal-900/20 transition transform active:scale-95">
+                                    <svg class="h-4 w-4 !text-white transform rotate-45 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                     </svg>
-                                    <span id="gmaps-btn-start-label" class="text-base sm:text-lg font-black text-white">Start Navigation</span>
+                                    <span id="gmaps-btn-start-label" class="text-sm sm:text-base font-black !text-white">Start Navigation</span>
                                 </button>
 
                                 <!-- Light Cyan Add Stops / Waypoints Button -->
-                                <button type="button" id="btn-gmaps-stops" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-4 py-3.5 text-xs sm:text-sm transition">
-                                    <svg class="h-4 w-4 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <button type="button" id="btn-gmaps-stops" class="flex-1 sm:flex-initial flex items-center justify-center gap-1 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-3.5 py-2.5 text-xs transition">
+                                    <svg class="h-3.5 w-3.5 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     </svg>
                                     <span>{{ count($mappedPoints) }} Waypoints</span>
                                 </button>
 
                                 <!-- Light Cyan Share Button -->
-                                <button type="button" id="btn-gmaps-share" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-4 py-3.5 text-xs sm:text-sm transition">
-                                    <svg class="h-4 w-4 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <button type="button" id="btn-gmaps-share" class="flex-1 sm:flex-initial flex items-center justify-center gap-1 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-3.5 py-2.5 text-xs transition">
+                                    <svg class="h-3.5 w-3.5 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                     </svg>
                                     <span>Share</span>
@@ -599,10 +611,6 @@
             });
         }
 
-        if (btnRecenter) {
-            btnRecenter.addEventListener('click', () => recenterMap());
-        }
-
         // Real-Time Hardware Magnetic Compass Listener (North/South/East/West Phone Rotation)
         let deviceCompassHeading = 0;
 
@@ -626,16 +634,13 @@
             let heading = null;
 
             if (event.webkitCompassHeading !== undefined && event.webkitCompassHeading !== null) {
-                // iOS Safari magnetic compass
                 heading = event.webkitCompassHeading;
             } else if (event.alpha !== null && event.alpha !== undefined) {
-                // Android Chrome / Standard device orientation absolute alpha
                 heading = (360 - event.alpha) % 360;
             }
 
             if (heading !== null && !isNaN(heading)) {
                 deviceCompassHeading = Math.round(heading);
-                // Update marker & map heading instantly on phone rotation
                 applyHeadingRotation(deviceCompassHeading);
             }
         }
@@ -653,6 +658,10 @@
             if (map && typeof map.setHeading === 'function') {
                 map.setHeading(headingDeg);
             }
+        }
+
+        if (btnRecenter) {
+            btnRecenter.addEventListener('click', () => recenterMap());
         }
 
         function recenterMap() {
