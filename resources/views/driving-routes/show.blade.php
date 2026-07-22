@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
     <style>
+        html, body {
+            overflow-x: hidden !important;
+            max-w: 100vw;
+        }
+
         .route-detail-page {
             background-color: #f8fafc;
             background-image:
@@ -14,6 +19,9 @@
                 radial-gradient(circle at 86% 12%, rgba(20, 184, 166, .07), transparent 30%),
                 linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
             color: #0f172a;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
         }
 
         .route-card-light {
@@ -98,11 +106,11 @@
         $mapsKey = config('services.google.maps_key');
     @endphp
 
-    <div class="route-detail-page min-h-screen py-8">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="route-detail-page min-h-screen py-6 sm:py-8 overflow-x-hidden">
+        <div class="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 max-w-full">
 
             <!-- Breadcrumbs -->
-            <nav class="mb-5 flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-500" aria-label="Breadcrumb">
+            <nav class="mb-4 flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500 max-w-full overflow-hidden" aria-label="Breadcrumb">
                 <a href="{{ route('home') }}" class="transition hover:text-teal-700">Home</a>
                 <span>/</span>
                 <a href="{{ route('driving-routes.index') }}" class="transition hover:text-teal-700">Routes</a>
@@ -114,35 +122,35 @@
                     <span>{{ $cityName }}</span>
                 @endif
                 <span>/</span>
-                <span class="text-slate-900 font-bold">{{ $route->title }}</span>
+                <span class="text-slate-900 font-bold truncate max-w-[180px] sm:max-w-none">{{ $route->title }}</span>
             </nav>
 
             <!-- Page Title Header -->
-            <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                    <a href="{{ route('driving-routes.index', $route->city_id ? ['city' => $route->city_id] : []) }}" class="inline-flex items-center gap-2 text-sm font-bold text-teal-800 hover:text-teal-900 mb-2 transition">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <div class="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between max-w-full overflow-hidden">
+                <div class="min-w-0 max-w-full">
+                    <a href="{{ route('driving-routes.index', $route->city_id ? ['city' => $route->city_id] : []) }}" class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-teal-800 hover:text-teal-900 mb-2 transition">
+                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                         Back to routes
                     </a>
-                    <div class="flex flex-wrap items-center gap-3">
-                        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">{{ $route->title }}</h1>
-                        <span class="rounded-full bg-teal-100 text-teal-800 px-3 py-1 text-xs font-black uppercase tracking-wider">
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3 max-w-full">
+                        <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight break-words max-w-full">{{ $route->title }}</h1>
+                        <span class="rounded-full bg-teal-100 text-teal-800 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider shrink-0">
                             {{ strtoupper($route->package_type) }} Route
                         </span>
                     </div>
-                    <p class="mt-1.5 text-base sm:text-lg font-bold text-teal-700">{{ $cityName }}, {{ $route->province }}</p>
+                    <p class="mt-1 text-sm sm:text-lg font-bold text-teal-700">{{ $cityName }}, {{ $route->province }}</p>
                     @if($cityAddress)
-                        <p class="mt-1 text-xs sm:text-sm text-slate-500 max-w-2xl">{{ $cityAddress }}</p>
+                        <p class="mt-0.5 text-xs sm:text-sm text-slate-500 max-w-2xl truncate">{{ $cityAddress }}</p>
                     @endif
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 shrink-0">
                     @if(auth()->user()->is_admin)
-                        <span class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-black text-blue-700">Admin Preview Mode</span>
+                        <span class="rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-black text-blue-700">Admin Preview Mode</span>
                     @else
-                        <span class="rounded-xl border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-black text-teal-800">
+                        <span class="rounded-xl border border-teal-200 bg-teal-50 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-black text-teal-800">
                             {{ $remainingStarts }} {{ \Illuminate\Support\Str::plural('start', $remainingStarts) }} left
                         </span>
                     @endif
@@ -150,40 +158,40 @@
             </div>
 
             <!-- Main Content Grid -->
-            <div class="grid gap-8 lg:grid-cols-3">
+            <div class="grid gap-6 lg:gap-8 lg:grid-cols-3 max-w-full">
 
                 <!-- Left Column (Google Maps Interactive Navigation Engine) -->
-                <div class="lg:col-span-2 space-y-6">
+                <div class="lg:col-span-2 space-y-6 max-w-full min-w-0">
 
                     <!-- Interactive Map Container -->
-                    <div id="map-wrapper" class="route-card-light relative overflow-hidden p-1.5 sm:p-2 transition-all">
+                    <div id="map-wrapper" class="route-card-light relative overflow-hidden p-1.5 sm:p-2 transition-all max-w-full">
                         
                         <!-- Top Navigation Upward Instruction Header (Responsive & Compact) -->
-                        <div id="nav-instruction-banner" class="nav-hud-light-top absolute top-3 left-3 right-3 z-30 rounded-2xl p-3.5 sm:p-4 text-white transition-all max-w-3xl mx-auto">
-                            <div class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                        <div id="nav-instruction-banner" class="nav-hud-light-top absolute top-2.5 left-2.5 right-2.5 z-30 rounded-2xl p-3 sm:p-4 text-white transition-all max-w-3xl mx-auto">
+                            <div class="flex items-center justify-between gap-2.5">
+                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
                                     <!-- Maneuver Icon -->
-                                    <div id="nav-maneuver-icon-container" class="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
-                                        <svg id="nav-maneuver-icon" class="h-6 w-6 sm:h-7 sm:w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <div id="nav-maneuver-icon-container" class="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
+                                        <svg id="nav-maneuver-icon" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                         </svg>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <div id="nav-step-distance" class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-teal-200">HEAD TO START POINT</div>
-                                        <h3 id="nav-step-title" class="text-sm sm:text-base font-black leading-snug text-white line-clamp-1 sm:line-clamp-2">
+                                        <div id="nav-step-distance" class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-teal-200 truncate">HEAD TO START POINT</div>
+                                        <h3 id="nav-step-title" class="text-xs sm:text-base font-black leading-tight text-white line-clamp-1 sm:line-clamp-2">
                                             📍 Head toward {{ $route->start_label ?: 'Start Point' }}
                                         </h3>
                                     </div>
                                 </div>
 
-                                <div class="flex items-center gap-1.5 shrink-0">
+                                <div class="flex items-center gap-1 shrink-0">
                                     <!-- Voice Toggle -->
-                                    <button type="button" id="btn-toggle-voice" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition" title="Voice Guidance On/Off">
-                                        <span id="voice-icon" class="text-base">🔊</span>
+                                    <button type="button" id="btn-toggle-voice" class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition text-xs sm:text-base" title="Voice Guidance On/Off">
+                                        <span id="voice-icon">🔊</span>
                                     </button>
 
                                     <!-- Fullscreen Toggle -->
-                                    <button type="button" id="btn-toggle-fullscreen" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition" title="Toggle Fullscreen Preview">
+                                    <button type="button" id="btn-toggle-fullscreen" class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition" title="Toggle Fullscreen Preview">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                                         </svg>
@@ -193,17 +201,17 @@
                         </div>
 
                         <!-- Interactive Navigation Map Canvas (Full Size for Laptops) -->
-                        <div id="navigation-map" class="h-[480px] sm:h-[540px] lg:h-[620px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
+                        <div id="navigation-map" class="h-[360px] sm:h-[480px] lg:h-[620px] w-full max-w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
 
                         <!-- Google Maps Mobile Bottom Sheet Drive Card (Exact Google Maps Style) -->
-                        <div id="gmaps-bottom-sheet" class="mt-3 rounded-3xl bg-white border border-slate-200 p-5 shadow-2xl z-20">
+                        <div id="gmaps-bottom-sheet" class="mt-3 rounded-3xl bg-white border border-slate-200 p-4 sm:p-5 shadow-2xl z-20 max-w-full overflow-hidden">
                             
                             <!-- Top Drag Handle & Title Bar -->
-                            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                            <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
                                 <div class="flex items-center gap-2">
-                                    <h3 class="text-2xl font-black text-slate-900">Drive</h3>
+                                    <h3 class="text-xl sm:text-2xl font-black text-slate-900">Drive</h3>
                                 </div>
-                                <div class="flex items-center gap-1.5">
+                                <div class="flex items-center gap-1">
                                     <button type="button" id="btn-recenter" class="p-2 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Recenter Map">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
@@ -218,54 +226,54 @@
                             </div>
 
                             <!-- Travel Modes Bar -->
-                            <div class="flex items-center gap-6 py-3 border-b border-slate-100 overflow-x-auto text-sm font-bold">
-                                <button type="button" class="flex items-center gap-1.5 text-teal-800 border-b-2 border-teal-800 pb-2 font-black shrink-0">
+                            <div class="flex items-center gap-4 sm:gap-6 py-2.5 border-b border-slate-100 overflow-x-auto text-xs sm:text-sm font-bold no-scrollbar max-w-full">
+                                <button type="button" class="flex items-center gap-1 text-teal-800 border-b-2 border-teal-800 pb-1.5 font-black shrink-0">
                                     <span>🚗</span> <span>{{ $route->route_duration_minutes ?: 18 }} min</span>
                                 </button>
-                                <button type="button" class="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 pb-2 shrink-0">
+                                <button type="button" class="flex items-center gap-1 text-slate-500 hover:text-slate-900 pb-1.5 shrink-0">
                                     <span>🏍️</span> <span>{{ $route->route_duration_minutes ?: 18 }} min</span>
                                 </button>
-                                <button type="button" class="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 pb-2 shrink-0">
+                                <button type="button" class="flex items-center gap-1 text-slate-500 hover:text-slate-900 pb-1.5 shrink-0">
                                     <span>🚆</span> <span>{{ round(($route->route_duration_minutes ?: 20) * 2.5) }} min</span>
                                 </button>
-                                <button type="button" class="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 pb-2 shrink-0">
+                                <button type="button" class="flex items-center gap-1 text-slate-500 hover:text-slate-900 pb-1.5 shrink-0">
                                     <span>🚶</span> <span>{{ round(($route->route_length_km ?: 8) * 12) }} min</span>
                                 </button>
                             </div>
 
                             <!-- Duration & Distance Line -->
-                            <div class="pt-4 pb-3">
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight">{{ $route->route_duration_minutes ?: 18 }} min</span>
-                                    <span class="text-lg sm:text-xl font-bold text-slate-700">({{ $route->route_length_km ?: 16 }} km)</span>
+                            <div class="pt-3 pb-2 max-w-full">
+                                <div class="flex items-baseline gap-2 flex-wrap">
+                                    <span class="text-xl sm:text-3xl font-black text-emerald-700 tracking-tight">{{ $route->route_duration_minutes ?: 18 }} min</span>
+                                    <span class="text-base sm:text-xl font-bold text-slate-700">({{ $route->route_length_km ?: 16 }} km)</span>
                                 </div>
-                                <p class="text-xs sm:text-sm font-medium text-slate-600 mt-1">Fastest route, typical test traffic</p>
-                                <div class="flex items-center gap-1 text-xs font-semibold text-emerald-700 mt-1">
+                                <p class="text-xs sm:text-sm font-medium text-slate-600 mt-0.5">Fastest route, typical test traffic</p>
+                                <div class="flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-emerald-700 mt-0.5">
                                     <span>🍃</span> <span>Saves gas & optimal practice path</span>
                                 </div>
                             </div>
 
                             <!-- Google Maps Iconic Action Buttons Row -->
-                            <div class="flex items-center gap-3 pt-2 overflow-x-auto pb-1">
+                            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 pt-2 max-w-full">
                                 <!-- Big Dark Teal Start Button (Exact Google Maps Style) -->
-                                <button type="button" id="btn-gmaps-start" class="flex items-center gap-2.5 rounded-full bg-teal-800 hover:bg-teal-900 text-white font-black px-6 py-3.5 shadow-lg shadow-teal-900/20 transition transform active:scale-95 shrink-0">
-                                    <svg class="h-5 w-5 text-white transform rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <button type="button" id="btn-gmaps-start" class="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-teal-800 hover:bg-teal-900 text-white font-black px-6 py-3 shadow-lg shadow-teal-900/20 transition transform active:scale-95">
+                                    <svg class="h-5 w-5 text-white transform rotate-45 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                     </svg>
-                                    <span id="gmaps-btn-start-label" class="text-base font-black">Start Navigation</span>
+                                    <span id="gmaps-btn-start-label" class="text-sm sm:text-base font-black">Start Navigation</span>
                                 </button>
 
                                 <!-- Light Cyan Add Stops / Waypoints Button -->
-                                <button type="button" id="btn-gmaps-stops" class="flex items-center gap-2 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-5 py-3.5 transition shrink-0">
-                                    <svg class="h-5 w-5 text-teal-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <button type="button" id="btn-gmaps-stops" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-4 py-3 text-xs sm:text-sm transition">
+                                    <svg class="h-4 w-4 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     </svg>
                                     <span>{{ count($mappedPoints) }} Waypoints</span>
                                 </button>
 
                                 <!-- Light Cyan Share Button -->
-                                <button type="button" id="btn-gmaps-share" class="flex items-center gap-2 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-5 py-3.5 transition shrink-0">
-                                    <svg class="h-5 w-5 text-teal-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <button type="button" id="btn-gmaps-share" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-4 py-3 text-xs sm:text-sm transition">
+                                    <svg class="h-4 w-4 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                     </svg>
                                     <span>Share</span>
@@ -277,26 +285,26 @@
 
                     <!-- Stops Breakdown Card -->
                     @if(count($mappedPoints) > 0)
-                        <div id="stops-breakdown-card" class="route-card-light p-6 sm:p-8">
+                        <div id="stops-breakdown-card" class="route-card-light p-4 sm:p-8 max-w-full overflow-hidden">
                             <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                                <h3 class="text-xl font-black text-slate-900">Test Waypoints & Maneuvers</h3>
+                                <h3 class="text-lg sm:text-xl font-black text-slate-900">Test Waypoints & Maneuvers</h3>
                                 <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
                                     {{ count($mappedPoints) }} Total Stops
                                 </span>
                             </div>
                             <div class="space-y-3">
                                 @foreach($mappedPoints as $idx => $pt)
-                                    <div class="flex items-start gap-4 rounded-2xl bg-white p-4 border border-slate-200/80 shadow-sm">
-                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white font-black text-xs">
+                                    <div class="flex items-start gap-3 sm:gap-4 rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/80 shadow-sm max-w-full">
+                                        <div class="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white font-black text-xs">
                                             {{ $idx + 1 }}
                                         </div>
-                                        <div class="flex-1 min-w-0">
+                                        <div class="flex-1 min-w-0 max-w-full">
                                             <div class="flex items-center gap-2">
                                                 <span class="rounded-md bg-teal-50 border border-teal-200 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-teal-800">
                                                     {{ strtoupper(str_replace('_', ' ', $pt['maneuver'] ?? 'continue')) }}
                                                 </span>
                                             </div>
-                                            <p class="text-sm font-bold text-slate-800 mt-1">
+                                            <p class="text-xs sm:text-sm font-bold text-slate-800 mt-1 break-words">
                                                 {{ $pt['instruction'] }}
                                             </p>
                                         </div>
@@ -309,46 +317,46 @@
                 </div>
 
                 <!-- Right Column (Sidebar Information) -->
-                <div class="space-y-6">
+                <div class="space-y-6 max-w-full min-w-0">
 
                     <!-- Route Details Sidebar Card -->
-                    <div class="route-card-light p-6">
-                        <h3 class="text-lg font-black text-slate-900 mb-4 pb-3 border-b border-slate-100">Route Information</h3>
+                    <div class="route-card-light p-4 sm:p-6 max-w-full overflow-hidden">
+                        <h3 class="text-base sm:text-lg font-black text-slate-900 mb-4 pb-3 border-b border-slate-100">Route Information</h3>
                         
-                        <dl class="space-y-3.5 text-sm">
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <dt class="font-bold text-slate-500">Start Location</dt>
-                                <dd class="font-black text-slate-900">{{ $route->start_label ?: $cityName }}</dd>
+                        <dl class="space-y-3 text-xs sm:text-sm">
+                            <div class="flex justify-between py-1.5 border-b border-slate-100 gap-2">
+                                <dt class="font-bold text-slate-500 shrink-0">Start Location</dt>
+                                <dd class="font-black text-slate-900 text-right truncate">{{ $route->start_label ?: $cityName }}</dd>
                             </div>
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <dt class="font-bold text-slate-500">Destination</dt>
-                                <dd class="font-black text-slate-900">{{ $route->destination_label ?: 'Return to Start' }}</dd>
+                            <div class="flex justify-between py-1.5 border-b border-slate-100 gap-2">
+                                <dt class="font-bold text-slate-500 shrink-0">Destination</dt>
+                                <dd class="font-black text-slate-900 text-right truncate">{{ $route->destination_label ?: 'Return to Start' }}</dd>
                             </div>
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <dt class="font-bold text-slate-500">Package</dt>
-                                <dd class="font-black text-slate-900 uppercase">{{ strtoupper($route->package_type) }} Package</dd>
+                            <div class="flex justify-between py-1.5 border-b border-slate-100 gap-2">
+                                <dt class="font-bold text-slate-500 shrink-0">Package</dt>
+                                <dd class="font-black text-slate-900 text-right uppercase">{{ strtoupper($route->package_type) }} Package</dd>
                             </div>
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <dt class="font-bold text-slate-500">City</dt>
-                                <dd class="font-black text-slate-900">{{ $cityName }}</dd>
+                            <div class="flex justify-between py-1.5 border-b border-slate-100 gap-2">
+                                <dt class="font-bold text-slate-500 shrink-0">City</dt>
+                                <dd class="font-black text-slate-900 text-right truncate">{{ $cityName }}</dd>
                             </div>
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <dt class="font-bold text-slate-500">Province</dt>
-                                <dd class="font-black text-slate-900">{{ $route->province }}</dd>
+                            <div class="flex justify-between py-1.5 border-b border-slate-100 gap-2">
+                                <dt class="font-bold text-slate-500 shrink-0">Province</dt>
+                                <dd class="font-black text-slate-900 text-right truncate">{{ $route->province }}</dd>
                             </div>
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <dt class="font-bold text-slate-500">Starts Included</dt>
-                                <dd class="font-black text-slate-900">{{ $route->access_limit }}</dd>
+                            <div class="flex justify-between py-1.5 border-b border-slate-100 gap-2">
+                                <dt class="font-bold text-slate-500 shrink-0">Starts Included</dt>
+                                <dd class="font-black text-slate-900 text-right">{{ $route->access_limit }}</dd>
                             </div>
-                            <div class="flex justify-between py-2">
-                                <dt class="font-bold text-slate-500">Price Paid</dt>
-                                <dd class="font-black text-teal-700">${{ number_format($route->price, 2) }}</dd>
+                            <div class="flex justify-between py-1.5 gap-2">
+                                <dt class="font-bold text-slate-500 shrink-0">Price Paid</dt>
+                                <dd class="font-black text-teal-700 text-right">${{ number_format($route->price, 2) }}</dd>
                             </div>
                         </dl>
 
                         @if($route->preview_pdf_path)
                             <div class="mt-5 pt-4 border-t border-slate-100">
-                                <a href="{{ \Illuminate\Support\Facades\Storage::url($route->preview_pdf_path) }}" target="_blank" class="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 py-3 text-sm font-bold text-slate-700 shadow-sm transition">
+                                <a href="{{ \Illuminate\Support\Facades\Storage::url($route->preview_pdf_path) }}" target="_blank" class="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 py-2.5 text-xs sm:text-sm font-bold text-slate-700 shadow-sm transition">
                                     📄 Preview Route PDF
                                 </a>
                             </div>
@@ -357,19 +365,19 @@
                         @if($route->description)
                             <div class="mt-5 pt-4 border-t border-slate-100">
                                 <span class="text-xs font-black uppercase text-slate-400 block mb-1">Route Notes</span>
-                                <p class="text-xs font-semibold text-slate-600 leading-relaxed">{{ $route->description }}</p>
+                                <p class="text-xs font-semibold text-slate-600 leading-relaxed break-words">{{ $route->description }}</p>
                             </div>
                         @endif
                     </div>
 
                     <!-- Related Routes Card -->
                     @if($relatedRoutes->count() > 0)
-                        <div class="route-card-light p-6">
-                            <h3 class="text-lg font-black text-slate-900 mb-4 pb-3 border-b border-slate-100">Other {{ $cityName }} Routes</h3>
+                        <div class="route-card-light p-4 sm:p-6 max-w-full overflow-hidden">
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 mb-4 pb-3 border-b border-slate-100">Other {{ $cityName }} Routes</h3>
                             <div class="space-y-3">
                                 @foreach($relatedRoutes as $rel)
-                                    <a href="{{ route('driving-routes.show', $rel) }}" class="group block rounded-2xl bg-slate-50 p-4 border border-slate-150 transition hover:bg-teal-50/50 hover:border-teal-200">
-                                        <h4 class="font-bold text-sm text-slate-900 group-hover:text-teal-800 transition">{{ $rel->title }}</h4>
+                                    <a href="{{ route('driving-routes.show', $rel) }}" class="group block rounded-2xl bg-slate-50 p-3.5 sm:p-4 border border-slate-150 transition hover:bg-teal-50/50 hover:border-teal-200">
+                                        <h4 class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-teal-800 transition truncate">{{ $rel->title }}</h4>
                                         <div class="mt-1 flex items-center justify-between text-xs font-semibold text-slate-500">
                                             <span>{{ $rel->route_duration_minutes ?: '15-20' }} mins</span>
                                             <span class="font-bold text-teal-700">${{ number_format($rel->price, 2) }}</span>
@@ -554,7 +562,6 @@
             return R * c;
         }
 
-        // Exact Google Maps Start Button Action
         if (btnGmapsStart) {
             btnGmapsStart.addEventListener('click', async () => {
                 if (!isDriving) {
@@ -643,7 +650,7 @@
                 speakInstruction('Arrived at start location. Driving test practice starting now.');
             }
 
-            updateArrowPosition(userLat, userLng, heading, speed);
+            updateArrowPosition(userLat, userLng, heading);
         }
 
         function startSimulatedDrive() {
