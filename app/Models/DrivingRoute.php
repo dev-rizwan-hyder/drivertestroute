@@ -44,36 +44,58 @@ class DrivingRoute extends Model
 
     public function getGoogleMapsUrlAttribute(): string
     {
-        if (! empty($this->attributes['google_maps_url'])) {
-            return $this->attributes['google_maps_url'];
+        $customUrl = $this->attributes['google_maps_url'] ?? null;
+
+        // If customUrl is ALREADY a Google Maps Directions URL, use it directly!
+        if ($customUrl && (str_contains($customUrl, '/maps/dir/') || str_contains($customUrl, 'api=1'))) {
+            return $customUrl;
         }
+
+        // Construct official Google Maps Directions URL to ensure "Start Navigation" button appears
+        $origin = null;
+        $destination = null;
+        $waypoints = [];
 
         if ($this->start_lat !== null && $this->start_lng !== null) {
             $origin = "{$this->start_lat},{$this->start_lng}";
-            $destination = ($this->end_lat !== null && $this->end_lng !== null)
-                ? "{$this->end_lat},{$this->end_lng}"
-                : $origin;
+        } elseif (! empty($this->start_label)) {
+            $origin = $this->start_label . ($this->city ? ", {$this->city}" : '');
+        }
 
-            $waypoints = [];
-            if ($this->relationLoaded('points') && $this->points->count() > 0) {
-                foreach ($this->points as $pt) {
-                    if ($pt->lat !== null && $pt->lng !== null) {
-                        $waypoints[] = "{$pt->lat},{$pt->lng}";
+        if ($this->end_lat !== null && $this->end_lng !== null) {
+            $destination = "{$this->end_lat},{$this->end_lng}";
+        } elseif (! empty($this->destination_label)) {
+            $destination = $this->destination_label . ($this->city ? ", {$this->city}" : '');
+        } elseif ($origin) {
+            $destination = $origin;
+        }
+
+        if ($this->relationLoaded('points') && $this->points->count() > 0) {
+            foreach ($this->points as $pt) {
+                if ($pt->lat !== null && $pt->lng !== null) {
+                    $waypoints[] = "{$pt->lat},{$pt->lng}";
+                } elseif (! empty($pt->instruction)) {
+                    $cleanInst = preg_replace('/^(continue|turn left|turn right) onto /i', '', $pt->instruction);
+                    if ($cleanInst) {
+                        $waypoints[] = $cleanInst . ($this->city ? ", {$this->city}" : '');
                     }
                 }
             }
+        }
 
+        if ($origin && $destination) {
             $url = "https://www.google.com/maps/dir/?api=1&origin=" . urlencode($origin) . "&destination=" . urlencode($destination) . "&travelmode=driving";
             if (! empty($waypoints)) {
-                $url .= "&waypoints=" . urlencode(implode('|', array_slice($waypoints, 0, 10)));
+                $midWaypoints = array_slice($waypoints, 0, 9);
+                $url .= "&waypoints=" . urlencode(implode('|', $midWaypoints));
             }
 
             return $url;
         }
 
-        if (! empty($this->start_label)) {
-            $dest = ! empty($this->destination_label) ? $this->destination_label : $this->start_label;
-            return "https://www.google.com/maps/dir/?api=1&origin=" . urlencode($this->start_label) . "&destination=" . urlencode($dest) . "&travelmode=driving";
+        // Fallback to custom URL if present
+        if (! empty($customUrl)) {
+            return $customUrl;
         }
 
         return "https://www.google.com/maps";
