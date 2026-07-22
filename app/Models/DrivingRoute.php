@@ -44,39 +44,43 @@ class DrivingRoute extends Model
 
     public function getGoogleMapsUrlAttribute(): string
     {
-        $customUrl = $this->attributes['google_maps_url'] ?? null;
+        $customUrl = trim($this->attributes['google_maps_url'] ?? '');
 
         // If customUrl is ALREADY a Google Maps Directions URL, use it directly!
         if ($customUrl && (str_contains($customUrl, '/maps/dir/') || str_contains($customUrl, 'api=1'))) {
+            if (! str_contains($customUrl, 'dir_action=')) {
+                $customUrl .= (str_contains($customUrl, '?') ? '&' : '?') . 'dir_action=navigate';
+            }
             return $customUrl;
         }
 
-        // Construct official Google Maps Directions URL to ensure "Start Navigation" button appears
         $origin = null;
         $destination = null;
         $waypoints = [];
 
-        if ($this->start_lat !== null && $this->start_lng !== null) {
+        if ($this->start_lat !== null && $this->start_lng !== null && is_numeric($this->start_lat)) {
             $origin = "{$this->start_lat},{$this->start_lng}";
-        } elseif (! empty($this->start_label)) {
+        } elseif (! empty($this->start_label) && ! $this->isGenericLabel($this->start_label)) {
             $origin = $this->start_label . ($this->city ? ", {$this->city}" : '');
+        } elseif ($this->city) {
+            $origin = $this->city . ($this->province ? ", {$this->province}" : '');
         }
 
-        if ($this->end_lat !== null && $this->end_lng !== null) {
+        if ($this->end_lat !== null && $this->end_lng !== null && is_numeric($this->end_lat)) {
             $destination = "{$this->end_lat},{$this->end_lng}";
-        } elseif (! empty($this->destination_label)) {
+        } elseif (! empty($this->destination_label) && ! $this->isGenericLabel($this->destination_label)) {
             $destination = $this->destination_label . ($this->city ? ", {$this->city}" : '');
-        } elseif ($origin) {
+        } else {
             $destination = $origin;
         }
 
         if ($this->relationLoaded('points') && $this->points->count() > 0) {
             foreach ($this->points as $pt) {
-                if ($pt->lat !== null && $pt->lng !== null) {
+                if ($pt->lat !== null && $pt->lng !== null && is_numeric($pt->lat)) {
                     $waypoints[] = "{$pt->lat},{$pt->lng}";
-                } elseif (! empty($pt->instruction)) {
+                } elseif (! empty($pt->instruction) && ! $this->isGenericLabel($pt->instruction)) {
                     $cleanInst = preg_replace('/^(continue|turn left|turn right) onto /i', '', $pt->instruction);
-                    if ($cleanInst) {
+                    if ($cleanInst && ! $this->isGenericLabel($cleanInst)) {
                         $waypoints[] = $cleanInst . ($this->city ? ", {$this->city}" : '');
                     }
                 }
@@ -93,15 +97,30 @@ class DrivingRoute extends Model
             return $url;
         }
 
-        // Fallback to custom URL if present
-        if (! empty($customUrl)) {
-            if (str_contains($customUrl, 'api=1') && ! str_contains($customUrl, 'dir_action=')) {
-                return $customUrl . '&dir_action=navigate';
-            }
+        if ($customUrl !== '') {
             return $customUrl;
         }
 
         return "https://www.google.com/maps";
+    }
+
+    private function isGenericLabel(?string $label): bool
+    {
+        if (! $label) {
+            return true;
+        }
+        $lower = strtolower(trim($label));
+        return in_array($lower, [
+            'midpoint', 
+            'return to start', 
+            'midpoint / return to start', 
+            'destination', 
+            'start', 
+            'start point', 
+            'end point', 
+            'waypoint',
+            'your location',
+        ]);
     }
 
     public function points()
