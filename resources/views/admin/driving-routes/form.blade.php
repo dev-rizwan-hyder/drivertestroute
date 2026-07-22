@@ -71,32 +71,32 @@
         </div>
     </section>
 
-    <!-- Google Maps URL & Start/End Section -->
-    <section class="rounded-xl border border-teal-200 bg-teal-50/30 p-6 shadow-sm">
+    <!-- Google Maps Directions URL & Route Labels Section -->
+    <section class="rounded-xl border border-teal-200 bg-teal-50/40 p-6 shadow-sm">
         <div class="flex items-center gap-2 mb-4">
             <span class="flex h-8 w-8 items-center justify-center rounded-full bg-teal-700 text-white font-bold text-sm">🗺️</span>
             <div>
-                <h2 class="text-lg font-bold text-stone-950">Google Maps Navigation Link</h2>
-                <p class="text-xs text-stone-600">Paste your custom Google Maps or My Maps link for voice-guided navigation</p>
+                <h2 class="text-lg font-bold text-stone-950">Google Maps Directions URL</h2>
+                <p class="text-xs text-stone-600">Copy the directions URL from your browser address bar when creating the route in Google Maps and paste it below.</p>
             </div>
         </div>
 
         <div class="space-y-4">
             <label class="block">
-                <span class="text-sm font-bold text-stone-800">Google Maps / My Maps URL</span>
-                <input type="url" name="google_maps_url" value="{{ old('google_maps_url', $route->google_maps_url) }}" placeholder="https://www.google.com/maps/d/edit?mid=1YQ1ViUMHI1F4QwoxVFGgyIlt9L7MJYU&usp=sharing" class="mt-1 block w-full rounded-lg border border-teal-300 px-3.5 py-2.5 text-stone-950 shadow-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-100">
-                <span class="mt-1 block text-xs text-stone-500">Copy & paste your Google My Maps link or Google Maps Directions link here.</span>
+                <span class="text-sm font-bold text-stone-800">Google Maps Directions URL</span>
+                <input type="url" name="google_maps_url" value="{{ old('google_maps_url', $route->google_maps_url) }}" placeholder="https://www.google.com/maps/dir/199+Longside+Dr,+Mississauga,+ON+L5W+1Z9,+Canada/43.6349525,-79.6968147/43.6369668,-79.6943133/..." class="mt-1 block w-full rounded-lg border border-teal-300 px-3.5 py-2.5 text-stone-950 shadow-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-100">
+                <span class="mt-1 block text-xs text-stone-500">Paste the full browser URL (e.g. <code>https://www.google.com/maps/dir/...</code>). Google Maps will automatically load all stops and waypoints.</span>
             </label>
 
             <div class="grid gap-4 md:grid-cols-2">
                 <label class="block">
-                    <span class="text-sm font-semibold text-stone-700">Start Point Label</span>
+                    <span class="text-sm font-semibold text-stone-700">Start Location Name</span>
                     <input type="text" name="start_label" value="{{ old('start_label', $route->start_label ?: 'Brampton Test Center') }}" required placeholder="e.g. Brampton Test Center" class="mt-1 block w-full rounded-lg border border-stone-300 px-3.5 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none">
                 </label>
 
                 <label class="block">
-                    <span class="text-sm font-semibold text-stone-700">Destination Point Label</span>
-                    <input type="text" name="destination_label" value="{{ old('destination_label', $route->destination_label ?: 'Midpoint / Return to Start') }}" required placeholder="e.g. Return to Test Center" class="mt-1 block w-full rounded-lg border border-stone-300 px-3.5 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none">
+                    <span class="text-sm font-semibold text-stone-700">Destination Location Name</span>
+                    <input type="text" name="destination_label" value="{{ old('destination_label', $route->destination_label ?: 'Return to Start') }}" required placeholder="e.g. Return to Test Center" class="mt-1 block w-full rounded-lg border border-stone-300 px-3.5 py-2 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none">
                 </label>
             </div>
         </div>

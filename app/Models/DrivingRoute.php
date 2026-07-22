@@ -46,11 +46,8 @@ class DrivingRoute extends Model
     {
         $customUrl = trim($this->attributes['google_maps_url'] ?? '');
 
-        // If customUrl is ALREADY a Google Maps Directions URL, use it directly!
-        if ($customUrl && (str_contains($customUrl, '/maps/dir/') || str_contains($customUrl, 'api=1'))) {
-            if (! str_contains($customUrl, 'dir_action=')) {
-                $customUrl .= (str_contains($customUrl, '?') ? '&' : '?') . 'dir_action=navigate';
-            }
+        // If admin stored a custom Google Maps Directions URL, return it directly as-is!
+        if (! empty($customUrl)) {
             return $customUrl;
         }
 
