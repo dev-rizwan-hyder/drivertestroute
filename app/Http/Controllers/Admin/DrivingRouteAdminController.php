@@ -143,6 +143,7 @@ class DrivingRouteAdminController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'access_limit' => ['required', 'integer', 'min:1', 'max:1000'],
             'is_active' => ['sometimes', 'boolean'],
+            'google_maps_url' => ['nullable', 'url', 'max:2000'],
             'preview_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'points' => ['nullable', 'array'],
             'points.*.sort_order' => ['required', 'integer', 'min:1'],
@@ -175,6 +176,7 @@ class DrivingRouteAdminController extends Controller
             'end_lng' => $validated['end_lng'] ?? null,
             'price' => $validated['price'],
             'access_limit' => $validated['access_limit'],
+            'google_maps_url' => $validated['google_maps_url'] ?? null,
             'is_active' => $request->boolean('is_active'),
         ];
     }
