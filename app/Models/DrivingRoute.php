@@ -60,10 +60,15 @@ class DrivingRoute extends Model
 
         if ($this->start_lat !== null && $this->start_lng !== null && is_numeric($this->start_lat)) {
             $origin = "{$this->start_lat},{$this->start_lng}";
-        } elseif (! empty($this->start_label) && ! $this->isGenericLabel($this->start_label)) {
-            $origin = $this->start_label . ($this->city ? ", {$this->city}" : '');
-        } elseif ($this->city) {
-            $origin = $this->city . ($this->province ? ", {$this->province}" : '');
+        } else {
+            $firstPt = $this->relationLoaded('points') ? $this->points->first(fn($p) => $p->lat !== null && $p->lng !== null) : null;
+            if ($firstPt) {
+                $origin = "{$firstPt->lat},{$firstPt->lng}";
+            } elseif (! empty($this->start_label) && ! $this->isGenericLabel($this->start_label)) {
+                $origin = $this->start_label . ($this->city ? ", {$this->city}" : '');
+            } elseif ($this->city) {
+                $origin = $this->city . ($this->province ? ", {$this->province}" : '');
+            }
         }
 
         if ($this->end_lat !== null && $this->end_lng !== null && is_numeric($this->end_lat)) {

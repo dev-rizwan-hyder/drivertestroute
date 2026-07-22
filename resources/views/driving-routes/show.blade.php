@@ -3,6 +3,9 @@
 @section('title', $route->title)
 
 @push('styles')
+    <!-- Leaflet CSS for guaranteed 100% interactive route map without API key errors -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
     <style>
         .route-detail-page {
             background-color: #f8f9fa;
@@ -30,6 +33,24 @@
             background: linear-gradient(135deg, #0f766e 0%, #115e59 50%, #134e4a 100%);
             box-shadow: 0 16px 32px -4px rgba(15, 118, 110, 0.45);
         }
+
+        /* Leaflet Custom Marker Icons */
+        .custom-map-pin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            border: 2.5px solid #ffffff;
+        }
+        .pin-start { background: linear-gradient(135deg, #10b981, #059669); }
+        .pin-waypoint { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .pin-end { background: linear-gradient(135deg, #ef4444, #dc2626); }
     </style>
 @endpush
 
@@ -39,14 +60,18 @@
         $cityName = $routeCity?->name ?? $route->city;
         $cityAddress = $routeCity?->address;
         $googleMapsUrl = $route->google_maps_url;
-        $embedMapUrl = null;
 
-        if ($googleMapsUrl && (str_contains($googleMapsUrl, '/maps/d/') || str_contains($googleMapsUrl, 'mid='))) {
-            $embedMapUrl = str_replace(['/edit', '/viewer'], '/embed', $googleMapsUrl);
-        } else {
-            $searchQuery = urlencode($route->start_label . ', ' . $cityName . ', ' . $route->province);
-            $embedMapUrl = "https://maps.google.com/maps?q={$searchQuery}&z=14&output=embed";
-        }
+        $mappedPoints = $points->map(function($p, $idx) {
+            return [
+                'id' => $p->id ?? ($idx + 1),
+                'sort_order' => $p->sort_order ?? ($idx + 1),
+                'lat' => $p->lat !== null ? (float) $p->lat : null,
+                'lng' => $p->lng !== null ? (float) $p->lng : null,
+                'instruction' => $p->instruction ?: 'Turn / Maneuver',
+                'maneuver' => $p->maneuver ?: 'continue',
+                'distance_km' => $p->distance_km !== null ? (float) $p->distance_km : null,
+            ];
+        });
     @endphp
 
     <div class="route-detail-page min-h-screen py-10">
@@ -103,7 +128,7 @@
             <!-- Main Content Grid -->
             <div class="grid gap-8 lg:grid-cols-3">
 
-                <!-- Left Column (Hero Card & Preview Map) -->
+                <!-- Left Column (Interactive Map & Points) -->
                 <div class="lg:col-span-2 space-y-6">
 
                     <!-- Google Maps Launch CTA Hero Card -->
@@ -112,7 +137,7 @@
                             <div>
                                 <span class="text-xs font-black uppercase tracking-wider text-teal-700 block mb-1">Practice Navigation</span>
                                 <h2 class="text-2xl font-black text-slate-900">Start Navigation in Google Maps</h2>
-                                <p class="mt-1 text-sm text-slate-600">Open full voice-guided turn-by-turn navigation directly in your Google Maps app or browser.</p>
+                                <p class="mt-1 text-sm text-slate-600">Launch voice-guided turn-by-turn navigation directly in your Google Maps app.</p>
                             </div>
 
                             @if($route->preview_pdf_path)
@@ -126,7 +151,7 @@
                         </div>
 
                         <!-- Stats Strip -->
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 py-6">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6">
                             <div class="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-center">
                                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Est. Duration</span>
                                 <span class="text-xl font-black text-slate-900 mt-0.5 block">{{ $route->route_duration_minutes ?: '15-20' }} mins</span>
@@ -134,6 +159,10 @@
                             <div class="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-center">
                                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Route Distance</span>
                                 <span class="text-xl font-black text-slate-900 mt-0.5 block">{{ $route->route_length_km ?: '8.5' }} km</span>
+                            </div>
+                            <div class="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-center">
+                                <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Waypoints</span>
+                                <span class="text-xl font-black text-slate-900 mt-0.5 block">{{ count($mappedPoints) }} stops</span>
                             </div>
                             <div class="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-center">
                                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Starts Left</span>
@@ -148,32 +177,49 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <span id="btn-maps-text">🗺️ Start Route in Google Maps</span>
+                                <span id="btn-maps-text">🗺️ Open Navigation in Google Maps App</span>
                             </button>
-                            <p class="mt-2.5 text-center text-xs font-semibold text-slate-500">
-                                Opens live turn-by-turn navigation in the Google Maps app or browser
-                            </p>
                         </div>
                     </div>
 
-                    <!-- Route Map Preview Frame -->
-                    <div class="route-card-glass overflow-hidden p-2">
-                        <div class="relative h-[480px] w-full rounded-2xl overflow-hidden bg-slate-100">
-                            <iframe 
-                                src="{{ $embedMapUrl }}" 
-                                width="100%" 
-                                height="100%" 
-                                style="border:0;" 
-                                allowfullscreen="" 
-                                loading="lazy" 
-                                referrerpolicy="no-referrer-when-downgrade">
-                            </iframe>
+                    <!-- Interactive Multi-Marker Route Map -->
+                    <div class="route-card-glass p-4 overflow-hidden">
+                        <div class="flex items-center justify-between pb-3 px-2">
+                            <span class="text-xs font-black uppercase tracking-wider text-slate-500">Interactive Test Route Map</span>
+                            <span class="text-xs font-bold text-teal-700">📍 All {{ count($mappedPoints) }} Waypoints Marked</span>
                         </div>
+                        <div id="interactive-map" class="h-[480px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-0"></div>
                     </div>
+
+                    <!-- Stops Breakdown Card -->
+                    @if(count($mappedPoints) > 0)
+                        <div class="route-card-glass p-6 sm:p-8">
+                            <h3 class="text-xl font-black text-slate-900 mb-4 pb-3 border-b border-slate-100">Test Waypoints & Maneuvers</h3>
+                            <div class="space-y-3">
+                                @foreach($mappedPoints as $idx => $pt)
+                                    <div class="flex items-start gap-4 rounded-2xl bg-white p-4 border border-slate-200/80 shadow-sm">
+                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-white font-black text-xs">
+                                            {{ $idx + 1 }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2">
+                                                <span class="rounded-md bg-teal-50 border border-teal-200 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-teal-800">
+                                                    {{ strtoupper(str_replace('_', ' ', $pt['maneuver'])) }}
+                                                </span>
+                                            </div>
+                                            <p class="text-sm font-bold text-slate-800 mt-1">
+                                                {{ $pt['instruction'] }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                 </div>
 
-                <!-- Right Column (Sidebar Details & Related Routes) -->
+                <!-- Right Column (Sidebar Information) -->
                 <div class="space-y-6">
 
                     <!-- Route Details Sidebar Card -->
@@ -182,12 +228,12 @@
                         
                         <dl class="space-y-3.5 text-sm">
                             <div class="flex justify-between py-2 border-b border-slate-100">
-                                <dt class="font-bold text-slate-500">Start Point</dt>
-                                <dd class="font-black text-slate-900">{{ $route->start_label }}</dd>
+                                <dt class="font-bold text-slate-500">Start Location</dt>
+                                <dd class="font-black text-slate-900">{{ $route->start_label ?: $cityName }}</dd>
                             </div>
                             <div class="flex justify-between py-2 border-b border-slate-100">
                                 <dt class="font-bold text-slate-500">Destination</dt>
-                                <dd class="font-black text-slate-900">{{ $route->destination_label ?: 'Midpoint / Return' }}</dd>
+                                <dd class="font-black text-slate-900">{{ $route->destination_label ?: 'Return to Start' }}</dd>
                             </div>
                             <div class="flex justify-between py-2 border-b border-slate-100">
                                 <dt class="font-bold text-slate-500">Package</dt>
@@ -246,10 +292,14 @@
 @endsection
 
 @push('scripts')
+<!-- Leaflet JS for guaranteed 100% route rendering and marker pins -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const btnMaps = document.getElementById('btn-open-google-maps');
         const btnText = document.getElementById('btn-maps-text');
+        const pointsData = @json($mappedPoints);
 
         const routeAccess = {
             isAdmin: @json(auth()->user()->is_admin),
@@ -259,11 +309,11 @@
             csrfToken: @json(csrf_token()),
         };
 
+        // Open in Google Maps Handler
         if (btnMaps) {
             btnMaps.addEventListener('click', async () => {
                 if (btnText) btnText.textContent = 'Opening Google Maps...';
 
-                // Consume start access in background (if not admin)
                 if (!routeAccess.isAdmin) {
                     try {
                         await fetch(routeAccess.startUrl, {
@@ -278,13 +328,78 @@
                     }
                 }
 
-                // Open Google Maps URL in new window / native Google Maps app
                 window.open(routeAccess.mapsUrl, '_blank');
 
                 setTimeout(() => {
-                    if (btnText) btnText.textContent = '🗺️ Start Route in Google Maps';
+                    if (btnText) btnText.textContent = '🗺️ Open Navigation in Google Maps App';
                 }, 1500);
             });
+        }
+
+        // Initialize Leaflet Interactive Route Map with All Markers
+        const mapContainer = document.getElementById('interactive-map');
+        if (mapContainer && typeof L !== 'undefined') {
+            const validPoints = pointsData.filter(p => p.lat !== null && p.lng !== null && !isNaN(p.lat) && !isNaN(p.lng));
+
+            let initialCenter = [43.6532, -79.3832]; // Default Ontario center
+            if (validPoints.length > 0) {
+                initialCenter = [validPoints[0].lat, validPoints[0].lng];
+            } else if (@json($route->start_lat) && @json($route->start_lng)) {
+                initialCenter = [@json((float)$route->start_lat), @json((float)$route->start_lng)];
+            }
+
+            const map = L.map('interactive-map').setView(initialCenter, 14);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            const bounds = [];
+
+            if (validPoints.length > 0) {
+                const latLngs = [];
+
+                validPoints.forEach((pt, index) => {
+                    const latLng = [pt.lat, pt.lng];
+                    latLngs.push(latLng);
+                    bounds.push(latLng);
+
+                    let pinClass = 'pin-waypoint';
+                    let label = index + 1;
+
+                    if (index === 0) {
+                        pinClass = 'pin-start';
+                        label = 'S';
+                    } else if (index === validPoints.length - 1) {
+                        pinClass = 'pin-end';
+                        label = 'D';
+                    }
+
+                    const customIcon = L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div class="custom-map-pin ${pinClass}">${label}</div>`,
+                        iconSize: [34, 34],
+                        iconAnchor: [17, 17],
+                    });
+
+                    L.marker(latLng, { icon: customIcon })
+                        .addTo(map)
+                        .bindPopup(`<b>Stop ${index + 1}: ${pt.instruction}</b>`);
+                });
+
+                // Polyline connecting all points
+                L.polyline(latLngs, {
+                    color: '#0284c7',
+                    weight: 5,
+                    opacity: 0.85,
+                    lineJoin: 'round'
+                }).addTo(map);
+
+                if (bounds.length > 0) {
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            }
         }
     });
 </script>
