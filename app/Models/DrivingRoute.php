@@ -90,7 +90,13 @@ class DrivingRoute extends Model
         }
 
         if ($origin && $destination) {
-            $url = "https://www.google.com/maps/dir/?api=1&origin=" . urlencode($origin) . "&destination=" . urlencode($destination) . "&travelmode=driving&dir_action=navigate";
+            // If origin equals destination, ensure we have waypoints so Google Maps doesn't instantly say "Arrived"
+            if ($origin === $destination && empty($waypoints) && ! empty($this->destination_label) && ! $this->isGenericLabel($this->destination_label)) {
+                $destination = $this->destination_label . ($this->city ? ", {$this->city}" : '');
+            }
+
+            $url = "https://www.google.com/maps/dir/?api=1&origin=" . urlencode($origin) . "&destination=" . urlencode($destination) . "&travelmode=driving";
+            
             if (! empty($waypoints)) {
                 $midWaypoints = array_slice($waypoints, 0, 9);
                 $url .= "&waypoints=" . urlencode(implode('|', $midWaypoints));
