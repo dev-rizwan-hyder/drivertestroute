@@ -699,6 +699,39 @@
             }
         }
 
+        let currentNavStepIdx = 0;
+
+        function updateRealTimeTurnInstructions(userLat, userLng) {
+            if (!validPoints || validPoints.length === 0) return;
+
+            const targetPt = validPoints[currentNavStepIdx];
+            if (!targetPt) return;
+
+            const distToTarget = calculateDistanceMeters(userLat, userLng, targetPt.lat, targetPt.lng);
+            const distFormatted = distToTarget > 1000 
+                                ? (distToTarget / 1000).toFixed(1) + ' km' 
+                                : Math.round(distToTarget) + ' meters';
+
+            if (stepDistance) {
+                stepDistance.textContent = `IN ${distFormatted.toUpperCase()} • STEP ${currentNavStepIdx + 1} OF ${validPoints.length}`;
+            }
+
+            const instructionText = targetPt.instruction || `Proceed along route to Waypoint ${currentNavStepIdx + 1}`;
+            if (stepTitle && stepTitle.textContent !== instructionText) {
+                stepTitle.textContent = instructionText;
+                speakInstruction(`In ${distFormatted}, ${instructionText}`);
+            }
+
+            // Arrived at current waypoint -> advance to next turn instruction!
+            if (distToTarget <= 30 && currentNavStepIdx < validPoints.length - 1) {
+                currentNavStepIdx++;
+                const nextPt = validPoints[currentNavStepIdx];
+                const nextInstruction = nextPt.instruction || `Waypoint ${currentNavStepIdx + 1}`;
+                if (stepTitle) stepTitle.textContent = nextInstruction;
+                speakInstruction(nextInstruction);
+            }
+        }
+
         function handleUserLocationUpdate(userLat, userLng, heading, speed) {
             if (!startPoint) return;
 
@@ -716,11 +749,12 @@
 
             if (!isAtStartPoint) {
                 isAtStartPoint = true;
-                if (stepDistance) stepDistance.textContent = 'TEST ROUTE ACTIVE';
-                if (stepTitle) stepTitle.textContent = '🚀 Driving Test Started! Follow route guidance.';
+                currentNavStepIdx = 0;
                 speakInstruction('Arrived at start location. Driving test practice starting now.');
             }
 
+            // Dynamically update turn-by-turn instructions as vehicle moves along map
+            updateRealTimeTurnInstructions(userLat, userLng);
             updateArrowPosition(userLat, userLng, heading, speed);
         }
 
@@ -735,7 +769,7 @@
 
                 const pt = validPoints[currentPointIdx];
                 if (pt && pt.lat !== null && pt.lng !== null) {
-                    if (stepDistance) stepDistance.textContent = `STEP ${currentPointIdx + 1} OF ${validPoints.length}`;
+                    if (stepDistance) stepDistance.textContent = `IN 50 METERS • STEP ${currentPointIdx + 1} OF ${validPoints.length}`;
                     if (stepTitle) stepTitle.textContent = pt.instruction;
 
                     speakInstruction(pt.instruction);
