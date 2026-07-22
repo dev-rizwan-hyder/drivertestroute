@@ -45,12 +45,7 @@
             box-shadow: 0 12px 32px rgba(15, 118, 110, 0.35);
         }
 
-        /* Arrow Marker Rotation Animation */
-        .car-heading-marker {
-            transition: transform 300ms ease-out;
-        }
-
-        /* Custom Pins */
+        /* Custom Pins & Floating Navigation Arrow */
         .custom-map-pin {
             display: flex;
             align-items: center;
@@ -67,6 +62,10 @@
         .pin-start { background: linear-gradient(135deg, #10b981, #059669); }
         .pin-waypoint { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .pin-end { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .nav-arrow-icon {
+            transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 @endpush
 
@@ -133,32 +132,32 @@
             <!-- Main Content Grid -->
             <div class="grid gap-8 lg:grid-cols-3">
 
-                <!-- Left Column (In-App Google Maps Turn-by-Turn Navigation Engine) -->
+                <!-- Left Column (Google Maps Style Real-Time Navigation Engine) -->
                 <div class="lg:col-span-2 space-y-6">
 
-                    <!-- In-App Google Maps Interactive Navigation Box -->
+                    <!-- Google Maps Real-Time Interactive Navigation Box -->
                     <div id="map-wrapper" class="route-card-glass relative overflow-hidden p-2 transition-all">
                         
-                        <!-- Top Google Maps Instruction Upward Banner -->
+                        <!-- Top Upward Navigation Instruction Banner -->
                         <div id="nav-instruction-banner" class="nav-hud-top absolute top-4 left-4 right-4 z-20 rounded-2xl p-4 sm:p-5 text-white shadow-2xl transition-all">
                             <div class="flex items-center justify-between gap-4">
                                 <div class="flex items-center gap-4">
-                                    <!-- Maneuver Icon -->
+                                    <!-- Maneuver Icon Container -->
                                     <div id="nav-maneuver-icon-container" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md">
                                         <svg id="nav-maneuver-icon" class="h-8 w-8 text-teal-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <div id="nav-step-distance" class="text-xs font-black uppercase tracking-wider text-teal-200">In 50 meters</div>
+                                        <div id="nav-step-distance" class="text-xs font-black uppercase tracking-wider text-teal-200">Head to Start Point</div>
                                         <h3 id="nav-step-title" class="text-lg sm:text-xl font-black leading-snug">
-                                            {{ $mappedPoints->first()['instruction'] ?? 'Prepare to start test route drive' }}
+                                            📍 Head toward {{ $route->start_label ?: 'Start Point' }}
                                         </h3>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center gap-2 shrink-0">
-                                    <!-- Voice Toggle -->
+                                    <!-- Voice Guidance Toggle -->
                                     <button type="button" id="btn-toggle-voice" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition" title="Voice Guidance On/Off">
                                         <span id="voice-icon" class="text-lg">🔊</span>
                                     </button>
@@ -174,7 +173,15 @@
                         </div>
 
                         <!-- Interactive Map Element -->
-                        <div id="navigation-map" class="h-[520px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
+                        <div id="navigation-map" class="h-[540px] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
+
+                        <!-- Google Maps Floating Action Button (Start / Recenter) -->
+                        <button type="button" id="btn-floating-start" class="absolute bottom-20 right-6 z-30 flex items-center gap-3 rounded-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-black px-6 py-4 shadow-2xl transition transform hover:scale-105 active:scale-95 border-2 border-white">
+                            <svg class="h-6 w-6 text-white transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                            <span id="floating-btn-label">Start Navigation</span>
+                        </button>
 
                         <!-- Bottom Controls HUD Bar -->
                         <div class="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white/95 border border-slate-200/80 shadow-md z-20">
@@ -195,18 +202,10 @@
                                 </div>
                             </div>
 
-                            <!-- Start Drive Action Buttons -->
+                            <!-- Navigation Controls -->
                             <div class="flex items-center gap-2">
-                                <button type="button" id="btn-recenter" class="hidden rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3.5 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition">
-                                    🎯 Recenter
-                                </button>
-
-                                <button type="button" id="btn-start-drive" class="btn-google-maps flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-xl py-3 px-6 text-base font-black text-white transition active:scale-95">
-                                    <svg class="h-5 w-5 text-teal-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span id="btn-start-drive-text">Start Practice Drive</span>
+                                <button type="button" id="btn-recenter" class="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition">
+                                    🎯 Recenter Map
                                 </button>
                             </div>
                         </div>
@@ -342,13 +341,15 @@
         };
 
         let isDriving = false;
+        let isAtStartPoint = false;
         let voiceEnabled = true;
-        let currentStepIdx = 0;
         let watchId = null;
         let simulationInterval = null;
+        let currentHeading = 0;
 
-        const btnStart = document.getElementById('btn-start-drive');
-        const btnStartText = document.getElementById('btn-start-drive-text');
+        const btnFloatingStart = document.getElementById('btn-floating-start');
+        const floatingBtnLabel = document.getElementById('floating-btn-label');
+        const btnRecenter = document.getElementById('btn-recenter');
         const btnVoice = document.getElementById('btn-toggle-voice');
         const voiceIcon = document.getElementById('voice-icon');
         const btnFullscreen = document.getElementById('btn-toggle-fullscreen');
@@ -356,52 +357,46 @@
         const stepTitle = document.getElementById('nav-step-title');
         const stepDistance = document.getElementById('nav-step-distance');
 
-        // Speech Synthesis for Voice Guidance
+        const validPoints = pointsData.filter(p => p.lat !== null && p.lng !== null && !isNaN(p.lat) && !isNaN(p.lng));
+        const startPoint = validPoints.length > 0 ? validPoints[0] : null;
+
         function speakInstruction(text) {
             if (!voiceEnabled || !('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel(); // stop previous
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
             window.speechSynthesis.speak(utterance);
         }
 
-        // Voice Toggle
         if (btnVoice) {
             btnVoice.addEventListener('click', () => {
                 voiceEnabled = !voiceEnabled;
-                voiceIcon.textContent = voiceEnabled ? '🔊' : '🔇';
+                voiceIcon.textContent = voiceEnabled ? '🔊' : '%EF%BF%BD';
             });
         }
 
-        // Fullscreen Toggle
         if (btnFullscreen && mapWrapper) {
             btnFullscreen.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
-                    if (mapWrapper.requestFullscreen) {
-                        mapWrapper.requestFullscreen();
-                    } else {
-                        mapWrapper.classList.toggle('is-fullscreen');
-                    }
+                    if (mapWrapper.requestFullscreen) mapWrapper.requestFullscreen();
+                    else mapWrapper.classList.toggle('is-fullscreen');
                 } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    }
+                    if (document.exitFullscreen) document.exitFullscreen();
                     mapWrapper.classList.remove('is-fullscreen');
                 }
             });
         }
 
-        // Initialize Map (Google Maps JS API or Leaflet Fallback)
-        let map, userMarker, routePolyline;
-        const validPoints = pointsData.filter(p => p.lat !== null && p.lng !== null && !isNaN(p.lat) && !isNaN(p.lng));
+        // Initialize Google Maps / Leaflet Engine
+        let map, userArrowMarker, routePolyline, approachPolyline;
 
         function initNavigationEngine() {
             const mapContainer = document.getElementById('navigation-map');
             let center = { lat: 43.6532, lng: -79.3832 };
 
-            if (validPoints.length > 0) {
-                center = { lat: validPoints[0].lat, lng: validPoints[0].lng };
+            if (startPoint) {
+                center = { lat: startPoint.lat, lng: startPoint.lng };
             }
 
             if (typeof google !== 'undefined' && google.maps) {
@@ -415,7 +410,6 @@
                     tilt: 45,
                 });
 
-                // Markers & Polyline
                 const latLngs = validPoints.map(p => ({ lat: p.lat, lng: p.lng }));
                 if (latLngs.length > 0) {
                     routePolyline = new google.maps.Polyline({
@@ -427,7 +421,6 @@
                         map: map,
                     });
 
-                    // Start/End Markers
                     validPoints.forEach((pt, idx) => {
                         new google.maps.Marker({
                             position: { lat: pt.lat, lng: pt.lng },
@@ -467,9 +460,25 @@
 
         initNavigationEngine();
 
-        // Start Practice Drive Action
-        if (btnStart) {
-            btnStart.addEventListener('click', async () => {
+        // Calculate Haversine Distance in meters
+        function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const phi1 = lat1 * Math.PI / 180;
+            const phi2 = lat2 * Math.PI / 180;
+            const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                      Math.cos(phi1) * Math.cos(phi2) *
+                      Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c;
+        }
+
+        // Floating Action Button Click (Start Navigation / Recenter)
+        if (btnFloatingStart) {
+            btnFloatingStart.addEventListener('click', async () => {
                 if (!isDriving) {
                     // Consume access limit
                     if (!routeAccess.isAdmin) {
@@ -487,39 +496,44 @@
                     }
 
                     isDriving = true;
-                    btnStartText.textContent = 'Pause Drive';
+                    if (floatingBtnLabel) floatingBtnLabel.textContent = 'Re-center';
 
-                    // Announce first step
-                    if (validPoints.length > 0) {
-                        const firstStep = validPoints[0].instruction || 'Practice drive started. Follow highlighted route.';
-                        if (stepTitle) stepTitle.textContent = firstStep;
-                        speakInstruction(firstStep);
-                    }
-
-                    // Start GPS / Simulation
-                    startDriveTracking();
+                    // Start GPS / Location Tracking
+                    startRealTimeLocationNavigation();
                 } else {
-                    isDriving = false;
-                    btnStartText.textContent = 'Resume Drive';
-                    if (simulationInterval) clearInterval(simulationInterval);
-                    if (watchId) navigator.geolocation.clearWatch(watchId);
+                    recenterMap();
                 }
             });
         }
 
-        function startDriveTracking() {
+        if (btnRecenter) {
+            btnRecenter.addEventListener('click', () => recenterMap());
+        }
+
+        function recenterMap() {
+            if (startPoint && map) {
+                if (typeof google !== 'undefined' && google.maps && map instanceof google.maps.Map) {
+                    map.panTo({ lat: startPoint.lat, lng: startPoint.lng });
+                    map.setZoom(17);
+                } else if (typeof L !== 'undefined' && map.panTo) {
+                    map.panTo([startPoint.lat, startPoint.lng]);
+                }
+            }
+        }
+
+        function startRealTimeLocationNavigation() {
             if ('geolocation' in navigator) {
                 watchId = navigator.geolocation.watchPosition(
                     (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lng = pos.coords.longitude;
+                        const userLat = pos.coords.latitude;
+                        const userLng = pos.coords.longitude;
                         const speed = pos.coords.speed ? Math.round(pos.coords.speed * 3.6) : 0;
                         const heading = pos.coords.heading || 0;
 
-                        updateNavPosition(lat, lng, heading, speed);
+                        handleUserLocationUpdate(userLat, userLng, heading, speed);
                     },
                     (err) => {
-                        console.warn('GPS position error, starting simulation:', err);
+                        console.warn('GPS location unavailable, launching simulation mode:', err);
                         startSimulatedDrive();
                     },
                     { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 }
@@ -527,6 +541,36 @@
             } else {
                 startSimulatedDrive();
             }
+        }
+
+        function handleUserLocationUpdate(userLat, userLng, heading, speed) {
+            const speedEl = document.getElementById('nav-speed');
+            if (speedEl) speedEl.textContent = speed;
+
+            if (!startPoint) return;
+
+            const distToStart = calculateDistanceMeters(userLat, userLng, startPoint.lat, startPoint.lng);
+
+            // Phase 1: First reach starting point
+            if (distToStart > 60 && !isAtStartPoint) {
+                const roundedDist = Math.round(distToStart);
+                if (stepDistance) stepDistance.textContent = `Head to Start Point (${roundedDist > 1000 ? (roundedDist / 1000).toFixed(1) + ' km' : roundedDist + ' m'})`;
+                if (stepTitle) stepTitle.textContent = `📍 Drive to ${startPoint.instruction || 'Start Point'}`;
+
+                speakInstruction(`Please drive to the start location: ${startPoint.instruction || 'Test Center'}`);
+                updateArrowPosition(userLat, userLng, heading);
+                return;
+            }
+
+            // Phase 2: Reached Start Point -> Start Test Drive
+            if (!isAtStartPoint) {
+                isAtStartPoint = true;
+                if (stepDistance) stepDistance.textContent = 'Test Route Active';
+                if (stepTitle) stepTitle.textContent = '🚀 Driving Test Started! Follow route guidance.';
+                speakInstruction('Arrived at start location. Driving test practice starting now.');
+            }
+
+            updateArrowPosition(userLat, userLng, heading);
         }
 
         function startSimulatedDrive() {
@@ -540,23 +584,48 @@
 
                 const pt = validPoints[currentPointIdx];
                 if (pt && pt.lat !== null && pt.lng !== null) {
-                    updateNavPosition(pt.lat, pt.lng, 90, 40);
-
+                    if (stepDistance) stepDistance.textContent = `Step ${currentPointIdx + 1} of ${validPoints.length}`;
                     if (stepTitle) stepTitle.textContent = pt.instruction;
+
                     speakInstruction(pt.instruction);
+                    updateArrowPosition(pt.lat, pt.lng, 90, 35);
 
                     currentPointIdx = (currentPointIdx + 1) % validPoints.length;
                 }
             }, 5000);
         }
 
-        function updateNavPosition(lat, lng, heading, speed) {
+        function updateArrowPosition(lat, lng, heading = 0, speed = 0) {
             const speedEl = document.getElementById('nav-speed');
             if (speedEl) speedEl.textContent = speed;
 
             if (map) {
                 if (typeof google !== 'undefined' && google.maps && map instanceof google.maps.Map) {
                     map.panTo({ lat: lat, lng: lng });
+
+                    // Create or move navigation arrow marker
+                    if (!userArrowMarker) {
+                        userArrowMarker = new google.maps.Marker({
+                            position: { lat: lat, lng: lng },
+                            map: map,
+                            icon: {
+                                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                                scale: 6,
+                                fillColor: '#0284c7',
+                                fillOpacity: 1,
+                                strokeColor: '#ffffff',
+                                strokeWeight: 2,
+                                rotation: heading,
+                            },
+                        });
+                    } else {
+                        userArrowMarker.setPosition({ lat: lat, lng: lng });
+                        const icon = userArrowMarker.getIcon();
+                        if (icon) {
+                            icon.rotation = heading;
+                            userArrowMarker.setIcon(icon);
+                        }
+                    }
                 } else if (typeof L !== 'undefined' && map.panTo) {
                     map.panTo([lat, lng]);
                 }
