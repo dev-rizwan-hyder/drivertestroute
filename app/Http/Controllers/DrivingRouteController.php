@@ -335,8 +335,8 @@ class DrivingRouteController extends Controller
         });
 
         return redirect()
-            ->route('driving-routes.show', $drivingRoute)
-            ->with('success', 'Checkout complete. Your route map is unlocked.');
+            ->route('driving-routes.my')
+            ->with('success', 'Checkout complete. Your route is ready under My Routes.');
     }
 
     private function checkoutValidationRules(bool $paymentIntentRequired): array
