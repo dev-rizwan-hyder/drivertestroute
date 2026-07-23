@@ -1203,12 +1203,12 @@
                     </span>
 
                     <h1 class="mt-6 text-4xl font-extrabold tracking-tight leading-[1.1] text-white sm:text-5xl lg:text-6xl">
-                        Driver Test Routes
+                        Driver Test Routes 2026
                         <span class="dtr-gradient-text-light block mt-1">practice with precision.</span>
                     </h1>
 
                     <p class="mt-6 text-sm leading-7 text-slate-300 sm:text-base font-medium">
-                        Unlock professional test-route maps, track live practice starts, and keep every session organized in a polished route dashboard built for focused test-day preparation.
+                        Pass Your Ontario G2 & G Road Test on the 1st Try — In Your Own Car.Turn your phone into your personal driving guide. Navigate live 2026 G & G2 Drive Test routes, download official examiner marking sheets, and practice with total confidence — no expensive driving school car required
                     </p>
 
                     @if($cities->isNotEmpty())
