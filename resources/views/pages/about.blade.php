@@ -92,8 +92,8 @@
                 <div class="max-w-4xl" data-page-reveal>
                 <p class="text-sm font-black uppercase text-cyan-200">About us</p>
                 <h1 class="mt-4 text-5xl font-black leading-tight text-white sm:text-6xl">
-                    Route preparation with
-                    <span class="public-gradient-text block">clearer expectations.</span>
+                    Pass Your Ontario G2 & G Road Test on Your First Attempt
+                    <span class="public-gradient-text block">In Your Own Car.</span>
                 </h1>
                 <p class="mt-6 max-w-3xl text-lg leading-8 text-slate-400">
                     Driver Test Routes helps learners and instructors plan focused practice with paid route maps, controlled starts, and simple dashboards for repeatable test-day preparation.
@@ -121,9 +121,9 @@
         <section class="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[.85fr_1.15fr] lg:px-8">
             <div data-page-reveal>
                 <p class="text-sm font-black uppercase text-cyan-200">Mission</p>
-                <h2 class="mt-3 text-3xl font-black text-white">Professional route practice without guesswork.</h2>
+                <h2 class="mt-3 text-3xl font-black text-white">Everything You Need to Prepare for Your Road Test.</h2>
                 <p class="mt-5 text-base leading-8 text-slate-400">
-                    We organize route details, access, and map starts so every learner can practice deliberately. The platform is built around clear locations, measurable use, and a clean account workflow.
+                    We organize route details, access, and map starts so every learner can practice deliberately. The platform is built around clear locations, measurable use, and a clean account workflow. How It Works: Practice Smarter, Save Hundreds
                 </p>
             </div>
 
