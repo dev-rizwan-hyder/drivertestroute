@@ -1242,11 +1242,11 @@
                                     <span class="block text-xs uppercase tracking-wider font-extrabold text-cyan-600 mb-3">Step 1: Choose Package Type</span>
                                     <div class="grid grid-cols-2 gap-4">
                                         <button type="button" data-select-pkg="g1" class="group relative overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-4 text-left transition-all duration-200 hover:bg-slate-100 hover:border-cyan-500/50 focus:outline-none">
-                                            <span class="block text-lg font-black text-slate-800 group-hover:text-cyan-600">G1 Package</span>
+                                            <span class="block text-lg font-black text-slate-800 group-hover:text-cyan-600">G2 Test Routes</span>
                                             <span class="mt-1 block text-xs font-bold text-slate-500">For G2 exit road test prep</span>
                                         </button>
                                         <button type="button" data-select-pkg="g2" class="group relative overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-4 text-left transition-all duration-200 hover:bg-slate-100 hover:border-cyan-500/50 focus:outline-none">
-                                            <span class="block text-lg font-black text-slate-800 group-hover:text-cyan-600">G2 Package</span>
+                                            <span class="block text-lg font-black text-slate-800 group-hover:text-cyan-600">G Test Routes</span>
                                             <span class="mt-1 block text-xs font-bold text-slate-500">For G exit road test prep</span>
                                         </button>
                                     </div>
@@ -1255,13 +1255,13 @@
                                 <!-- Phase 2: Select City -->
                                 <div id="phase-city" class="hidden p-5">
                                     <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
-                                        <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 uppercase font-black" id="badge-pkg">G1</span></span>
+                                        <span class="text-xs font-black text-cyan-600">Routes: <span class="text-slate-800 uppercase font-black" id="badge-pkg">G2</span></span>
                                         <button type="button" data-reset-to="package" class="text-xs text-cyan-600 hover:text-cyan-800 font-extrabold flex items-center gap-1">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                                             Back
                                         </button>
                                     </div>
-                                    <span class="block text-xs uppercase tracking-wider font-extrabold text-cyan-600 mb-3">Step 2: Select Your City</span>
+                                    <span class="block text-xs uppercase tracking-wider font-extrabold text-cyan-600 mb-3">Step 2: Select Your City Drive Test Center</span>
                                     <div class="relative mb-3">
                                         <input
                                             type="text"
@@ -1280,7 +1280,7 @@
                                 <div id="phase-route" class="hidden p-5">
                                     <div class="mb-4 flex flex-col gap-1.5 border-b border-slate-200 pb-3">
                                         <div class="flex items-center justify-between">
-                                            <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 uppercase font-black" id="badge-pkg-2">G1</span></span>
+                                            <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 uppercase font-black" id="badge-pkg-2">G2</span></span>
                                             <button type="button" data-reset-to="package" class="text-xs text-cyan-600 hover:text-cyan-800 font-extrabold flex items-center gap-1">
                                                 Change Package
                                             </button>
@@ -1498,8 +1498,13 @@
             <div class="mx-auto max-w-7xl">
                 <div class="mx-auto mb-10 max-w-3xl text-center" data-reveal>
                     <p class="text-sm font-black uppercase text-cyan-300">How it works</p>
-                    <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">A crisp route workflow with interactive detail cards.</h2>
-                    <p class="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">Hover or tap each card to reveal the operational details behind the practice flow.</p>
+                    <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">Everything You Need to Pass Your Road Test.</h2>
+                    <p class="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">•	Latest 2026 DriveTest Routes (G & G2): Access turn-by-turn route maps for every DriveTest location across Ontario.
+•	Turn-by-Turn GPS Phone Navigation: Open test routes directly on your phone's map app and drive them as many times as you need.
+•	Official Examiner Marking Sheet Downloads: See the exact checklist examiners use to score your turns, parking, lane changes, and highway merges.
+•	Proven Pass Tips & Tricks: Learn the most common automatic fails and instant point-deductions so you can avoid them.
+•	Practice in Your Own Car: Build muscle memory in the vehicle you are most comfortable driving, on your own schedule.
+.</p>
                 </div>
 
                 <div class="grid gap-5 md:grid-cols-3">
