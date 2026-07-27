@@ -285,20 +285,6 @@
         $displayCities = max($cityCount, 30);
     @endphp
 
-<<<<<<< HEAD
-    <div class="public-dark-page">
-        <section class="about-hero">
-            <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-                <div class="max-w-4xl" data-page-reveal>
-                <p class="text-sm font-black uppercase text-cyan-200">About us</p>
-                <h1 class="mt-4 text-5xl font-black leading-tight text-white sm:text-6xl">
-                    Pass Your Ontario G2 & G Road Test on Your First Attempt
-                    <span class="public-gradient-text block">In Your Own Car.</span>
-                </h1>
-                <p class="mt-6 max-w-3xl text-lg leading-8 text-slate-400">
-                    Driver Test Routes helps learners and instructors plan focused practice with paid route maps, controlled starts, and simple dashboards for repeatable test-day preparation.
-                </p>
-=======
     <div class="about-page">
         <!-- HERO SECTION (Improved Layout: Road SVG shifted right, 2-column SaaS design) -->
         <section class="about-section-soft py-16 lg:py-24 px-4 sm:px-6 lg:px-8 relative border-b border-slate-200/80">
@@ -423,7 +409,6 @@
                             </div>
                         </div>
                     </div>
->>>>>>> 7aa4b7e (Search filter improved)
                 </div>
             </div>
         </section>
@@ -459,15 +444,6 @@
             </div>
         </section>
 
-<<<<<<< HEAD
-        <section class="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[.85fr_1.15fr] lg:px-8">
-            <div data-page-reveal>
-                <p class="text-sm font-black uppercase text-cyan-200">Mission</p>
-                <h2 class="mt-3 text-3xl font-black text-white">Everything You Need to Prepare for Your Road Test.</h2>
-                <p class="mt-5 text-base leading-8 text-slate-400">
-                    We organize route details, access, and map starts so every learner can practice deliberately. The platform is built around clear locations, measurable use, and a clean account workflow. How It Works: Practice Smarter, Save Hundreds
-                </p>
-=======
         <!-- OUR STORY & MISSION SECTION -->
         <section class="about-section-soft py-20 px-4 sm:px-6 lg:px-8">
             <div class="dtr-bg-shapes">
@@ -480,7 +456,6 @@
                     </svg>
                 </div>
                 <div class="dtr-shape-blob top-1/3 left-10 w-[450px] h-[450px] bg-cyan-400/15 dtr-pulse-glow"></div>
->>>>>>> 7aa4b7e (Search filter improved)
             </div>
 
             <div class="mx-auto max-w-7xl relative z-10 grid gap-12 lg:grid-cols-2 lg:items-center">

@@ -1526,17 +1526,13 @@
                                 <!-- Phase 2: Select City -->
                                 <div id="phase-city" class="hidden p-5">
                                     <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
-<<<<<<< HEAD
-                                        <span class="text-xs font-black text-cyan-600">Routes: <span class="text-slate-800 uppercase font-black" id="badge-pkg">G2</span></span>
-=======
                                         <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 font-black" id="badge-pkg">G2 Test Routes</span></span>
->>>>>>> 7aa4b7e (Search filter improved)
                                         <button type="button" data-reset-to="package" class="text-xs text-cyan-600 hover:text-cyan-800 font-extrabold flex items-center gap-1">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                                             Back
                                         </button>
                                     </div>
-                                    <span class="block text-xs uppercase tracking-wider font-extrabold text-cyan-600 mb-3">Step 2: Select Your City Drive Test Center</span>
+                                    <span class="block text-xs uppercase tracking-wider font-extrabold text-cyan-600 mb-3">Step 2: Select Your City</span>
                                     <div class="relative mb-3">
                                         <input
                                             type="text"
@@ -1555,11 +1551,7 @@
                                 <div id="phase-route" class="hidden p-5">
                                     <div class="mb-4 flex flex-col gap-1.5 border-b border-slate-200 pb-3">
                                         <div class="flex items-center justify-between">
-<<<<<<< HEAD
-                                            <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 uppercase font-black" id="badge-pkg-2">G2</span></span>
-=======
                                             <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 font-black" id="badge-pkg-2">G2 Test Routes</span></span>
->>>>>>> 7aa4b7e (Search filter improved)
                                             <button type="button" data-reset-to="package" class="text-xs text-cyan-600 hover:text-cyan-800 font-extrabold flex items-center gap-1">
                                                 Change Package
                                             </button>
@@ -1779,22 +1771,10 @@
                 <div class="dtr-shape-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/25 dtr-pulse-glow"></div>
             </div>
             <div class="mx-auto max-w-7xl">
-<<<<<<< HEAD
-                <div class="mx-auto mb-10 max-w-3xl text-center" data-reveal>
-                    <p class="text-sm font-black uppercase text-cyan-300">How it works</p>
-                    <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">Everything You Need to Pass Your Road Test.</h2>
-                    <p class="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">•	Latest 2026 DriveTest Routes (G & G2): Access turn-by-turn route maps for every DriveTest location across Ontario.
-•	Turn-by-Turn GPS Phone Navigation: Open test routes directly on your phone's map app and drive them as many times as you need.
-•	Official Examiner Marking Sheet Downloads: See the exact checklist examiners use to score your turns, parking, lane changes, and highway merges.
-•	Proven Pass Tips & Tricks: Learn the most common automatic fails and instant point-deductions so you can avoid them.
-•	Practice in Your Own Car: Build muscle memory in the vehicle you are most comfortable driving, on your own schedule.
-.</p>
-=======
                 <div class="text-center max-w-3xl mx-auto mb-16" data-reveal>
                     <span class="text-xs font-black uppercase tracking-widest text-cyan-400">Complete Feature Toolkit</span>
                     <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">Everything You Need to Pass Your Road Test</h2>
                     <p class="mt-4 text-sm leading-7 text-slate-300 sm:text-base">Designed specifically for Ontario drivers preparing for G2 and G exit examinations.</p>
->>>>>>> 7aa4b7e (Search filter improved)
                 </div>
 
                 <div class="dtr-3d-grid grid gap-6 md:grid-cols-2 lg:grid-cols-3">
