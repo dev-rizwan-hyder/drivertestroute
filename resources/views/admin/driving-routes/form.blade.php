@@ -45,7 +45,7 @@
                 <p class="text-xs text-stone-500">Configure driving test route information and price</p>
             </div>
             <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 uppercase">
-                {{ strtoupper($route->package_type ?: 'G1') }} Route
+                {{ $route->package_type === 'g1' ? 'G2 Test Routes' : ($route->package_type === 'g2' ? 'G Test Routes' : 'G2 Test Routes') }}
             </span>
         </div>
 
@@ -58,8 +58,8 @@
             <label class="block">
                 <span class="text-sm font-semibold text-stone-700">Package Type</span>
                 <select name="package_type" required class="mt-1 block w-full rounded-lg border border-stone-300 px-3.5 py-2.5 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                    <option value="g1" @selected(old('package_type', $route->package_type) === 'g1')>G1 Package (G2 Road Test)</option>
-                    <option value="g2" @selected(old('package_type', $route->package_type) === 'g2')>G2 Package (G Road Test)</option>
+                    <option value="g1" @selected(old('package_type', $route->package_type) === 'g1')>G2 Test Routes</option>
+                    <option value="g2" @selected(old('package_type', $route->package_type) === 'g2')>G Test Routes</option>
                 </select>
             </label>
 

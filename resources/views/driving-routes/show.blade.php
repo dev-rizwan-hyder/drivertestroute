@@ -59,15 +59,18 @@
         #map-wrapper:fullscreen #gmaps-bottom-sheet,
         #map-wrapper.is-fullscreen #gmaps-bottom-sheet {
             position: absolute !important;
-            bottom: 0.75rem !important;
-            left: 0.75rem !important;
-            right: 0.75rem !important;
-            max-width: 36rem !important;
+            bottom: 1.25rem !important;
+            left: 1rem !important;
+            right: 1rem !important;
+            max-width: 44rem !important;
             margin-left: auto !important;
             margin-right: auto !important;
             z-index: 9999 !important;
             margin-top: 0 !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35) !important;
+            background: rgba(255, 255, 255, 0.96) !important;
+            backdrop-filter: blur(16px) !important;
+            border-radius: 1.5rem !important;
         }
 
         /* Top Google Maps Navigation Light Instruction HUD */
@@ -166,7 +169,7 @@
                     <div class="flex flex-wrap items-center gap-2 sm:gap-3 max-w-full">
                         <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight break-words max-w-full">{{ $route->title }}</h1>
                         <span class="rounded-full bg-teal-100 text-teal-800 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider shrink-0">
-                            {{ strtoupper($route->package_type) }} Route
+                            {{ $route->package_type === 'g1' ? 'G2 Test Routes' : 'G Test Routes' }}
                         </span>
                     </div>
                     <p class="mt-1 text-sm sm:text-lg font-bold text-teal-700">{{ $cityName }}, {{ $route->province }}</p>
@@ -232,22 +235,23 @@
                         <!-- Interactive Navigation Map Canvas (Full Size for Laptops) -->
                         <div id="navigation-map" class="h-[380px] sm:h-[500px] lg:h-[640px] w-full max-w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 z-10"></div>
 
-                        <!-- Google Maps Mobile Bottom Sheet Drive Card (Ultra Compact Height) -->
-                        <div id="gmaps-bottom-sheet" class="mt-2 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 p-2.5 sm:p-3.5 shadow-xl z-20 max-w-full overflow-hidden">
+                        <!-- Google Maps Mobile Bottom Sheet Drive Card (Ultra Compact & Highly Responsive) -->
+                        <div id="gmaps-bottom-sheet" class="mt-2.5 rounded-2xl sm:rounded-3xl bg-white/95 backdrop-blur-md border border-slate-200/90 p-3 sm:p-4 shadow-xl z-20 max-w-full overflow-hidden transition-all duration-300">
                             
                             <!-- Top Drag Handle & Title Bar -->
-                            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                                 <div class="flex items-center gap-2">
-                                    <h3 class="text-base sm:text-lg font-black text-slate-900">Drive</h3>
+                                    <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <h3 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">Drive Test Practice</h3>
                                 </div>
-                                <div class="flex items-center gap-1">
-                                    <button type="button" id="btn-recenter" class="p-1.5 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Recenter Map">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <div class="flex items-center gap-1.5">
+                                    <button type="button" id="btn-recenter" class="p-2 rounded-xl hover:bg-slate-100 text-slate-700 transition active:scale-95" title="Recenter Map">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
                                         </svg>
                                     </button>
-                                    <button type="button" id="btn-share-route" class="p-1.5 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Share Route">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <button type="button" id="btn-share-route" class="p-2 rounded-xl hover:bg-slate-100 text-slate-700 transition active:scale-95" title="Share Route">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                         </svg>
                                     </button>
@@ -255,35 +259,46 @@
                             </div>
 
                             <!-- Compact Duration & Distance Summary -->
-                            <div class="py-1.5 max-w-full flex items-baseline justify-between">
-                                <div class="flex items-baseline gap-1.5 flex-wrap">
-                                    <span class="text-lg sm:text-xl font-black text-emerald-700 tracking-tight">{{ $route->route_duration_minutes ?: 18 }} min</span>
-                                    <span class="text-xs sm:text-sm font-bold text-slate-600">({{ $route->route_length_km ?: 16 }} km)</span>
+                            <div class="py-2 max-w-full flex items-center justify-between">
+                                <div class="flex items-baseline gap-2 flex-wrap">
+                                    <span class="text-xl sm:text-2xl font-black text-teal-800 tracking-tight leading-none">{{ $route->route_duration_minutes ?: 18 }} min</span>
+                                    <span class="text-xs sm:text-sm font-bold text-slate-500">({{ $route->route_length_km ?: 16 }} km)</span>
                                 </div>
-                                <span class="text-[10px] font-semibold text-emerald-700">🍃 Practice Route</span>
+                                <span class="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-black text-emerald-800 uppercase tracking-wider">
+                                    🍃 Practice Route
+                                </span>
                             </div>
 
-                            <!-- Google Maps Iconic Action Buttons Row -->
-                            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 pt-1 max-w-full">
+                            <!-- Responsive Action Buttons Grid/Flex -->
+                            <div class="grid grid-cols-2 md:flex md:items-center gap-2 sm:gap-2.5 pt-1.5 max-w-full">
                                 <!-- Big Dark Teal Start Button (STRICT PURE WHITE TEXT) -->
-                                <button type="button" id="btn-gmaps-start" class="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-teal-800 hover:bg-teal-900 !text-white font-black px-5 py-2.5 shadow-md shadow-teal-900/20 transition transform active:scale-95">
+                                <button type="button" id="btn-gmaps-start" class="col-span-1 md:flex-1 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-800 to-emerald-800 hover:from-teal-900 hover:to-emerald-900 !text-white font-black px-4 sm:px-5 py-2.5 shadow-md shadow-teal-900/20 transition transform active:scale-95">
                                     <svg class="h-4 w-4 !text-white transform rotate-45 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                     </svg>
-                                    <span id="gmaps-btn-start-label" class="text-sm sm:text-base font-black !text-white">Start Navigation</span>
+                                    <span id="gmaps-btn-start-label" class="text-xs sm:text-sm font-black !text-white whitespace-nowrap">Start Live GPS</span>
                                 </button>
 
-                                <!-- Light Cyan Add Stops / Waypoints Button -->
-                                <button type="button" id="btn-gmaps-stops" class="flex-1 sm:flex-initial flex items-center justify-center gap-1 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-3.5 py-2.5 text-xs transition">
-                                    <svg class="h-3.5 w-3.5 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <!-- Vivid Emerald Demo Simulation Button -->
+                                <button type="button" id="btn-demo-nav" class="col-span-1 md:flex-1 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 !text-white font-black px-4 sm:px-5 py-2.5 shadow-md shadow-emerald-900/20 transition transform active:scale-95">
+                                    <svg class="h-4 w-4 !text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span id="demo-btn-label" class="text-xs sm:text-sm font-black !text-white whitespace-nowrap">Demo Drive</span>
+                                </button>
+
+                                <!-- Light Cyan Waypoints Button -->
+                                <button type="button" id="btn-gmaps-stops" class="col-span-1 md:shrink-0 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-1.5 rounded-2xl bg-cyan-50 hover:bg-cyan-100 border border-cyan-200/80 text-teal-900 font-bold px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm transition transform active:scale-95 whitespace-nowrap">
+                                    <svg class="h-4 w-4 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     </svg>
                                     <span>{{ count($mappedPoints) }} Waypoints</span>
                                 </button>
 
                                 <!-- Light Cyan Share Button -->
-                                <button type="button" id="btn-gmaps-share" class="flex-1 sm:flex-initial flex items-center justify-center gap-1 rounded-full bg-cyan-100 hover:bg-cyan-200 text-teal-900 font-bold px-3.5 py-2.5 text-xs transition">
-                                    <svg class="h-3.5 w-3.5 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <button type="button" id="btn-gmaps-share" class="col-span-1 md:shrink-0 min-h-[44px] sm:min-h-[46px] flex items-center justify-center gap-1.5 rounded-2xl bg-cyan-50 hover:bg-cyan-100 border border-cyan-200/80 text-teal-900 font-bold px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm transition transform active:scale-95 whitespace-nowrap">
+                                    <svg class="h-4 w-4 text-teal-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                     </svg>
                                     <span>Share</span>
@@ -344,7 +359,7 @@
                             </div>
                             <div class="flex justify-between py-1.5 border-b border-slate-100 gap-2">
                                 <dt class="font-bold text-slate-500 shrink-0">Package</dt>
-                                <dd class="font-black text-slate-900 text-right uppercase">{{ strtoupper($route->package_type) }} Package</dd>
+                                <dd class="font-black text-slate-900 text-right uppercase">{{ $route->package_type === 'g1' ? 'G2 Test Routes' : 'G Test Routes' }}</dd>
                             </div>
                             <div class="flex justify-between py-1.5 border-b border-slate-100 gap-2">
                                 <dt class="font-bold text-slate-500 shrink-0">City</dt>
@@ -407,14 +422,27 @@
 @endsection
 
 @push('scripts')
-@if($mapsKey)
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ $mapsKey }}&libraries=places,geometry"></script>
+@php
+    $effectiveMapsKey = $mapsKey ?? config('services.google.maps_key');
+@endphp
+<script>
+    window.googleMapsLoaded = false;
+    window.initGoogleMapsCallback = function() {
+        window.googleMapsLoaded = true;
+        if (typeof window.triggerInitNavEngine === 'function') {
+            window.triggerInitNavEngine();
+        }
+    };
+</script>
+@if($effectiveMapsKey)
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ $effectiveMapsKey }}&libraries=places,geometry&callback=initGoogleMapsCallback&loading=async" async defer></script>
 @endif
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const pointsData = @json($mappedPoints);
+        const googleMapsUrl = @json($route->google_maps_url);
         const routeAccess = {
             isAdmin: @json(auth()->user()->is_admin),
             remainingStarts: @json($remainingStarts),
@@ -442,6 +470,80 @@
 
         const validPoints = pointsData.filter(p => p.lat !== null && p.lng !== null && !isNaN(p.lat) && !isNaN(p.lng));
         const startPoint = validPoints.length > 0 ? validPoints[0] : null;
+
+        function parseGoogleMapsUrlStops(url) {
+            if (!url) return null;
+
+            try {
+                const urlObj = new URL(url);
+                const params = urlObj.searchParams;
+
+                if (params.has('origin') && params.has('destination')) {
+                    const originStr = decodeURIComponent(params.get('origin'));
+                    const destStr = decodeURIComponent(params.get('destination'));
+                    const waypointsStr = params.get('waypoints') ? decodeURIComponent(params.get('waypoints')) : '';
+
+                    const parseCoordOrQuery = (str) => {
+                        const coordMatch = str.trim().match(/^(-?\d+\.\d+),\s*(-?\d+\.\d+)$/);
+                        if (coordMatch) {
+                            return { lat: parseFloat(coordMatch[1]), lng: parseFloat(coordMatch[2]) };
+                        }
+                        return str.trim();
+                    };
+
+                    const origin = parseCoordOrQuery(originStr);
+                    const destination = parseCoordOrQuery(destStr);
+                    const waypointsList = [];
+
+                    if (waypointsStr) {
+                        const wayStops = waypointsStr.split('|');
+                        wayStops.forEach(st => {
+                            if (st.trim()) {
+                                waypointsList.push({
+                                    location: parseCoordOrQuery(st),
+                                    stopover: false,
+                                });
+                            }
+                        });
+                    }
+
+                    return { origin, destination, waypointsList };
+                }
+            } catch (e) {
+                // Fallback for path-based URL
+            }
+
+            if (url.includes('/maps/dir/')) {
+                const match = url.match(/\/maps\/dir\/([^\?]+)/);
+                if (match && match[1]) {
+                    const rawPath = match[1].split('/@')[0];
+                    const parts = rawPath.split('/').filter(p => p && !p.startsWith('data=') && !p.startsWith('am=') && !p.startsWith('entry='));
+
+                    const stops = [];
+                    parts.forEach((p) => {
+                        const decoded = decodeURIComponent(p);
+                        const coordMatch = decoded.match(/^(-?\d+\.\d+),\s*(-?\d+\.\d+)$/);
+                        if (coordMatch) {
+                            stops.push({ lat: parseFloat(coordMatch[1]), lng: parseFloat(coordMatch[2]) });
+                        } else {
+                            stops.push(decoded.replace(/\+/g, ' '));
+                        }
+                    });
+
+                    if (stops.length >= 2) {
+                        const origin = stops[0];
+                        const destination = stops[stops.length - 1];
+                        const waypointsList = stops.slice(1, -1).map(st => ({
+                            location: st,
+                            stopover: false,
+                        }));
+                        return { origin, destination, waypointsList };
+                    }
+                }
+            }
+
+            return null;
+        }
 
         function speakInstruction(text) {
             if (!voiceEnabled || !('speechSynthesis' in window)) return;
@@ -498,59 +600,174 @@
         });
 
         // Initialize Google Maps / Leaflet Engine
-        let map, userArrowMarker, routePolyline;
+        let map, userArrowMarker, routePolyline, directionsService, directionsRenderer;
 
         function initNavigationEngine() {
             const mapContainer = document.getElementById('navigation-map');
+            if (!mapContainer) return;
+
             let center = { lat: 43.6532, lng: -79.3832 };
 
             if (startPoint) {
                 center = { lat: startPoint.lat, lng: startPoint.lng };
             }
 
-            if (typeof google !== 'undefined' && google.maps) {
-                map = new google.maps.Map(mapContainer, {
-                    center: center,
-                    zoom: 19,
-                    mapTypeId: 'roadmap',
-                    disableDefaultUI: false,
-                    heading: 0,
-                    tilt: 45,
-                });
-
-                const latLngs = validPoints.map(p => ({ lat: p.lat, lng: p.lng }));
-                if (latLngs.length > 0) {
-                    routePolyline = new google.maps.Polyline({
-                        path: latLngs,
-                        geodesic: true,
-                        strokeColor: '#0284c7',
-                        strokeOpacity: 0.95,
-                        strokeWeight: 6,
-                        map: map,
+            if (typeof google !== 'undefined' && google.maps && typeof google.maps.Map === 'function') {
+                try {
+                    map = new google.maps.Map(mapContainer, {
+                        center: center,
+                        zoom: 15,
+                        mapTypeId: 'roadmap',
+                        disableDefaultUI: false,
                     });
 
-                    validPoints.forEach((pt, idx) => {
-                        new google.maps.Marker({
-                            position: { lat: pt.lat, lng: pt.lng },
-                            map: map,
-                            label: {
-                                text: idx === 0 ? 'S' : (idx === validPoints.length - 1 ? 'D' : `${idx + 1}`),
-                                color: '#ffffff',
-                                fontWeight: 'bold'
-                            },
+                    if (validPoints.length > 0) {
+                        const bounds = new google.maps.LatLngBounds();
+                        validPoints.forEach((pt, idx) => {
+                            const pos = { lat: pt.lat, lng: pt.lng };
+                            bounds.extend(pos);
+                            new google.maps.Marker({
+                                position: pos,
+                                map: map,
+                                label: {
+                                    text: idx === 0 ? 'S' : (idx === validPoints.length - 1 ? 'D' : `${idx + 1}`),
+                                    color: '#ffffff',
+                                    fontWeight: 'bold'
+                                },
+                            });
                         });
+                        map.fitBounds(bounds);
+                    }
+
+                    directionsService = new google.maps.DirectionsService();
+                    directionsRenderer = new google.maps.DirectionsRenderer({
+                        map: map,
+                        suppressMarkers: true,
+                        polylineOptions: {
+                            strokeColor: '#0284c7',
+                            strokeOpacity: 0.95,
+                            strokeWeight: 6,
+                        }
                     });
+
+                    let routeInfo = null;
+                    try {
+                        routeInfo = parseGoogleMapsUrlStops(googleMapsUrl);
+                    } catch (e) {
+                        console.warn('URL parsing error:', e);
+                    }
+
+                    let origin = null;
+                    let destination = null;
+                    let waypointsList = [];
+
+                    if (routeInfo) {
+                        origin = routeInfo.origin;
+                        destination = routeInfo.destination;
+                        waypointsList = routeInfo.waypointsList || [];
+                    } else if (validPoints.length >= 2) {
+                        origin = { lat: validPoints[0].lat, lng: validPoints[0].lng };
+                        destination = { lat: validPoints[validPoints.length - 1].lat, lng: validPoints[validPoints.length - 1].lng };
+
+                        let intermediate = validPoints.slice(1, -1);
+                        waypointsList = intermediate.map(pt => ({
+                            location: { lat: pt.lat, lng: pt.lng },
+                            stopover: false,
+                        }));
+                    }
+
+                    if (waypointsList.length > 23) {
+                        const stepRatio = waypointsList.length / 23;
+                        const sampled = [];
+                        for (let i = 0; i < 23; i++) {
+                            sampled.push(waypointsList[Math.floor(i * stepRatio)]);
+                        }
+                        waypointsList = sampled;
+                    }
+
+                    if (origin && destination) {
+                        directionsService.route({
+                            origin: origin,
+                            destination: destination,
+                            waypoints: waypointsList,
+                            travelMode: google.maps.TravelMode.DRIVING,
+                        }, (result, status) => {
+                            if (status === 'OK' && result.routes && result.routes[0]) {
+                                directionsRenderer.setDirections(result);
+                                if (result.routes[0].bounds) {
+                                    map.fitBounds(result.routes[0].bounds);
+                                }
+
+                                activeRoadPath = [];
+                                const route = result.routes[0];
+                                if (route.legs) {
+                                    route.legs.forEach(leg => {
+                                        if (leg.steps) {
+                                            leg.steps.forEach(step => {
+                                                if (step.path) {
+                                                    step.path.forEach(pt => {
+                                                        activeRoadPath.push({ lat: pt.lat(), lng: pt.lng() });
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+
+                                if (activeRoadPath.length === 0 && route.overview_path) {
+                                    activeRoadPath = route.overview_path.map(pt => ({ lat: pt.lat(), lng: pt.lng() }));
+                                }
+                            } else {
+                                console.warn('DirectionsService status:', status, '- drawing fallback polyline');
+                                drawFallbackPolyline();
+                            }
+                        });
+                    } else {
+                        drawFallbackPolyline();
+                    }
+                } catch (err) {
+                    console.error('Google Maps initialization exception:', err);
+                    drawFallbackPolyline();
+                }
+
+                function drawFallbackPolyline() {
+                    if (!map) return;
+                    const latLngs = validPoints.map(p => ({ lat: p.lat, lng: p.lng }));
+                    if (latLngs.length > 0) {
+                        if (!routePolyline) {
+                            routePolyline = new google.maps.Polyline({
+                                path: latLngs,
+                                geodesic: true,
+                                strokeColor: '#0284c7',
+                                strokeOpacity: 0.95,
+                                strokeWeight: 6,
+                                map: map,
+                            });
+                        }
+                        const bounds = new google.maps.LatLngBounds();
+                        latLngs.forEach(pt => bounds.extend(pt));
+                        map.fitBounds(bounds);
+                    }
                 }
             } else if (typeof L !== 'undefined') {
-                map = L.map('navigation-map').setView([center.lat, center.lng], 19);
+                map = L.map('navigation-map').setView([center.lat, center.lng], 15);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(map);
 
+                setTimeout(() => {
+                    if (map && map.invalidateSize) {
+                        map.invalidateSize();
+                    }
+                }, 250);
+
                 if (validPoints.length > 0) {
                     const coords = validPoints.map(p => [p.lat, p.lng]);
                     L.polyline(coords, { color: '#0284c7', weight: 6 }).addTo(map);
+
+                    const bounds = L.latLngBounds(coords);
+                    map.fitBounds(bounds);
 
                     validPoints.forEach((pt, idx) => {
                         const customIcon = L.divIcon({
@@ -565,7 +782,43 @@
             }
         }
 
-        initNavigationEngine();
+        let isMapInitialized = false;
+
+        window.triggerInitNavEngine = function() {
+            if (isMapInitialized) return;
+
+            const isGoogleAvailable = (typeof google !== 'undefined' && google.maps && typeof google.maps.Map === 'function');
+            
+            if (isGoogleAvailable) {
+                isMapInitialized = true;
+                initNavigationEngine();
+            } else if (!@json((bool)$effectiveMapsKey)) {
+                isMapInitialized = true;
+                initNavigationEngine();
+            }
+        };
+
+        if (window.googleMapsLoaded || (typeof google !== 'undefined' && google.maps && typeof google.maps.Map === 'function')) {
+            window.triggerInitNavEngine();
+        } else if (@json((bool)$effectiveMapsKey)) {
+            let checkAttempts = 0;
+            const googleCheckInterval = setInterval(() => {
+                checkAttempts++;
+                if (typeof google !== 'undefined' && google.maps && typeof google.maps.Map === 'function') {
+                    clearInterval(googleCheckInterval);
+                    window.triggerInitNavEngine();
+                } else if (checkAttempts >= 20) { // 6 seconds wait
+                    clearInterval(googleCheckInterval);
+                    if (!isMapInitialized) {
+                        isMapInitialized = true;
+                        initNavigationEngine();
+                    }
+                }
+            }, 300);
+        } else {
+            isMapInitialized = true;
+            initNavigationEngine();
+        }
 
         function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
             const R = 6371e3;
@@ -582,9 +835,192 @@
             return R * c;
         }
 
+        const btnDemoNav = document.getElementById('btn-demo-nav');
+        const demoBtnLabel = document.getElementById('demo-btn-label');
+        let activeRoadPath = [];
+        let demoSubStepTimer = null;
+        let demoRoadPathIndex = 0;
+
+        function calculateBearing(lat1, lon1, lat2, lon2) {
+            const toRad = x => x * Math.PI / 180;
+            const toDeg = x => x * 180 / Math.PI;
+
+            const dLon = toRad(lon2 - lon1);
+            const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+            const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+                      Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+
+            const brng = toDeg(Math.atan2(y, x));
+            return (brng + 360) % 360;
+        }
+
+        function snapToRoadPath(userLat, userLng) {
+            if (!activeRoadPath || activeRoadPath.length === 0) {
+                return { lat: userLat, lng: userLng };
+            }
+
+            let minDist = Infinity;
+            let closestPt = { lat: userLat, lng: userLng };
+
+            for (let i = 0; i < activeRoadPath.length; i++) {
+                const pt = activeRoadPath[i];
+                const dist = calculateDistanceMeters(userLat, userLng, pt.lat, pt.lng);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closestPt = pt;
+                }
+            }
+
+            if (minDist <= 35) {
+                return closestPt;
+            }
+
+            return { lat: userLat, lng: userLng };
+        }
+
+        let demoAnimationReq = null;
+        let isDemoDriving = false;
+
+        function stopDemoDrive() {
+            isDemoDriving = false;
+            if (demoAnimationReq) {
+                cancelAnimationFrame(demoAnimationReq);
+                demoAnimationReq = null;
+            }
+            if (demoBtnLabel) demoBtnLabel.textContent = 'Demo Drive';
+            if (btnDemoNav) {
+                btnDemoNav.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+                btnDemoNav.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+            }
+            if (stepTitle) stepTitle.textContent = `📍 Head toward ${startPoint ? (startPoint.instruction || 'Start Point') : 'Start Point'}`;
+            if (stepDistance) stepDistance.textContent = 'HEAD TO START POINT';
+        }
+
+        function startDemoDrive() {
+            const pathPoints = activeRoadPath.length > 1 ? activeRoadPath : validPoints;
+
+            if (!pathPoints || pathPoints.length < 2) {
+                alert('No valid road path available for demo navigation.');
+                return;
+            }
+
+            if (isDriving) {
+                isDriving = false;
+                if (gmapsBtnLabel) gmapsBtnLabel.textContent = 'Start Live GPS';
+                if (watchId) navigator.geolocation.clearWatch(watchId);
+            }
+
+            isDemoDriving = true;
+            if (demoBtnLabel) demoBtnLabel.textContent = 'Pause Demo';
+            if (btnDemoNav) {
+                btnDemoNav.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                btnDemoNav.classList.add('bg-amber-600', 'hover:bg-amber-700');
+            }
+
+            currentNavStepIdx = 0;
+            let segIdx = 0;
+            let segStartTime = null;
+            let lastPanTime = 0;
+
+            // Realistic driving test speed: ~40 km/h = ~11 meters per second
+            const SIMULATED_SPEED_MPS = 11;
+
+            const announceStepIfNeeded = (currentLat, currentLng) => {
+                if (!validPoints || validPoints.length === 0) return;
+                if (currentNavStepIdx >= validPoints.length) return;
+
+                const targetPt = validPoints[currentNavStepIdx];
+                const distToTarget = calculateDistanceMeters(currentLat, currentLng, targetPt.lat, targetPt.lng);
+                const distFormatted = distToTarget > 1000 
+                    ? (distToTarget / 1000).toFixed(1) + ' km' 
+                    : Math.round(distToTarget) + ' meters';
+
+                if (stepDistance) {
+                    stepDistance.textContent = `DEMO SIMULATION • STEP ${currentNavStepIdx + 1} OF ${validPoints.length} (${distFormatted})`;
+                }
+
+                const instructionText = targetPt.instruction || `Waypoint ${currentNavStepIdx + 1}`;
+                if (stepTitle && stepTitle.textContent !== instructionText) {
+                    stepTitle.textContent = instructionText;
+                    speakInstruction(`In ${distFormatted}, ${instructionText}`);
+                }
+
+                if (distToTarget <= 30 && currentNavStepIdx < validPoints.length - 1) {
+                    currentNavStepIdx++;
+                }
+            };
+
+            if (demoAnimationReq) cancelAnimationFrame(demoAnimationReq);
+
+            const startPos = pathPoints[0];
+            const nextPos = pathPoints[1];
+            const initialBearing = calculateBearing(startPos.lat, startPos.lng, nextPos.lat, nextPos.lng);
+            updateArrowPosition(startPos.lat, startPos.lng, initialBearing, 35, true);
+            announceStepIfNeeded(startPos.lat, startPos.lng);
+
+            function animateFrame(timestamp) {
+                if (!isDemoDriving) return;
+
+                if (segIdx >= pathPoints.length - 1) {
+                    const finalPos = pathPoints[pathPoints.length - 1];
+                    updateArrowPosition(finalPos.lat, finalPos.lng, 0, 0, true);
+                    if (stepTitle) stepTitle.textContent = '🎉 Demo Navigation Completed! Destination Reached.';
+                    if (stepDistance) stepDistance.textContent = 'DEMO ROUTE COMPLETE';
+                    speakInstruction('Demo navigation complete. You have reached your destination.');
+                    stopDemoDrive();
+                    return;
+                }
+
+                const startPt = pathPoints[segIdx];
+                const endPt = pathPoints[segIdx + 1];
+                const segDist = calculateDistanceMeters(startPt.lat, startPt.lng, endPt.lat, endPt.lng);
+
+                // Minimum 250ms per road segment
+                const segDurationMs = Math.max(250, (segDist / SIMULATED_SPEED_MPS) * 1000);
+
+                if (!segStartTime) segStartTime = timestamp;
+                const elapsed = timestamp - segStartTime;
+                const progress = Math.min(1, elapsed / segDurationMs);
+
+                const currentLat = startPt.lat + (endPt.lat - startPt.lat) * progress;
+                const currentLng = startPt.lng + (endPt.lng - startPt.lng) * progress;
+                const bearing = calculateBearing(startPt.lat, startPt.lng, endPt.lat, endPt.lng);
+
+                // Throttle map panning to every 1200ms to prevent map rendering lag
+                const shouldPan = (timestamp - lastPanTime > 1200);
+                if (shouldPan) lastPanTime = timestamp;
+
+                updateArrowPosition(currentLat, currentLng, bearing, 35, shouldPan);
+                announceStepIfNeeded(currentLat, currentLng);
+
+                if (progress >= 1) {
+                    segIdx++;
+                    segStartTime = timestamp;
+                }
+
+                demoAnimationReq = requestAnimationFrame(animateFrame);
+            }
+
+            demoAnimationReq = requestAnimationFrame(animateFrame);
+        }
+
+        if (btnDemoNav) {
+            btnDemoNav.addEventListener('click', () => {
+                if (!isDemoDriving) {
+                    startDemoDrive();
+                } else {
+                    stopDemoDrive();
+                }
+            });
+        }
+
         if (btnGmapsStart) {
             btnGmapsStart.addEventListener('click', async () => {
                 if (!isDriving) {
+                    if (isDemoDriving) {
+                        stopDemoDrive();
+                    }
+
                     if (!routeAccess.isAdmin) {
                         try {
                             await fetch(routeAccess.startUrl, {
@@ -600,11 +1036,11 @@
                     }
 
                     isDriving = true;
-                    if (gmapsBtnLabel) gmapsBtnLabel.textContent = 'Pause Navigation';
+                    if (gmapsBtnLabel) gmapsBtnLabel.textContent = 'Pause Live GPS';
                     startRealTimeLocationNavigation();
                 } else {
                     isDriving = false;
-                    if (gmapsBtnLabel) gmapsBtnLabel.textContent = 'Resume Navigation';
+                    if (gmapsBtnLabel) gmapsBtnLabel.textContent = 'Start Live GPS';
                     if (simulationInterval) clearInterval(simulationInterval);
                     if (watchId) navigator.geolocation.clearWatch(watchId);
                 }
@@ -735,7 +1171,12 @@
         function handleUserLocationUpdate(userLat, userLng, heading, speed) {
             if (!startPoint) return;
 
-            const distToStart = calculateDistanceMeters(userLat, userLng, startPoint.lat, startPoint.lng);
+            // Snap live location to active road path line if driver is within 35m
+            const snappedPos = snapToRoadPath(userLat, userLng);
+            const activeLat = snappedPos.lat;
+            const activeLng = snappedPos.lng;
+
+            const distToStart = calculateDistanceMeters(activeLat, activeLng, startPoint.lat, startPoint.lng);
 
             if (distToStart > 60 && !isAtStartPoint) {
                 const roundedDist = Math.round(distToStart);
@@ -743,7 +1184,7 @@
                 if (stepTitle) stepTitle.textContent = `📍 Drive to ${startPoint.instruction || 'Start Point'}`;
 
                 speakInstruction(`Please drive to the start location: ${startPoint.instruction || 'Test Center'}`);
-                updateArrowPosition(userLat, userLng, heading, speed);
+                updateArrowPosition(activeLat, activeLng, heading, speed);
                 return;
             }
 
@@ -754,8 +1195,8 @@
             }
 
             // Dynamically update turn-by-turn instructions as vehicle moves along map
-            updateRealTimeTurnInstructions(userLat, userLng);
-            updateArrowPosition(userLat, userLng, heading, speed);
+            updateRealTimeTurnInstructions(activeLat, activeLng);
+            updateArrowPosition(activeLat, activeLng, heading, speed);
         }
 
         function startSimulatedDrive() {
@@ -780,18 +1221,15 @@
             }, 5000);
         }
 
-        function updateArrowPosition(lat, lng, heading = 0, speed = 0) {
-            const activeHeading = (heading !== undefined && heading !== null && !isNaN(heading) && heading !== 0) 
+        function updateArrowPosition(lat, lng, heading = 0, speed = 0, doPan = true) {
+            const activeHeading = (heading !== undefined && heading !== null && !isNaN(heading)) 
                                 ? heading 
                                 : deviceCompassHeading;
 
             if (map) {
                 if (typeof google !== 'undefined' && google.maps && map instanceof google.maps.Map) {
-                    map.panTo({ lat: lat, lng: lng });
-                    map.setZoom(19);
-
-                    if (map.setHeading && typeof map.setHeading === 'function') {
-                        map.setHeading(activeHeading);
+                    if (doPan) {
+                        map.panTo({ lat: lat, lng: lng });
                     }
 
                     if (!userArrowMarker) {
@@ -817,7 +1255,7 @@
                         }
                     }
                 } else if (typeof L !== 'undefined' && map.panTo) {
-                    map.setView([lat, lng], 19);
+                    if (doPan) map.setView([lat, lng], 17);
                 }
             }
         }

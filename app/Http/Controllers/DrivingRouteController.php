@@ -45,6 +45,12 @@ class DrivingRouteController extends Controller
         return view('home', compact('featuredRoutes', 'stats', 'cities'));
     }
 
+    /** Map package_type slug → human-readable label (alphabetical order). */
+    public static array $packageLabels = [
+        'g1' => 'G2 Test Routes',
+        'g2' => 'G Test Routes',
+    ];
+
     public function index(Request $request)
     {
         $citySchemaReady = $this->citySchemaReady();
@@ -52,10 +58,11 @@ class DrivingRouteController extends Controller
             ? City::find($request->integer('city'))
             : null;
         $selectedPackageType = $request->input('package_type');
+        $search = trim((string) $request->input('search', ''));
 
         $routesQuery = DrivingRoute::where('is_active', true)
             ->withCount('points')
-            ->latest();
+            ->orderBy('title');
 
         if ($citySchemaReady) {
             $routesQuery->with('cityModel');
@@ -75,13 +82,43 @@ class DrivingRouteController extends Controller
             });
         }
 
+        if ($search !== '') {
+            // Collect package_type slugs whose label matches the search term
+            $matchingPackageTypes = collect(self::$packageLabels)
+                ->filter(fn ($label) => str_contains(strtolower($label), strtolower($search)))
+                ->keys()
+                ->toArray();
+
+            $routesQuery->where(function ($q) use ($search, $matchingPackageTypes) {
+                $q->where('title', 'like', '%'.$search.'%');
+                if (! empty($matchingPackageTypes)) {
+                    $q->orWhereIn('package_type', $matchingPackageTypes);
+                }
+            });
+        }
+
         $routes = $routesQuery->get();
 
+        // Package pills sorted alphabetically by label
+        $packageOptions = collect(self::$packageLabels)->sortKeys();
+
         $cities = $citySchemaReady
-            ? City::withCount(['routes as active_routes_count' => function ($query) use ($selectedPackageType) {
+            ? City::withCount(['routes as active_routes_count' => function ($query) use ($selectedPackageType, $search) {
                     $query->where('is_active', true);
                     if ($selectedPackageType) {
                         $query->where('package_type', $selectedPackageType);
+                    }
+                    if ($search !== '') {
+                        $matchingPackageTypes = collect(DrivingRouteController::$packageLabels)
+                            ->filter(fn ($label) => str_contains(strtolower($label), strtolower($search)))
+                            ->keys()
+                            ->toArray();
+                        $query->where(function ($q) use ($search, $matchingPackageTypes) {
+                            $q->where('title', 'like', '%'.$search.'%');
+                            if (! empty($matchingPackageTypes)) {
+                                $q->orWhereIn('package_type', $matchingPackageTypes);
+                            }
+                        });
                     }
                 }])
                 ->orderBy('name')
@@ -95,7 +132,22 @@ class DrivingRouteController extends Controller
                 ->keyBy('driving_route_id')
             : collect();
 
-        return view('driving-routes.index', compact('routes', 'purchases', 'cities', 'selectedCity', 'selectedPackageType'));
+        // Partial/AJAX request: return JSON with rendered cards HTML + result count
+        if ($request->boolean('partial')) {
+            $html = view('driving-routes._cards', compact(
+                'routes', 'purchases', 'search', 'selectedPackageType', 'selectedCity'
+            ))->render();
+
+            return response()->json([
+                'html'  => $html,
+                'count' => $routes->count(),
+            ]);
+        }
+
+        return view('driving-routes.index', compact(
+            'routes', 'purchases', 'cities', 'selectedCity',
+            'selectedPackageType', 'search', 'packageOptions'
+        ));
     }
 
     public function myRoutes()
@@ -604,6 +656,7 @@ class DrivingRouteController extends Controller
             'purchase' => $purchase,
             'remainingStarts' => $remainingStarts,
             'relatedRoutes' => $relatedRoutes,
+            'mapsKey' => config('services.google.maps_key'),
         ]);
     }
 

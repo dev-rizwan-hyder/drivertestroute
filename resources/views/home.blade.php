@@ -34,7 +34,7 @@
             --section-glow-a: radial-gradient(circle at 14% 18%, rgba(37, 99, 235, .08), transparent 34%);
             --section-glow-b: radial-gradient(circle at 86% 14%, rgba(6, 182, 212, .06), transparent 30%);
             --section-grid-opacity: .13;
-            --section-image: var(--public-image-section);
+            --section-image: none;
             position: relative;
             isolation: isolate;
             overflow: hidden;
@@ -43,11 +43,10 @@
             background-color: var(--dtr-bg);
             background-image:
                 var(--section-bg),
-                linear-gradient(90deg, rgba(248, 249, 250, .58), rgba(255, 255, 255, .28), rgba(241, 243, 245, .64)),
-                var(--section-image);
-            background-position: center, center, center;
+                linear-gradient(90deg, rgba(248, 249, 250, .58), rgba(255, 255, 255, .28), rgba(241, 243, 245, .64));
+            background-position: center, center;
             background-repeat: no-repeat;
-            background-size: auto, auto, cover;
+            background-size: auto, auto;
         }
 
         .dtr-section::before,
@@ -1105,6 +1104,115 @@
             50% { box-shadow: 0 0 0 10px rgba(34, 211, 238, 0); }
         }
 
+        /* Dynamic Background Shapes & Geometry Animations for Home Sections */
+        @keyframes dtr-spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes dtr-spin-reverse-slow {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        @keyframes dtr-float-slow {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-18px) rotate(4deg); }
+        }
+
+        @keyframes dtr-float-reverse {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(16px) rotate(-5deg); }
+        }
+
+        @keyframes dtr-pulse-glow {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 0.95; transform: scale(1.1); }
+        }
+
+        @keyframes dtr-dash-flow {
+            from { stroke-dashoffset: 200; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Shape Container & Elements */
+        .dtr-bg-shapes {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .dtr-spin-slow {
+            animation: dtr-spin-slow 45s linear infinite;
+        }
+
+        .dtr-spin-reverse {
+            animation: dtr-spin-reverse-slow 55s linear infinite;
+        }
+
+        .dtr-float-slow {
+            animation: dtr-float-slow 8s ease-in-out infinite;
+        }
+
+        .dtr-float-reverse {
+            animation: dtr-float-reverse 10s ease-in-out infinite;
+        }
+
+        .dtr-pulse-glow {
+            animation: dtr-pulse-glow 6s ease-in-out infinite;
+        }
+
+        .dtr-dash-flow {
+            stroke-dasharray: 14 10;
+            animation: dtr-dash-flow 25s linear infinite;
+        }
+
+        .dtr-shape-blob {
+            position: absolute;
+            border-radius: 9999px;
+            pointer-events: none;
+            filter: blur(55px);
+        }
+
+        .dtr-shape-diamond {
+            position: absolute;
+            border: 2px solid rgba(56, 189, 248, 0.5);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(6, 182, 212, 0.14));
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            transform: rotate(45deg);
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.25);
+        }
+
+        .dtr-shape-pill {
+            position: absolute;
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.16), rgba(99, 102, 241, 0.16));
+            border-radius: 9999px;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.2);
+        }
+
+        .dtr-shape-grid-dots {
+            position: absolute;
+            background-image: radial-gradient(circle, rgba(56, 189, 248, 0.65) 2.5px, transparent 2.5px);
+            background-size: 26px 26px;
+            pointer-events: none;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+        }
+
+        .dtr-shape-hex-pattern {
+            position: absolute;
+            opacity: 0.22;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z' fill-opacity='0' stroke='%2338bdf8' stroke-width='1.75'/%3E%3C/svg%3E");
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
         @media (max-width: 900px) {
             .dtr-route-row {
                 grid-template-columns: 1fr;
@@ -1151,6 +1259,169 @@
                 opacity: 1;
                 transform: none;
             }
+        }
+
+        /* 3D Animated Layout & Interactive Component Styles */
+        .dtr-3d-grid {
+            perspective: 1200px;
+        }
+
+        .dtr-3d-card-v2 {
+            position: relative;
+            border-radius: 1.25rem;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 400ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease;
+            transform-style: preserve-3d;
+            will-change: transform, box-shadow;
+        }
+
+        .dtr-3d-card-v2:hover {
+            transform: translateY(-8px) rotateX(4deg) rotateY(-2deg);
+            box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.22), 0 10px 20px -5px rgba(6, 182, 212, 0.15);
+            border-color: rgba(37, 99, 235, 0.4);
+        }
+
+        .dtr-3d-dark-glow {
+            position: relative;
+            border-radius: 1.25rem;
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 400ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease;
+        }
+
+        .dtr-3d-dark-glow:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 30px 70px -15px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .dtr-step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.25rem;
+            height: 3.25rem;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #1e40af, #2563eb 50%, #0891b2);
+            color: #ffffff !important;
+            font-size: 1.15rem;
+            font-weight: 900;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dtr-3d-card-v2:hover .dtr-step-badge {
+            transform: scale(1.12) rotate(6deg);
+        }
+
+        .dtr-faq-box {
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 300ms ease;
+            overflow: hidden;
+        }
+
+        .dtr-faq-box.is-open {
+            border-color: rgba(37, 99, 235, 0.4);
+            background: #ffffff;
+            box-shadow: 0 16px 36px -10px rgba(37, 99, 235, 0.14);
+        }
+
+        .dtr-faq-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.35rem 1.6rem;
+            text-align: left;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #1e293b;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .dtr-faq-chevron {
+            width: 1.35rem;
+            height: 1.35rem;
+            color: #2563eb;
+            flex-shrink: 0;
+            transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dtr-faq-box.is-open .dtr-faq-chevron {
+            transform: rotate(180deg);
+        }
+
+        .dtr-faq-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 350ms cubic-bezier(0.16, 1, 0.3, 1), padding 350ms ease;
+            padding: 0 1.6rem;
+        }
+
+        .dtr-faq-box.is-open .dtr-faq-body {
+            max-height: 350px;
+            padding: 0 1.6rem 1.4rem 1.6rem;
+        }
+
+        .dtr-check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            padding: 0.85rem 1rem;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 250ms ease;
+        }
+
+        .dtr-check-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(56, 189, 248, 0.3);
+            transform: translateX(4px);
+        }
+
+        .dtr-check-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff !important;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Light theme readability overrides for dark elements */
+        .public-light-theme .dtr-3d-dark-glow :is(.text-white, h2, h3, h4, p, dt, dd, span, button, a) {
+            color: #ffffff !important;
+        }
+        .public-light-theme .dtr-3d-dark-glow .text-slate-300 {
+            color: #cbd5e1 !important;
+        }
+        .public-light-theme .dtr-3d-dark-glow .text-slate-400 {
+            color: #94a3b8 !important;
+        }
+        .public-light-theme .dtr-3d-dark-glow .text-cyan-400 {
+            color: #38bdf8 !important;
+        }
+        .public-light-theme .dtr-3d-dark-glow .text-emerald-400 {
+            color: #34d399 !important;
         }
     </style>
 @endpush
@@ -1255,7 +1526,11 @@
                                 <!-- Phase 2: Select City -->
                                 <div id="phase-city" class="hidden p-5">
                                     <div class="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+<<<<<<< HEAD
                                         <span class="text-xs font-black text-cyan-600">Routes: <span class="text-slate-800 uppercase font-black" id="badge-pkg">G2</span></span>
+=======
+                                        <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 font-black" id="badge-pkg">G2 Test Routes</span></span>
+>>>>>>> 7aa4b7e (Search filter improved)
                                         <button type="button" data-reset-to="package" class="text-xs text-cyan-600 hover:text-cyan-800 font-extrabold flex items-center gap-1">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                                             Back
@@ -1280,7 +1555,11 @@
                                 <div id="phase-route" class="hidden p-5">
                                     <div class="mb-4 flex flex-col gap-1.5 border-b border-slate-200 pb-3">
                                         <div class="flex items-center justify-between">
+<<<<<<< HEAD
                                             <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 uppercase font-black" id="badge-pkg-2">G2</span></span>
+=======
+                                            <span class="text-xs font-black text-cyan-600">Package: <span class="text-slate-800 font-black" id="badge-pkg-2">G2 Test Routes</span></span>
+>>>>>>> 7aa4b7e (Search filter improved)
                                             <button type="button" data-reset-to="package" class="text-xs text-cyan-600 hover:text-cyan-800 font-extrabold flex items-center gap-1">
                                                 Change Package
                                             </button>
@@ -1381,121 +1660,126 @@
             </div>
         </section>
 
-        <section class="dtr-section dtr-section--dashboard border-y border-white/10 px-4 py-20 sm:px-6 lg:px-8">
+        <!-- SECTION 1: Pass Test Value Proposition & Savings Callout -->
+        <section class="dtr-section py-20 px-4 sm:px-6 lg:px-8 border-t border-white/10">
+            <!-- Background Shape Design Layer -->
+            <div class="dtr-bg-shapes">
+                <!-- Concentric Rotating Orbital Rings (Top-Left) -->
+                <div class="absolute -top-16 -left-16 w-[440px] h-[440px] opacity-80 dtr-spin-slow">
+                    <svg viewBox="0 0 400 400" fill="none" class="w-full h-full text-cyan-400">
+                        <circle cx="200" cy="200" r="180" stroke="currentColor" stroke-width="2.5" stroke-dasharray="16 12" />
+                        <circle cx="200" cy="200" r="130" stroke="rgba(37, 99, 235, 0.7)" stroke-width="2" stroke-dasharray="10 8" />
+                        <circle cx="200" cy="200" r="80" stroke="rgba(56, 189, 248, 0.6)" stroke-width="3" />
+                        <circle cx="200" cy="20" r="8" fill="#38bdf8" />
+                        <circle cx="380" cy="200" r="6" fill="#60a5fa" />
+                    </svg>
+                </div>
+
+                <!-- Sweeping Curved Road Vector Line (Right background) -->
+                <svg class="absolute top-1/2 right-0 -translate-y-1/2 w-full max-w-3xl h-[420px] opacity-75 pointer-events-none" viewBox="0 0 600 400" fill="none">
+                    <path d="M50 350 C 200 350, 250 50, 400 50 C 500 50, 550 200, 600 200" stroke="url(#sec1RouteGrad)" stroke-width="9" stroke-linecap="round" class="dtr-dash-flow" />
+                    <path d="M50 350 C 200 350, 250 50, 400 50 C 500 50, 550 200, 600 200" stroke="rgba(56, 189, 248, 0.3)" stroke-width="28" stroke-linecap="round" />
+                    <circle cx="400" cy="50" r="10" fill="#22d3ee" />
+                    <circle cx="50" cy="350" r="10" fill="#3b82f6" />
+                    <defs>
+                        <linearGradient id="sec1RouteGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#3b82f6" />
+                            <stop offset="50%" stop-color="#06b6d4" />
+                            <stop offset="100%" stop-color="#38bdf8" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <!-- Floating Ambient Glow Spheres -->
+                <div class="dtr-shape-blob top-10 right-10 w-[420px] h-[420px] bg-cyan-500/25 dtr-pulse-glow"></div>
+                <div class="dtr-shape-blob bottom-10 left-10 w-[360px] h-[360px] bg-blue-600/25 dtr-pulse-glow" style="animation-delay: 3s;"></div>
+
+                <!-- Floating 3D Diamond Ring Accent -->
+                <div class="dtr-shape-diamond bottom-12 right-1/4 w-32 h-32 opacity-90 dtr-float-slow"></div>
+            </div>
             <div class="mx-auto max-w-7xl">
-                <div class="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div data-reveal>
-                        <p class="text-sm font-black uppercase text-cyan-300">Dashboard section</p>
-                        <h2 class="mt-3 max-w-3xl text-3xl font-black leading-tight text-white sm:text-5xl">Route performance, purchase activity, and practice readiness in one view.</h2>
-                    </div>
-                    <p class="max-w-xl text-sm leading-7 text-zinc-400 lg:text-right" data-reveal="slide-left" style="--delay: 90ms;">
-                        A compact command center for route inventory, city coverage, student access, and practice usage with animated metrics and responsive data views.
+                <div class="text-center max-w-4xl mx-auto mb-14" data-reveal>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-950/70 px-4 py-1.5 text-xs font-extrabold uppercase tracking-wider text-cyan-400 backdrop-blur-md">
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Pass Your Road Test on the 1st Attempt
+                    </span>
+                    <h2 class="mt-6 text-3xl font-black tracking-tight leading-tight text-white sm:text-5xl lg:text-6xl">
+                        Pass Your Ontario G2 & G Road Test on the 1st Try — <span class="dtr-gradient-text-light">In Your Own Car</span>
+                    </h2>
+                    <p class="mt-6 text-base leading-8 text-slate-300 font-medium max-w-3xl mx-auto sm:text-lg">
+                        Turn your phone into your personal driving guide. Navigate live 2026 G & G2 DriveTest routes, download official examiner marking sheets, and practice with total confidence — no expensive driving school car required.
                     </p>
                 </div>
 
-                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <article class="dtr-stat-card dtr-gradient-border" data-reveal data-animate-chart>
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-sm font-bold text-zinc-400">Active routes</p>
-                                <p class="mt-2 text-4xl font-black text-white" data-counter data-target="{{ $routeCount }}">{{ number_format($routeCount) }}</p>
+                <!-- 3D Banner Callout: Why pay $200+ -->
+                <div class="dtr-3d-dark-glow p-8 sm:p-12 relative overflow-hidden" data-reveal data-tilt>
+                    <div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
+                    <div class="absolute -left-20 -top-20 w-80 h-80 rounded-full bg-blue-500/10 blur-3xl pointer-events-none"></div>
+                    
+                    <div class="relative z-10 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+                        <div class="space-y-4">
+                            <div class="inline-flex items-center gap-2 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-emerald-400">
+                                💰 Save Hundreds on Test Day
                             </div>
-                            <span class="grid h-10 w-10 place-items-center rounded-md bg-cyan-400/10 text-cyan-200">
-                                <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                    <path d="M3 6h18" />
-                                    <path d="M3 12h18" />
-                                    <path d="M3 18h18" />
-                                </svg>
-                            </span>
+                            <h3 class="text-2xl sm:text-4xl font-black text-white leading-snug">
+                                Why pay <span class="text-cyan-400 underline decoration-cyan-500/40 underline-offset-8">$200+ to rent a driving school car</span>?
+                            </h3>
+                            <p class="text-slate-300 text-base leading-relaxed max-w-3xl font-normal">
+                                Practice the exact routes around your local DriveTest centre in your own car, master every tricky intersection, and pass your test on the very first attempt without paying exorbitant instructor vehicle rental fees.
+                            </p>
                         </div>
-                        <svg class="dtr-mini-chart mt-5 h-14 w-full" viewBox="0 0 220 58" fill="none" aria-hidden="true">
-                            <path d="M4 48 C32 25 46 34 68 26 C94 16 113 40 139 27 C164 15 177 21 216 8" stroke="url(#sparkRoutes)" stroke-width="4" stroke-linecap="round" />
-                            <defs>
-                                <linearGradient id="sparkRoutes" x1="4" x2="216" y1="48" y2="8">
-                                    <stop stop-color="#1e3a8a" />
-                                    <stop offset="1" stop-color="#06b6d4" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </article>
-
-                    <article class="dtr-stat-card dtr-gradient-border" data-reveal data-animate-chart style="--delay: 80ms;">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-sm font-bold text-zinc-400">Cities covered</p>
-                                <p class="mt-2 text-4xl font-black text-white" data-counter data-target="{{ $cityCount }}">{{ number_format($cityCount) }}</p>
+                        <div class="flex flex-col sm:flex-row lg:flex-col gap-4 shrink-0">
+                            <a href="{{ route('driving-routes.index') }}" class="dtr-btn dtr-btn-primary px-8 py-4 text-base rounded-xl shadow-xl hover:shadow-cyan-500/20">
+                                Explore Local Routes
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                            </a>
+                            <div class="text-center sm:text-left lg:text-center text-xs text-slate-400 font-bold">
+                                ⚡ Instant Mobile GPS Access
                             </div>
-                            <span class="grid h-10 w-10 place-items-center rounded-md bg-blue-400/10 text-blue-200">
-                                <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                    <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
-                                    <circle cx="12" cy="10" r="3" />
-                                </svg>
-                            </span>
                         </div>
-                        <svg class="dtr-mini-chart mt-5 h-14 w-full" viewBox="0 0 220 58" fill="none" aria-hidden="true">
-                            <polyline points="5,48 35,42 63,44 91,28 122,32 151,20 182,24 215,10" stroke="url(#sparkCities)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                            <defs>
-                                <linearGradient id="sparkCities" x1="5" x2="215" y1="48" y2="10">
-                                    <stop stop-color="#1e40af" />
-                                    <stop offset="1" stop-color="#38bdf8" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </article>
-
-                    <article class="dtr-stat-card dtr-gradient-border" data-reveal data-animate-chart style="--delay: 160ms;">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-sm font-bold text-zinc-400">Map starts used</p>
-                                <p class="mt-2 text-4xl font-black text-white" data-counter data-target="{{ $startCount }}">{{ number_format($startCount) }}</p>
-                            </div>
-                            <span class="grid h-10 w-10 place-items-center rounded-md bg-sky-400/10 text-sky-200">
-                                <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                    <path d="m5 3 14 9-14 9V3Z" />
-                                </svg>
-                            </span>
-                        </div>
-                        <svg class="dtr-mini-chart mt-5 h-14 w-full" viewBox="0 0 220 58" fill="none" aria-hidden="true">
-                            <path d="M5 42 C30 45 44 16 69 23 C90 29 98 51 124 42 C153 32 158 13 183 18 C199 21 207 14 216 9" stroke="url(#sparkStarts)" stroke-width="4" stroke-linecap="round" />
-                            <defs>
-                                <linearGradient id="sparkStarts" x1="5" x2="216" y1="42" y2="9">
-                                    <stop stop-color="#1e3a8a" />
-                                    <stop offset=".55" stop-color="#2563eb" />
-                                    <stop offset="1" stop-color="#06b6d4" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </article>
-
-                    <article class="dtr-stat-card dtr-gradient-border" data-reveal data-animate-chart style="--delay: 240ms;">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-sm font-bold text-zinc-400">Readiness score</p>
-                                <p class="mt-2 text-4xl font-black text-white" data-counter data-target="{{ $practiceScore }}">{{ $practiceScore }}</p>
-                            </div>
-                            <span class="grid h-10 w-10 place-items-center rounded-md bg-cyan-400/10 text-cyan-200">
-                                <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                    <path d="M20 6 9 17l-5-5" />
-                                </svg>
-                            </span>
-                        </div>
-                        <svg class="dtr-mini-chart mt-5 h-14 w-full" viewBox="0 0 220 58" fill="none" aria-hidden="true">
-                            <path d="M4 49 C33 47 45 37 66 38 C89 39 93 20 119 22 C142 24 153 36 174 23 C190 13 200 13 216 8" stroke="url(#sparkReady)" stroke-width="4" stroke-linecap="round" />
-                            <defs>
-                                <linearGradient id="sparkReady" x1="4" x2="216" y1="49" y2="8">
-                                    <stop stop-color="#38bdf8" />
-                                    <stop offset=".55" stop-color="#06b6d4" />
-                                    <stop offset="1" stop-color="#1e40af" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </article>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="dtr-section dtr-section--workflow px-4 py-20 sm:px-6 lg:px-8">
+        <!-- SECTION 2: Everything You Need to Pass Your Road Test (3D Animated Grid) -->
+        <section class="dtr-section py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/40 border-t border-white/10">
+            <!-- Background Shape Design Layer -->
+            <div class="dtr-bg-shapes">
+                <!-- Floating Dot Matrix Clusters -->
+                <div class="dtr-shape-grid-dots top-8 right-12 w-96 h-96 opacity-85"></div>
+                <div class="dtr-shape-grid-dots bottom-8 left-12 w-96 h-96 opacity-75"></div>
+
+                <!-- 3D Wireframe Cube/Polygon Left -->
+                <div class="absolute top-1/4 left-6 w-52 h-52 opacity-75 dtr-float-slow">
+                    <svg viewBox="0 0 200 200" fill="none" class="w-full h-full stroke-cyan-400">
+                        <polygon points="100,20 170,60 170,140 100,180 30,140 30,60" stroke-width="2.5" stroke-dasharray="6 4" />
+                        <polygon points="100,50 140,75 140,125 100,150 60,125 60,75" stroke-width="2" />
+                        <line x1="100" y1="20" x2="100" y2="50" stroke-width="2" />
+                        <line x1="170" y1="60" x2="140" y2="75" stroke-width="2" />
+                        <line x1="170" y1="140" x2="140" y2="125" stroke-width="2" />
+                        <line x1="100" y1="180" x2="100" y2="150" stroke-width="2" />
+                        <line x1="30" y1="140" x2="60" y2="125" stroke-width="2" />
+                        <line x1="30" y1="60" x2="60" y2="75" stroke-width="2" />
+                    </svg>
+                </div>
+
+                <!-- 3D Wireframe Polygon Right -->
+                <div class="absolute bottom-1/4 right-8 w-48 h-48 opacity-70 dtr-float-reverse">
+                    <svg viewBox="0 0 200 200" fill="none" class="w-full h-full stroke-indigo-400">
+                        <circle cx="100" cy="100" r="80" stroke-width="2.5" stroke-dasharray="8 6" />
+                        <polygon points="100,30 160,140 40,140" stroke-width="2.5" />
+                        <polygon points="100,170 160,60 40,60" stroke-width="2" />
+                    </svg>
+                </div>
+
+                <!-- Glowing Deep Indigo Center Orb -->
+                <div class="dtr-shape-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/25 dtr-pulse-glow"></div>
+            </div>
             <div class="mx-auto max-w-7xl">
+<<<<<<< HEAD
                 <div class="mx-auto mb-10 max-w-3xl text-center" data-reveal>
                     <p class="text-sm font-black uppercase text-cyan-300">How it works</p>
                     <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">Everything You Need to Pass Your Road Test.</h2>
@@ -1505,47 +1789,455 @@
 •	Proven Pass Tips & Tricks: Learn the most common automatic fails and instant point-deductions so you can avoid them.
 •	Practice in Your Own Car: Build muscle memory in the vehicle you are most comfortable driving, on your own schedule.
 .</p>
+=======
+                <div class="text-center max-w-3xl mx-auto mb-16" data-reveal>
+                    <span class="text-xs font-black uppercase tracking-widest text-cyan-400">Complete Feature Toolkit</span>
+                    <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">Everything You Need to Pass Your Road Test</h2>
+                    <p class="mt-4 text-sm leading-7 text-slate-300 sm:text-base">Designed specifically for Ontario drivers preparing for G2 and G exit examinations.</p>
+>>>>>>> 7aa4b7e (Search filter improved)
                 </div>
 
-                <div class="grid gap-5 md:grid-cols-3">
-                    @foreach([
-                        ['step' => '01', 'title' => 'Choose a route', 'copy' => 'Compare city, duration, starting area, price, included starts, and checkpoints before buying.', 'back' => 'Every listing is structured for quick scanning so learners can pick the exact practice area they need.', 'accent' => 'from-blue-950 via-blue-700 to-cyan-400'],
-                        ['step' => '02', 'title' => 'Unlock access', 'copy' => 'Purchase the map and keep the route available in your account for focused practice sessions.', 'back' => 'The checkout flow keeps student details, billing, and access limits connected to the chosen route.', 'accent' => 'from-slate-950 via-blue-800 to-sky-400'],
-                        ['step' => '03', 'title' => 'Practice live', 'copy' => 'Open the route, use controlled starts, and review progress without losing sight of access usage.', 'back' => 'Live starts are counted and surfaced in the dashboard so each practice attempt is intentional.', 'accent' => 'from-indigo-950 via-blue-700 to-cyan-300'],
-                    ] as $card)
-                        <article class="dtr-flip-card" data-flip-card data-reveal style="--delay: {{ $loop->index * 90 }}ms;">
-                            <div class="dtr-flip-inner">
-                                <div class="dtr-flip-face dtr-gradient-border p-6">
-                                    <span class="grid h-12 w-12 place-items-center rounded-md bg-gradient-to-br {{ $card['accent'] }} text-base font-black text-white">{{ $card['step'] }}</span>
-                                    <h3 class="mt-6 text-2xl font-black text-white">{{ $card['title'] }}</h3>
-                                    <p class="mt-3 text-sm leading-7 text-zinc-400">{{ $card['copy'] }}</p>
-                                    <div class="mt-auto pt-6">
-                                        <button type="button" class="dtr-flip-toggle" data-flip-toggle>
-                                            View details
-                                            <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                                <path d="M5 12h14" />
-                                                <path d="m13 6 6 6-6 6" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="dtr-flip-face dtr-flip-back dtr-glass p-6">
-                                    <span class="dtr-badge">Workflow detail</span>
-                                    <h3 class="mt-6 text-2xl font-black text-white">{{ $card['title'] }}</h3>
-                                    <p class="mt-3 text-sm leading-7 text-zinc-300">{{ $card['back'] }}</p>
-                                    <div class="mt-auto rounded-lg border border-white/10 bg-white/[.055] p-4">
-                                        <p class="text-xs font-bold uppercase text-zinc-500">Result</p>
-                                        <p class="mt-2 font-black text-white">Cleaner planning, fewer surprises, better sessions.</p>
-                                    </div>
-                                </div>
+                <div class="dtr-3d-grid grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Feature 1 -->
+                    <article class="dtr-3d-card-v2 p-7 flex flex-col justify-between" data-reveal data-tilt style="--delay: 0ms;">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 mb-6">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                </svg>
                             </div>
-                        </article>
-                    @endforeach
+                            <h3 class="text-xl font-black text-slate-900 mb-3">Latest 2026 DriveTest Routes (G & G2)</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed font-medium">Access turn-by-turn route maps for every DriveTest location across Ontario, updated for current testing paths.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600">
+                            <span>All Ontario Locations</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                        </div>
+                    </article>
+
+                    <!-- Feature 2 -->
+                    <article class="dtr-3d-card-v2 p-7 flex flex-col justify-between" data-reveal data-tilt style="--delay: 80ms;">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-600 mb-6">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-black text-slate-900 mb-3">Turn-by-Turn GPS Phone Navigation</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed font-medium">Open test routes directly on your phone's GPS map app and drive them as many times as you need before test day.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-cyan-600">
+                            <span>One-Tap Mobile GPS</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7"/></svg>
+                        </div>
+                    </article>
+
+                    <!-- Feature 3 -->
+                    <article class="dtr-3d-card-v2 p-7 flex flex-col justify-between" data-reveal data-tilt style="--delay: 160ms;">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 mb-6">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-black text-slate-900 mb-3">Official Examiner Marking Sheets</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed font-medium">See the exact checklist examiners use to score your turns, parallel parking, lane changes, and highway merges.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
+                            <span>2026 Checklist Download</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                        </div>
+                    </article>
+
+                    <!-- Feature 4 -->
+                    <article class="dtr-3d-card-v2 p-7 flex flex-col justify-between" data-reveal data-tilt style="--delay: 240ms;">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-600 mb-6">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-black text-slate-900 mb-3">Proven Pass Tips & Tricks</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed font-medium">Learn the most common automatic fails and instant point-deductions so you can avoid them completely.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-sky-600">
+                            <span>Avoid Instant Fails</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                        </div>
+                    </article>
+
+                    <!-- Feature 5 -->
+                    <article class="dtr-3d-card-v2 p-7 flex flex-col justify-between md:col-span-2 lg:col-span-2" data-reveal data-tilt style="--delay: 320ms;">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 mb-6">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-black text-slate-900 mb-3">Practice in Your Own Car</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed font-medium">Build muscle memory in the vehicle you are most comfortable driving, on your own schedule with family or friends — zero stress, zero extra rental fees.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+                            <span>Personal Vehicle Ready</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"/></svg>
+                        </div>
+                    </article>
                 </div>
             </div>
         </section>
 
+        <!-- SECTION 3: How It Works: Practice Smarter, Save Hundreds (3D Step Layout) -->
+        <section class="dtr-section py-20 px-4 sm:px-6 lg:px-8 border-t border-white/10">
+            <!-- Background Shape Design Layer -->
+            <div class="dtr-bg-shapes">
+                <!-- Interactive Road Track Connector Path SVG (Behind Cards) -->
+                <svg class="hidden lg:block absolute top-[45%] left-0 w-full h-36 opacity-85 pointer-events-none" viewBox="0 0 1200 120" fill="none">
+                    <path d="M 150,60 Q 300,110 450,60 T 750,60 T 1050,60" stroke="url(#stepRouteGrad)" stroke-width="6" stroke-linecap="round" class="dtr-dash-flow" />
+                    <path d="M 150,60 Q 300,110 450,60 T 750,60 T 1050,60" stroke="rgba(56, 189, 248, 0.25)" stroke-width="18" stroke-linecap="round" />
+                    <!-- Step Node Dots -->
+                    <circle cx="150" cy="60" r="9" fill="#2563eb" stroke="#38bdf8" stroke-width="3" />
+                    <circle cx="450" cy="60" r="9" fill="#0891b2" stroke="#38bdf8" stroke-width="3" />
+                    <circle cx="750" cy="60" r="9" fill="#4338ca" stroke="#a5b4fc" stroke-width="3" />
+                    <circle cx="1050" cy="60" r="9" fill="#059669" stroke="#34d399" stroke-width="3" />
+                    <defs>
+                        <linearGradient id="stepRouteGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#2563eb" />
+                            <stop offset="33%" stop-color="#0891b2" />
+                            <stop offset="66%" stop-color="#4338ca" />
+                            <stop offset="100%" stop-color="#059669" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <!-- Floating Translucent Pill Accent Shapes -->
+                <div class="dtr-shape-pill top-10 right-16 w-72 h-20 rotate-12 opacity-80 dtr-float-slow"></div>
+                <div class="dtr-shape-pill bottom-10 left-12 w-80 h-24 -rotate-12 opacity-75 dtr-float-reverse"></div>
+                <div class="dtr-shape-blob top-1/3 right-1/4 w-96 h-96 bg-cyan-500/25 dtr-pulse-glow"></div>
+            </div>
+            <div class="mx-auto max-w-7xl">
+                <div class="text-center max-w-3xl mx-auto mb-16" data-reveal>
+                    <span class="text-xs font-black uppercase tracking-widest text-cyan-400">Step-by-Step Blueprint</span>
+                    <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">How It Works: Practice Smarter, Save Hundreds</h2>
+                    <p class="mt-4 text-sm leading-7 text-slate-300 sm:text-base">Four simple steps from selecting your centre to mastering your test routes.</p>
+                </div>
+
+                <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    <!-- Step 1 -->
+                    <div class="dtr-3d-card-v2 p-6 flex flex-col justify-between" data-reveal style="--delay: 0ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="dtr-step-badge">1</span>
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Step 01</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Choose Your Centre</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-semibold mb-4">Select your Ontario DriveTest location (Brampton, Mississauga, Toronto, Oakville, etc.).</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-blue-50 border border-blue-100 text-blue-900 text-xs font-bold">
+                            💡 <span class="text-blue-700 font-extrabold">How It Helps:</span> Focus exclusively on the roads & speed limits where you will be tested.
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="dtr-3d-card-v2 p-6 flex flex-col justify-between" data-reveal style="--delay: 90ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="dtr-step-badge">2</span>
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Step 02</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Launch Route on Phone</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-semibold mb-4">Click to open turn-by-turn navigation on your mobile GPS app.</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-cyan-50 border border-cyan-100 text-cyan-900 text-xs font-bold">
+                            💡 <span class="text-cyan-700 font-extrabold">How It Helps:</span> No guessing — experience exact test turns, merge lanes, and residential zones.
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="dtr-3d-card-v2 p-6 flex flex-col justify-between" data-reveal style="--delay: 180ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="dtr-step-badge">3</span>
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Step 03</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Drive & Master</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-semibold mb-4">Practice in your own car with a friend or family member on your time.</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-900 text-xs font-bold">
+                            💡 <span class="text-indigo-700 font-extrabold">How It Helps:</span> Master tricky speed changes, school zones, and multi-lane intersections early.
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="dtr-3d-card-v2 p-6 flex flex-col justify-between" data-reveal style="--delay: 270ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="dtr-step-badge">4</span>
+                                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Step 04</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Check Marking Sheet</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-semibold mb-4">Download the 2026 examiner marking checklist and score yourself.</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-900 text-xs font-bold">
+                            💡 <span class="text-emerald-700 font-extrabold">How It Helps:</span> Know precisely how examiners grade mirror checks, blind spots, & parking.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Examiner Marking Sheets & What Examiners Look For (3D Interactive Preview) -->
+        <section class="dtr-section py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/60 border-t border-white/10">
+            <!-- Background Shape Design Layer -->
+            <div class="dtr-bg-shapes">
+                <!-- Scorecard Concentric Radar / Target SVG behind Graphic Mockup -->
+                <div class="absolute top-1/2 right-10 -translate-y-1/2 w-[560px] h-[560px] opacity-80 dtr-spin-reverse pointer-events-none">
+                    <svg viewBox="0 0 500 500" fill="none" class="w-full h-full text-cyan-400">
+                        <circle cx="250" cy="250" r="230" stroke="currentColor" stroke-width="2.5" stroke-dasharray="12 8" />
+                        <circle cx="250" cy="250" r="170" stroke="rgba(16, 185, 129, 0.6)" stroke-width="2" stroke-dasharray="6 6" />
+                        <circle cx="250" cy="250" r="110" stroke="rgba(56, 189, 248, 0.5)" stroke-width="3" />
+                        <line x1="250" y1="20" x2="250" y2="480" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5" />
+                        <line x1="20" y1="250" x2="480" y2="250" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5" />
+                        <circle cx="250" cy="20" r="7" fill="#34d399" />
+                        <circle cx="480" cy="250" r="7" fill="#38bdf8" />
+                    </svg>
+                </div>
+
+                <!-- Floating Geometric Shield Outline (Left Behind Text) -->
+                <div class="absolute top-16 left-12 w-56 h-64 opacity-70 dtr-float-slow">
+                    <svg viewBox="0 0 200 240" fill="none" class="w-full h-full stroke-cyan-400">
+                        <path d="M100 20 L180 50 V130 C180 180 100 220 100 220 C100 220 20 180 20 130 V50 L100 20 Z" stroke-width="3" stroke-dasharray="8 4" />
+                        <path d="M100 45 L160 70 V125 C160 165 100 195 100 195 C100 195 40 165 40 125 V70 L100 45 Z" stroke-width="2" />
+                    </svg>
+                </div>
+
+                <div class="dtr-shape-blob top-1/4 left-1/3 w-[450px] h-[450px] bg-emerald-500/25 dtr-pulse-glow"></div>
+            </div>
+            <div class="mx-auto max-w-7xl">
+                <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+                    <!-- Left: Explanation & Checklist -->
+                    <div data-reveal class="space-y-6">
+                        <span class="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-emerald-400">
+                            📄 2026 Official Examiner Standards
+                        </span>
+                        <h2 class="text-3xl font-black text-white sm:text-5xl leading-tight">
+                            Download Official 2026 DriveTest Examiner Marking Sheets
+                        </h2>
+                        <p class="text-slate-300 text-base leading-relaxed font-medium">
+                            Don't go into your test blind. Know exactly how many points you can afford to lose and what gets marked as a major vs. minor error before sitting behind the wheel.
+                        </p>
+
+                        <div class="pt-4 space-y-3">
+                            <h3 class="text-sm font-black uppercase tracking-widest text-cyan-400 mb-2">What Examiners Look For:</h3>
+                            
+                            <div class="dtr-check-item">
+                                <div class="dtr-check-icon">✓</div>
+                                <div>
+                                    <h4 class="text-sm font-black text-white">Mirror & Blindspot Checks</h4>
+                                    <p class="text-xs text-slate-300 font-medium">Checked every 5 to 7 seconds and before lane changes</p>
+                                </div>
+                            </div>
+
+                            <div class="dtr-check-item">
+                                <div class="dtr-check-icon">✓</div>
+                                <div>
+                                    <h4 class="text-sm font-black text-white">Speed Management</h4>
+                                    <p class="text-xs text-slate-300 font-medium">Maintaining posted speed without trailing or speeding</p>
+                                </div>
+                            </div>
+
+                            <div class="dtr-check-item">
+                                <div class="dtr-check-icon">✓</div>
+                                <div>
+                                    <h4 class="text-sm font-black text-white">Full Stops & Right of Way</h4>
+                                    <p class="text-xs text-slate-300 font-medium">Complete stops behind stop lines; yield rules</p>
+                                </div>
+                            </div>
+
+                            <div class="dtr-check-item">
+                                <div class="dtr-check-icon">✓</div>
+                                <div>
+                                    <h4 class="text-sm font-black text-white">Highway Merging (G Test)</h4>
+                                    <p class="text-xs text-slate-300 font-medium">Matching flow of traffic smoothly on the on-ramp</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <a href="{{ route('driving-routes.index') }}" class="dtr-btn dtr-btn-primary px-8 py-3.5 text-sm rounded-xl">
+                                Browse Routes & Download Sheets
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right: 3D Scorecard Graphic Mockup -->
+                    <div data-reveal="slide-left" class="dtr-3d-dark-glow p-6 sm:p-8 border border-cyan-500/30 relative">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 font-black">
+                                    ON
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-black text-white">DriveTest Ontario Marking Sheet</h4>
+                                    <p class="text-xs text-slate-400 font-mono">Form 2026-G/G2-VERIFIED</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-black text-emerald-400 bg-emerald-950/80 border border-emerald-500/40 px-3 py-1 rounded-full uppercase">PASSED</span>
+                        </div>
+
+                        <div class="space-y-4 text-xs font-mono text-slate-300">
+                            <div class="flex justify-between p-2.5 rounded bg-white/5 border border-white/5">
+                                <span>[1] Observation & Mirror Check</span>
+                                <span class="text-emerald-400 font-bold">PASS (0 DEDUCTION)</span>
+                            </div>
+                            <div class="flex justify-between p-2.5 rounded bg-white/5 border border-white/5">
+                                <span>[2] 3-Point Turn & Parallel Park</span>
+                                <span class="text-emerald-400 font-bold">PASS (0 DEDUCTION)</span>
+                            </div>
+                            <div class="flex justify-between p-2.5 rounded bg-white/5 border border-white/5">
+                                <span>[3] Highway Merge (100 km/h)</span>
+                                <span class="text-emerald-400 font-bold">PASS (0 DEDUCTION)</span>
+                            </div>
+                            <div class="flex justify-between p-2.5 rounded bg-white/5 border border-white/5">
+                                <span>[4] Speed Limit Adherence</span>
+                                <span class="text-emerald-400 font-bold">PASS (0 DEDUCTION)</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 rounded-xl bg-cyan-950/50 border border-cyan-500/30 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-black uppercase text-cyan-300 block">Overall Test Score</span>
+                                <span class="text-xl font-black text-white">100 / 100 Perfect Pass</span>
+                            </div>
+                            <div class="w-12 h-12 rounded-full border-2 border-emerald-400 flex items-center justify-center text-emerald-400 font-black text-sm">
+                                100%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: Top 5 Tips to Pass Your Ontario Road Test (3D Tilt Cards) -->
+        <section class="dtr-section py-20 px-4 sm:px-6 lg:px-8 border-t border-white/10">
+            <!-- Background Shape Design Layer -->
+            <div class="dtr-bg-shapes">
+                <!-- Hexagonal Mesh Grid Background -->
+                <div class="dtr-shape-hex-pattern inset-0 w-full h-full"></div>
+
+                <!-- Floating 3D Polyhedron Diamond Right -->
+                <div class="absolute top-12 right-12 w-44 h-44 opacity-75 dtr-float-slow">
+                    <svg viewBox="0 0 200 200" fill="none" class="w-full h-full stroke-cyan-400">
+                        <polygon points="100,10 180,70 150,180 50,180 20,70" stroke-width="2.5" stroke-dasharray="6 4" />
+                        <line x1="100" y1="10" x2="150" y2="180" stroke-width="2" />
+                        <line x1="100" y1="10" x2="50" y2="180" stroke-width="2" />
+                        <line x1="20" y1="70" x2="180" y2="70" stroke-width="2" />
+                    </svg>
+                </div>
+
+                <!-- Floating Diamond Ring Left -->
+                <div class="dtr-shape-diamond bottom-16 left-10 w-36 h-36 opacity-90 dtr-float-reverse"></div>
+                <div class="dtr-shape-blob top-1/2 right-1/4 w-[450px] h-[450px] bg-sky-500/25 dtr-pulse-glow"></div>
+            </div>
+            <div class="mx-auto max-w-7xl">
+                <div class="text-center max-w-3xl mx-auto mb-16" data-reveal>
+                    <span class="text-xs font-black uppercase tracking-widest text-cyan-400">Expert Guidance</span>
+                    <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">Top 5 Tips to Pass Your Ontario Road Test on the 1st Attempt</h2>
+                    <p class="mt-4 text-sm leading-7 text-slate-300 sm:text-base">Master these key requirements to eliminate deductions and avoid instant disqualification.</p>
+                </div>
+
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Tip 1 -->
+                    <div class="dtr-3d-card-v2 p-7 flex flex-col justify-between" data-reveal data-tilt style="--delay: 0ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-600 font-black text-sm flex items-center justify-center">#1</span>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full">Observation</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Exaggerate Your Head Movements</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-medium">Examiners track your eye and head movement. Make mirror and blindspot checks obvious every time you signal, turn, or change lanes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tip 2 -->
+                    <div class="dtr-3d-card-v2 p-7 flex flex-col justify-between" data-reveal data-tilt style="--delay: 80ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 font-black text-sm flex items-center justify-center">#2</span>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full">Critical Rule</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Master the Complete Stop</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-medium">Rolling through a stop sign is an automatic fail. Feel your car settle back completely behind the line for 2 full seconds before moving forward.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tip 3 -->
+                    <div class="dtr-3d-card-v2 p-7 flex flex-col justify-between" data-reveal data-tilt style="--delay: 160ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 font-black text-sm flex items-center justify-center">#3</span>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">Speed Limits</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Know the Route Speed Limits</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-medium">Residential streets are typically 40 or 50 km/h unless posted. School zones drop to 30 or 40 km/h — know these exact spots on your route!</p>
+                        </div>
+                    </div>
+
+                    <!-- Tip 4 -->
+                    <div class="dtr-3d-card-v2 p-7 flex flex-col justify-between" data-reveal data-tilt style="--delay: 240ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 font-black text-sm flex items-center justify-center">#4</span>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">G Test Highway</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Match Speed on Highway On-Ramps</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-medium">Accelerate to 100 km/h on the ramp before merging onto expressways like the 401, 403, or QEW to avoid dangerous speed gaps.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tip 5 -->
+                    <div class="dtr-3d-card-v2 p-7 flex flex-col justify-between md:col-span-2 lg:col-span-2" data-reveal data-tilt style="--delay: 320ms;">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 font-black text-sm flex items-center justify-center">#5</span>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">Maneuvers</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2">Practice Parking Drills Off-Peak</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed font-medium">Spend 15 minutes practicing parallel parking, three-point turns, and reverse parking at your target test location prior to your test date.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: Featured Coverage (Database Dynamic Routes Grid) -->
         <section class="dtr-section dtr-section--routes border-t border-white/10 px-4 py-20 sm:px-6 lg:px-8">
+            <!-- Background Shape Design Layer -->
+            <div class="dtr-bg-shapes">
+                <!-- Highway Multi-Lane Curved Vector SVG -->
+                <svg class="absolute top-1/3 left-0 w-full h-96 opacity-80 pointer-events-none" viewBox="0 0 1400 300" fill="none">
+                    <path d="M -100 200 Q 300 50 700 220 T 1500 100" stroke="url(#highwayGrad)" stroke-width="20" stroke-linecap="round" />
+                    <path d="M -100 200 Q 300 50 700 220 T 1500 100" stroke="#ffffff" stroke-width="3.5" stroke-dasharray="16 12" stroke-linecap="round" class="dtr-dash-flow" />
+                    <defs>
+                        <linearGradient id="highwayGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#1e40af" />
+                            <stop offset="50%" stop-color="#0284c7" />
+                            <stop offset="100%" stop-color="#06b6d4" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <!-- Floating GPS Location Pin / Compass Geometry -->
+                <div class="absolute bottom-10 right-10 w-64 h-64 opacity-70 dtr-spin-slow">
+                    <svg viewBox="0 0 200 200" fill="none" class="w-full h-full stroke-cyan-400">
+                        <circle cx="100" cy="100" r="90" stroke-width="2.5" stroke-dasharray="10 6" />
+                        <circle cx="100" cy="100" r="60" stroke-width="2" />
+                        <polygon points="100,20 115,85 180,100 115,115 100,180 85,115 20,100 85,85" stroke-width="2" fill="rgba(56, 189, 248, 0.12)" />
+                    </svg>
+                </div>
+
+                <div class="dtr-shape-blob top-10 left-10 w-[450px] h-[450px] bg-blue-600/30 dtr-pulse-glow"></div>
+            </div>
             <div class="mx-auto max-w-7xl">
                 <div class="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                     <div data-reveal>
@@ -1645,20 +2337,104 @@
             </div>
         </section>
 
-        <section class="dtr-section dtr-section--cta px-4 py-16 sm:px-6 lg:px-8">
-            <div class="dtr-callout dtr-gradient-border mx-auto grid max-w-7xl gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center" data-reveal>
-                <div>
-                    <p class="text-sm font-black uppercase text-cyan-200">Ready when you are</p>
-                    <h2 class="mt-3 max-w-3xl text-3xl font-black text-white sm:text-4xl">Start from the catalog and move into practice with a cleaner route workflow.</h2>
-                    <p class="mt-4 max-w-2xl text-sm leading-7 text-zinc-300">Compare routes, unlock the map you need, and return to your purchased practice area whenever your session starts.</p>
+        <!-- SECTION 7: Final Call to Action ("Ready to Pass Your Road Test on the First Try?") -->
+        <section class="dtr-section dtr-section--gradient-e px-4 py-20 sm:px-6 lg:px-8 border-t border-white/10">
+            <!-- Background Shape Design Layer -->
+            <div class="dtr-bg-shapes">
+                <!-- Concentric Aurora Glow Rings -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] opacity-80 dtr-spin-slow">
+                    <svg viewBox="0 0 600 600" fill="none" class="w-full h-full text-cyan-400">
+                        <circle cx="300" cy="300" r="280" stroke="currentColor" stroke-width="2" stroke-dasharray="20 12" />
+                        <circle cx="300" cy="300" r="210" stroke="rgba(37, 99, 235, 0.6)" stroke-width="2.5" stroke-dasharray="12 8" />
+                        <circle cx="300" cy="300" r="140" stroke="rgba(56, 189, 248, 0.7)" stroke-width="3" />
+                    </svg>
                 </div>
-                <a href="{{ route('driving-routes.index') }}" class="dtr-btn dtr-btn-primary">
-                    Browse Routes
-                    <svg class="dtr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+                <div class="dtr-shape-blob top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-cyan-500/30 dtr-pulse-glow"></div>
+            </div>
+            <div class="dtr-callout dtr-gradient-border mx-auto grid max-w-7xl gap-8 p-8 sm:p-12 lg:grid-cols-[1fr_auto] lg:items-center" data-reveal>
+                <div>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-950/70 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-cyan-400">
+                        🚗 Pass on the 1st Attempt
+                    </span>
+                    <h2 class="mt-4 max-w-3xl text-3xl font-black text-white sm:text-5xl leading-tight">
+                        Ready to Pass Your Road Test on the First Try?
+                    </h2>
+                    <p class="mt-4 max-w-2xl text-base leading-relaxed text-zinc-300">
+                        Select your DriveTest centre, load your 2026 G or G2 test route onto your phone, and start practicing today!
+                    </p>
+                </div>
+                <a href="{{ route('driving-routes.index') }}" class="dtr-btn dtr-btn-primary px-8 py-4 text-base rounded-xl">
+                    Select Your DriveTest Centre
+                    <svg class="dtr-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path d="M5 12h14" />
                         <path d="m13 6 6 6-6 6" />
                     </svg>
                 </a>
+            </div>
+        </section>
+
+         <!-- SECTION 7: Frequently Asked Questions (3D Accordion) -->
+        <section class="dtr-section dtr-section--gradient-c py-20 px-4 sm:px-6 lg:px-8 border-t border-white/10">
+            <!-- Background Shape Design Layer -->
+            <div class="dtr-bg-shapes">
+                <!-- Floating Question Badge Geometry -->
+                <div class="absolute top-12 left-12 w-48 h-48 opacity-75 dtr-float-slow">
+                    <svg viewBox="0 0 200 200" fill="none" class="w-full h-full stroke-cyan-400">
+                        <circle cx="100" cy="100" r="85" stroke-width="2.5" stroke-dasharray="8 6" />
+                        <path d="M 80,75 C 80,55 120,55 120,75 C 120,95 100,95 100,115" stroke-width="4" stroke-linecap="round" />
+                        <circle cx="100" cy="140" r="6" fill="#38bdf8" />
+                    </svg>
+                </div>
+                <div class="dtr-shape-grid-dots bottom-10 right-10 w-80 h-80 opacity-80"></div>
+                <div class="dtr-shape-blob bottom-10 right-10 w-[450px] h-[450px] bg-blue-600/30 dtr-pulse-glow"></div>
+            </div>
+            <div class="mx-auto max-w-6xl">
+                <div class="text-center mb-16" data-reveal>
+                    <span class="text-xs font-black uppercase tracking-widest text-cyan-400">Got Questions?</span>
+                    <h2 class="mt-3 text-3xl font-black text-white sm:text-5xl">Frequently Asked Questions</h2>
+                    <p class="mt-4 text-sm leading-7 text-slate-300 sm:text-base">Everything you need to know about taking your test in your own car.</p>
+                </div>
+
+                <div class="space-y-4" data-reveal>
+                    <!-- FAQ 1 -->
+                    <div class="dtr-faq-box is-open" data-faq-box>
+                        <button type="button" class="dtr-faq-btn" data-faq-btn>
+                            <span>Do I really need a driving school car to take my test?</span>
+                            <svg class="dtr-faq-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div class="dtr-faq-body">
+                            <p class="text-slate-600 text-sm leading-relaxed font-medium">
+                                No! As long as your personal vehicle is in safe working order (functional lights, working seatbelts, horn, clear windshield, valid insurance, and license plates), you can take your test in your own car.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="dtr-faq-box" data-faq-box>
+                        <button type="button" class="dtr-faq-btn" data-faq-btn>
+                            <span>How accurate are these test routes?</span>
+                            <svg class="dtr-faq-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div class="dtr-faq-body">
+                            <p class="text-slate-600 text-sm leading-relaxed font-medium">
+                                Our routes are updated for 2026 based on real test feedback across Ontario DriveTest centres. While examiners may adjust routes slightly for traffic or roadwork, practicing these primary paths ensures you know the surrounding neighborhood inside out.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="dtr-faq-box" data-faq-box>
+                        <button type="button" class="dtr-faq-btn" data-faq-btn>
+                            <span>Can I open the route on my phone's GPS?</span>
+                            <svg class="dtr-faq-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div class="dtr-faq-body">
+                            <p class="text-slate-600 text-sm leading-relaxed font-medium">
+                                Yes! One tap loads the route directly into your mobile GPS app so your passenger or co-driver can guide you smoothly through the route.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
@@ -1862,7 +2638,7 @@
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     selectedPackage = btn.dataset.selectPkg;
-                    const val = selectedPackage.toUpperCase() + ' Package';
+                    const val = selectedPackage === 'g1' ? 'G2 Test Routes' : 'G Test Routes';
                     if (badgePkg) badgePkg.textContent = val;
                     if (badgePkg2) badgePkg2.textContent = val;
                     
@@ -1979,7 +2755,8 @@
                 
                 // Set the value in the input box
                 if (searchInput) {
-                    searchInput.value = `${selectedPackage.toUpperCase()} Package - ${selectedCity.name} - ${route.title}`;
+                    const pkgLabel = selectedPackage === 'g1' ? 'G2 Test Routes' : 'G Test Routes';
+                    searchInput.value = `${pkgLabel} - ${selectedCity.name} - ${route.title}`;
                 }
                 
                 // Update search action button
@@ -2009,6 +2786,21 @@
                     dashboardTabs.forEach((item) => item.classList.remove('is-active'));
                     tab.classList.add('is-active');
                     moveDashboardIndicator(tab);
+                });
+            });
+
+            // FAQ Accordion Handlers
+            document.querySelectorAll('[data-faq-btn]').forEach((btn) => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const box = btn.closest('[data-faq-box]');
+                    if (box) {
+                        const isOpen = box.classList.contains('is-open');
+                        document.querySelectorAll('[data-faq-box]').forEach((item) => item.classList.remove('is-open'));
+                        if (!isOpen) {
+                            box.classList.add('is-open');
+                        }
+                    }
                 });
             });
 
