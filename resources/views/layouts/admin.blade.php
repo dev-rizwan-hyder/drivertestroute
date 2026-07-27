@@ -102,6 +102,7 @@
                 ['label' => 'Add Post', 'route' => 'admin.blog-posts.create', 'active' => ['admin.blog-posts.create'], 'hint' => 'New post'],
                 ['label' => 'Purchases', 'route' => 'admin.purchases.index', 'active' => ['admin.purchases.*'], 'hint' => 'Checkout records'],
                 ['label' => 'Users', 'route' => 'admin.users.index', 'active' => ['admin.users.*'], 'hint' => 'Customers'],
+                ['label' => 'Chat Questions', 'route' => 'admin.chat-questions.index', 'active' => ['admin.chat-questions.*'], 'hint' => 'FAQ widget'],
             ];
         @endphp
 
@@ -215,5 +216,8 @@
             adminSidebarBackdrop?.addEventListener('click', () => setAdminSidebar(false));
         </script>
         @stack('scripts')
+
+        <!-- Chat Widget -->
+        @include('components.chat-widget')
     </body>
 </html>

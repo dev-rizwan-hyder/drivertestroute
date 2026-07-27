@@ -1065,6 +1065,9 @@
         })();
     </script>
     @stack('scripts')
+
+    <!-- Chat Widget -->
+    @include('components.chat-widget')
 </body>
 
 </html>

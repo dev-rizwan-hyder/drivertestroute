@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\ChatQuestionController;
 use App\Http\Controllers\Admin\DrivingRouteAdminController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CityController;
@@ -60,5 +61,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('cities', CityController::class)->except(['create', 'show', 'edit']);
         Route::resource('driving-routes', DrivingRouteAdminController::class);
         Route::resource('blog-posts', BlogPostController::class);
+        Route::resource('chat-questions', ChatQuestionController::class);
     });
 });
