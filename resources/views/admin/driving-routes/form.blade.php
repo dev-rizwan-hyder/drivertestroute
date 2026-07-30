@@ -155,9 +155,9 @@
 
     <!-- Additional Files & Description -->
     <section class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
-        <h2 class="text-lg font-bold text-stone-950 mb-4">Preview PDF & Route Notes</h2>
+        <h2 class="text-lg font-bold text-stone-950 mb-4">Preview PDF & Examiner Sheets</h2>
 
-        <div class="grid gap-5 md:grid-cols-2">
+        <div class="grid gap-5 md:grid-cols-3">
             <label class="block">
                 <span class="text-sm font-semibold text-stone-700">Preview PDF File (Optional)</span>
                 <input type="file" name="preview_pdf" accept="application/pdf" class="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3.5 file:py-1.5 file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:outline-none transition">
@@ -169,6 +169,26 @@
             </label>
 
             <label class="block">
+                <span class="text-sm font-semibold text-stone-700">G1 Examiner Sheet (Optional)</span>
+                <input type="file" name="g1_examiner_sheet" accept="application/pdf" class="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-lg file:border-0 file:bg-green-50 file:px-3.5 file:py-1.5 file:font-semibold file:text-green-700 hover:file:bg-green-100 focus:outline-none transition">
+                @if($route->g1_examiner_sheet_path)
+                    <a href="{{ \Illuminate\Support\Facades\Storage::url($route->g1_examiner_sheet_path) }}" target="_blank" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-green-700 hover:text-green-800">
+                        📋 View current G1 sheet
+                    </a>
+                @endif
+            </label>
+
+            <label class="block">
+                <span class="text-sm font-semibold text-stone-700">G2 Examiner Sheet (Optional)</span>
+                <input type="file" name="g2_examiner_sheet" accept="application/pdf" class="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-lg file:border-0 file:bg-purple-50 file:px-3.5 file:py-1.5 file:font-semibold file:text-purple-700 hover:file:bg-purple-100 focus:outline-none transition">
+                @if($route->g2_examiner_sheet_path)
+                    <a href="{{ \Illuminate\Support\Facades\Storage::url($route->g2_examiner_sheet_path) }}" target="_blank" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-purple-700 hover:text-purple-800">
+                        📋 View current G2 sheet
+                    </a>
+                @endif
+            </label>
+
+            <label class="block md:col-span-3">
                 <span class="text-sm font-semibold text-stone-700">Active Status</span>
                 <div class="mt-2 flex items-center gap-2">
                     <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $route->is_active ?? true)) class="h-4 w-4 rounded border-stone-300 text-blue-600 focus:ring-blue-500">
@@ -176,7 +196,7 @@
                 </div>
             </label>
 
-            <label class="block md:col-span-2">
+            <label class="block md:col-span-3">
                 <span class="text-sm font-semibold text-stone-700">Description & Route Tips</span>
                 <textarea name="description" rows="3" placeholder="Add specific notes or test tips for student drivers..." class="mt-1 block w-full rounded-lg border border-stone-300 px-3.5 py-2.5 text-stone-950 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">{{ old('description', $route->description) }}</textarea>
             </label>

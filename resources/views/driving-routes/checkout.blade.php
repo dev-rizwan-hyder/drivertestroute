@@ -55,6 +55,16 @@
             outline: none;
         }
 
+        /* Stripe Card Element Styling */
+        #card-element {
+            transition: box-shadow 0.15s ease-out;
+        }
+
+        #card-element.StripeElement--focus {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            border-color: #2563eb !important;
+        }
+
         .payment-method-btn {
             border: 2px solid #e2e8f0;
             transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -129,7 +139,7 @@
             </div>
             <span class="inline-flex w-fit items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1.5 text-xs font-bold text-blue-700">
                 <span class="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
-                {{ $stripeEnabled ? 'Stripe Card Payment' : 'Local Checkout Mode' }}
+                Stripe Card Payment
             </span>
         </div>
 
@@ -174,7 +184,7 @@
                 <form id="checkout-form" method="POST" action="{{ route('driving-routes.checkout.store', $drivingRoute) }}" class="space-y-6">
                     @csrf
                     <input id="payment-intent-id" type="hidden" name="payment_intent_id" value="{{ old('payment_intent_id') }}">
-                    <input id="payment-provider" type="hidden" name="payment_provider" value="{{ $stripeEnabled ? 'stripe' : ($paypalEnabled ? 'paypal' : ($squareEnabled ? 'square' : 'local')) }}">
+                    <input id="payment-provider" type="hidden" name="payment_provider" value="stripe">
 
                     <!-- Student Details -->
                     <section class="premium-card p-6 sm:p-8 border-l-4 border-l-blue-600">
@@ -218,51 +228,6 @@
                         </div>
                     </section>
 
-                    <!-- Payment Method Selector -->
-                    <section class="premium-card p-6 sm:p-8 border-l-4 border-l-indigo-600">
-                        <div class="mb-6">
-                            <h2 class="text-lg font-black text-zinc-900 tracking-tight">Payment Method</h2>
-                            <p class="mt-1 text-xs text-zinc-500">Select your preferred secure gateway for checkout.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                            @if($stripeEnabled)
-                                <label class="payment-method-btn relative flex cursor-pointer flex-col items-center justify-center rounded-xl p-5 text-center bg-white shadow-sm @if($stripeEnabled) selected-gateway @endif">
-                                    <input type="radio" name="payment_provider_select" value="stripe" class="sr-only" checked>
-                                    <svg class="h-6 w-6 text-blue-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <rect x="2" y="5" width="20" height="14" rx="2" />
-                                        <line x1="2" y1="10" x2="22" y2="10" />
-                                    </svg>
-                                    <span class="block text-sm font-bold text-zinc-900">Stripe Card</span>
-                                    <span class="mt-1 block text-xxs text-zinc-400">Credit/Debit card securely via Stripe</span>
-                                </label>
-                            @endif
-
-                            @if($paypalEnabled)
-                                <label class="payment-method-btn relative flex cursor-pointer flex-col items-center justify-center rounded-xl p-5 text-center bg-white shadow-sm @if(!$stripeEnabled) selected-gateway @endif">
-                                    <input type="radio" name="payment_provider_select" value="paypal" class="sr-only" @if(!$stripeEnabled) checked @endif>
-                                    <svg class="h-6 w-6 text-amber-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    <span class="block text-sm font-bold text-zinc-900">PayPal</span>
-                                    <span class="mt-1 block text-xxs text-zinc-400">Express PayPal balance or credit cards</span>
-                                </label>
-                            @endif
-
-                            @if($squareEnabled)
-                                <label class="payment-method-btn relative flex cursor-pointer flex-col items-center justify-center rounded-xl p-5 text-center bg-white shadow-sm @if(!$stripeEnabled && !$paypalEnabled) selected-gateway @endif">
-                                    <input type="radio" name="payment_provider_select" value="square" class="sr-only" @if(!$stripeEnabled && !$paypalEnabled) checked @endif>
-                                    <svg class="h-6 w-6 text-zinc-800 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                                        <rect x="7" y="7" width="10" height="10" />
-                                    </svg>
-                                    <span class="block text-sm font-bold text-zinc-900">Square Card</span>
-                                    <span class="mt-1 block text-xxs text-zinc-400">Fast checkout integration via Square</span>
-                                </label>
-                            @endif
-                        </div>
-                    </section>
-
                     <!-- Billing & Payment Details -->
                     <section class="premium-card p-6 sm:p-8 border-l-4 border-l-emerald-600">
                         <div class="mb-6">
@@ -283,36 +248,14 @@
                         </div>
 
                         <!-- Stripe Card Container -->
-                        @if($stripeEnabled)
-                            <div id="stripe-payment-container" class="payment-details-container mt-6">
-                                <label class="block">
-                                    <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 block mb-1.5">Card Details</span>
-                                    <div id="card-element" class="checkout-input shadow-inner min-h-[46px] flex items-center"></div>
-                                </label>
-                                <p id="card-errors" class="mt-3 hidden rounded-lg border border-red-200 bg-red-55 px-4 py-2.5 text-xs font-bold text-red-700"></p>
-                                <p class="mt-3 text-xxs leading-relaxed text-zinc-400">For testing purposes, you can use the card number <span class="font-bold text-zinc-500">4242 4242 4242 4242</span> with any future expiration date and any CVC code.</p>
-                            </div>
-                        @endif
-
-                        <!-- PayPal Button Container -->
-                        @if($paypalEnabled)
-                            <div id="paypal-payment-container" class="payment-details-container mt-6 hidden">
-                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 block mb-2">PayPal Transaction Summary</span>
-                                <div id="paypal-button-container" class="mt-1 min-h-[50px] overflow-hidden rounded-lg"></div>
-                                <p id="paypal-errors" class="mt-3 hidden rounded-lg border border-red-200 bg-red-55 px-4 py-2.5 text-xs font-bold text-red-700"></p>
-                            </div>
-                        @endif
-
-                        <!-- Square Card Container -->
-                        @if($squareEnabled)
-                            <div id="square-payment-container" class="payment-details-container mt-6 hidden">
-                                <label class="block">
-                                    <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 block mb-1.5">Card Details</span>
-                                    <div id="square-card-container" class="checkout-input shadow-inner min-h-[46px]"></div>
-                                </label>
-                                <p id="square-errors" class="mt-3 hidden rounded-lg border border-red-200 bg-red-55 px-4 py-2.5 text-xs font-bold text-red-700"></p>
-                            </div>
-                        @endif
+                        <div id="stripe-payment-container" class="payment-details-container mt-6">
+                            <label class="block">
+                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 block mb-1.5">Card Details</span>
+                                <div id="card-element" style="padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 0.5rem; background-color: #ffffff; min-height: 44px;"></div>
+                            </label>
+                            <p id="card-errors" class="mt-3 hidden rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-bold text-red-700"></p>
+                            <p class="mt-3 text-xxs leading-relaxed text-zinc-400">For testing purposes, you can use the card number <span class="font-bold text-zinc-500">4242 4242 4242 4242</span> with any future expiration date and any CVC code.</p>
+                        </div>
                     </section>
                 </form>
             </div>
@@ -487,30 +430,9 @@
     </div>
 
     <!-- Payment SDKs -->
-    @if($stripeEnabled)
-        <script src="https://js.stripe.com/v3/"></script>
-    @endif
-
-    @if($paypalEnabled)
-        <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency={{ $paypalCurrency }}"></script>
-    @endif
-
-    @if($squareEnabled)
-        @if($squareEnv === 'sandbox')
-            <script src="https://sandbox.web.squareupsandbox.com/v2/paymentform"></script>
-        @else
-            <script src="https://web.squareupsandbox.com/v2/paymentform"></script>
-        @endif
-    @endif
+    <script src="https://js.stripe.com/v3/"></script>
 
     <script>
-        const checkoutForm = document.getElementById('checkout-form');
-        const checkoutButton = document.getElementById('checkout-submit');
-        const checkoutStatus = document.getElementById('checkout-status');
-        const paymentIntentInput = document.getElementById('payment-intent-id');
-        const providerInput = document.getElementById('payment-provider');
-        const providerSelects = document.querySelectorAll('input[name="payment_provider_select"]');
-
         function openTermsModal() {
             const modal = document.getElementById('terms-modal');
             modal.classList.add('active');
@@ -530,27 +452,25 @@
             }
         });
 
+        const checkoutForm = document.getElementById('checkout-form');
+        const checkoutButton = document.getElementById('checkout-submit');
+        const checkoutStatus = document.getElementById('checkout-status');
+        const paymentIntentInput = document.getElementById('payment-intent-id');
+        const providerInput = document.getElementById('payment-provider');
+
         function setCheckoutMessage(message, error = false) {
             let target = checkoutStatus;
             
-            // Redirect error to active gateway element if exists
-            const currentProvider = providerInput.value;
             if (error) {
-                const gatewayErrors = document.getElementById(`${currentProvider}-errors`);
-                if (gatewayErrors) {
-                    target = gatewayErrors;
-                } else {
-                    const stripeErrors = document.getElementById('card-errors');
-                    if (stripeErrors) target = stripeErrors;
-                }
+                const cardErrors = document.getElementById('card-errors');
+                if (cardErrors) target = cardErrors;
             }
             
             target.textContent = message;
             target.classList.remove('hidden');
             
-            // Clean up other errors if success message
             if (!error) {
-                document.querySelectorAll('[id$="-errors"]').forEach(el => el.classList.add('hidden'));
+                document.getElementById('card-errors').classList.add('hidden');
             }
         }
 
@@ -559,160 +479,41 @@
             checkoutButton.textContent = loading ? 'Processing payment...' : 'Pay ${{ number_format((float) $drivingRoute->price, 2) }} & Unlock Route';
         }
 
-        // Dynamic gateway selector styling and switching
-        function switchPaymentProvider(provider) {
-            providerInput.value = provider;
-            
-            // Hide all payment containers
-            document.querySelectorAll('.payment-details-container').forEach(el => el.classList.add('hidden'));
-            
-            // Show selected container
-            const container = document.getElementById(`${provider}-payment-container`);
-            if (container) {
-                container.classList.remove('hidden');
-            }
-            
-            // Control primary submit button display
-            if (provider === 'paypal') {
-                checkoutButton.classList.add('hidden');
-            } else {
-                checkoutButton.classList.remove('hidden');
-            }
-        }
-
-        providerSelects.forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                // Remove selected styles from all labels
-                providerSelects.forEach(r => {
-                    const label = r.closest('.payment-method-btn');
-                    if (label) {
-                        label.classList.remove('selected-gateway');
+        // Initialize Stripe
+        const cardErrors = document.getElementById('card-errors');
+        const stripe = Stripe(@json($stripeKey));
+        const elements = stripe.elements();
+        const card = elements.create('card', {
+            style: {
+                base: {
+                    color: '#000000',
+                    backgroundColor: '#ffffff',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                    fontSize: '14px',
+                    fontSmoothing: 'antialiased',
+                    fontWeight: '500',
+                    lineHeight: '1.5',
+                    letterSpacing: '0.5px',
+                    '::placeholder': { 
+                        color: '#999999',
+                        fontWeight: '400'
                     }
-                });
-                
-                if (e.target.checked) {
-                    const label = e.target.closest('.payment-method-btn');
-                    if (label) {
-                        label.classList.add('selected-gateway');
-                    }
-                    switchPaymentProvider(e.target.value);
+                },
+                invalid: { 
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
+                },
+                complete: {
+                    color: '#11a34a'
                 }
-            });
-            
-            // Trigger load setup
-            if (radio.checked) {
-                radio.dispatchEvent(new Event('change'));
-            }
+            },
         });
-
-        // Initialize Stripe if enabled
-        let stripe, card;
-        @if($stripeEnabled)
-            const cardErrors = document.getElementById('card-errors');
-            stripe = Stripe(@json($stripeKey));
-            const elements = stripe.elements();
-            card = elements.create('card', {
-                style: {
-                    base: {
-                        color: '#0f172a',
-                        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-                        fontSize: '15px',
-                        '::placeholder': { color: '#94a3b8' },
-                    },
-                    invalid: { color: '#b91c1c' },
-                },
-            });
-            card.mount('#card-element');
-        @endif
-
-        // Initialize PayPal if enabled
-        @if($paypalEnabled)
-            const paypalErrors = document.getElementById('paypal-errors');
-            paypal.Buttons({
-                onClick: function(data, actions) {
-                    if (!checkoutForm.reportValidity()) {
-                        return actions.reject();
-                    }
-                },
-                createOrder: async function(data, actions) {
-                    try {
-                        const formData = new FormData(checkoutForm);
-                        const response = await fetch(@json(route('driving-routes.paypal.create-order', $drivingRoute)), {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': @json(csrf_token()),
-                            },
-                            credentials: 'same-origin',
-                            body: formData
-                        });
-
-                        const payload = await response.json();
-                        if (!response.ok) {
-                            throw new Error(payload.message || 'PayPal order creation failed.');
-                        }
-
-                        return payload.id;
-                    } catch (error) {
-                        paypalErrors.textContent = error.message;
-                        paypalErrors.classList.remove('hidden');
-                        throw error;
-                    }
-                },
-                onApprove: async function(data, actions) {
-                    paypalErrors.classList.add('hidden');
-                    paymentIntentInput.value = data.orderID;
-                    setCheckoutMessage('Payment authorized. Completing checkout...');
-                    checkoutForm.submit();
-                },
-                onError: function(err) {
-                    paypalErrors.textContent = 'PayPal transaction error occurred.';
-                    paypalErrors.classList.remove('hidden');
-                    console.error(err);
-                }
-            }).render('#paypal-button-container');
-        @endif
-
-        // Initialize Square if enabled
-        let squarePayments, squareCard;
-        @if($squareEnabled)
-            const squareErrors = document.getElementById('square-errors');
-            async function initializeSquare() {
-                try {
-                    squarePayments = Square.payments(@json($squareAppId), @json($squareLocationId));
-                    squareCard = await squarePayments.card({
-                        style: {
-                            input: {
-                                color: '#0f172a',
-                                fontSize: '15px',
-                                fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-                            },
-                            'input::placeholder': {
-                                color: '#94a3b8'
-                            }
-                        }
-                    });
-                    await squareCard.attach('#square-card-container');
-                } catch (error) {
-                    console.error('Square initialization failed', error);
-                    squareErrors.textContent = 'Square Card elements failed to load.';
-                    squareErrors.classList.remove('hidden');
-                }
-            }
-            initializeSquare();
-        @endif
+        card.mount('#card-element');
 
         // Form Submit Handler
         checkoutForm.addEventListener('submit', async (event) => {
-            const currentProvider = providerInput.value;
-
             if (paymentIntentInput.value) {
                 return; // Payment already authorized, allow form submission
-            }
-
-            // Local mode bypass
-            if (currentProvider === 'local') {
-                return;
             }
 
             event.preventDefault();
@@ -722,77 +523,51 @@
             }
 
             setCheckoutLoading(true);
+            setCheckoutMessage('Creating secure payment...');
+            
+            try {
+                const formData = new FormData(checkoutForm);
+                const intentResponse = await fetch(@json(route('driving-routes.payment-intent', $drivingRoute)), {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': @json(csrf_token()),
+                    },
+                    credentials: 'same-origin',
+                    body: formData,
+                });
 
-            if (currentProvider === 'stripe') {
-                setCheckoutMessage('Creating secure payment...');
-                try {
-                    const formData = new FormData(checkoutForm);
-                    const intentResponse = await fetch(@json(route('driving-routes.payment-intent', $drivingRoute)), {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': @json(csrf_token()),
-                        },
-                        credentials: 'same-origin',
-                        body: formData,
-                    });
+                const intentPayload = await intentResponse.json();
 
-                    const intentPayload = await intentResponse.json();
-
-                    if (!intentResponse.ok) {
-                        const firstError = intentPayload.errors ? Object.values(intentPayload.errors).flat()[0] : intentPayload.message;
-                        throw new Error(firstError || 'Payment could not be started.');
-                    }
-
-                    setCheckoutMessage('Confirming card payment...');
-
-                    const result = await stripe.confirmCardPayment(intentPayload.client_secret, {
-                        payment_method: {
-                            card,
-                            billing_details: {
-                                name: checkoutForm.billing_name.value,
-                                email: checkoutForm.billing_email.value,
-                                phone: checkoutForm.student_phone.value,
-                            },
-                        },
-                    });
-
-                    if (result.error) {
-                        throw new Error(result.error.message || 'Card payment failed.');
-                    }
-
-                    paymentIntentInput.value = blockPaymentIntentId(result.paymentIntent.id);
-                    setCheckoutMessage('Payment confirmed. Unlocking your route...');
-                    checkoutForm.submit();
-                } catch (error) {
-                    setCheckoutMessage(error.message, true);
-                    setCheckoutLoading(false);
+                if (!intentResponse.ok) {
+                    const firstError = intentPayload.errors ? Object.values(intentPayload.errors).flat()[0] : intentPayload.message;
+                    throw new Error(firstError || 'Payment could not be started.');
                 }
-            } else if (currentProvider === 'square') {
-                setCheckoutMessage('Tokenizing card details...');
-                try {
-                    const result = await squareCard.tokenize();
-                    if (result.status === 'OK') {
-                        paymentIntentInput.value = result.token;
-                        setCheckoutMessage('Card authorized. Completing checkout...');
-                        checkoutForm.submit();
-                    } else {
-                        let tokenizationError = 'Card tokenization failed.';
-                        if (result.errors && result.errors.length > 0) {
-                            tokenizationError = result.errors[0].message;
-                        }
-                        throw new Error(tokenizationError);
-                    }
-                } catch (error) {
-                    setCheckoutMessage(error.message, true);
-                    setCheckoutLoading(false);
+
+                setCheckoutMessage('Confirming card payment...');
+
+                const result = await stripe.confirmCardPayment(intentPayload.client_secret, {
+                    payment_method: {
+                        card,
+                        billing_details: {
+                            name: checkoutForm.billing_name.value,
+                            email: checkoutForm.billing_email.value,
+                            phone: checkoutForm.student_phone.value,
+                        },
+                    },
+                });
+
+                if (result.error) {
+                    throw new Error(result.error.message || 'Card payment failed.');
                 }
+
+                paymentIntentInput.value = result.paymentIntent.id;
+                setCheckoutMessage('Payment confirmed. Unlocking your route...');
+                checkoutForm.submit();
+            } catch (error) {
+                setCheckoutMessage(error.message, true);
+                setCheckoutLoading(false);
             }
         });
-
-        // Helper function to bypass block if mock
-        function blockPaymentIntentId(id) {
-            return id || 'pi_mock_' + Math.random().toString(36).substring(2);
-        }
     </script>
 @endsection
