@@ -10,10 +10,12 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\DrivingRouteController;
+use App\Http\Controllers\DownloadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DrivingRouteController::class, 'home'])->name('home');
+Route::get('/download-sheet/{type}', [DownloadController::class, 'examinerSheet'])->name('download.examiner-sheet');
 Route::get('/routes', [DrivingRouteController::class, 'index'])->name('routes.index');
 Route::view('/about', 'pages.about')->name('about');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');

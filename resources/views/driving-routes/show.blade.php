@@ -222,6 +222,16 @@
                                         <span id="voice-icon">🔊</span>
                                     </button>
 
+                                    <!-- Screen Keep-Alive Toggle -->
+                                    <button type="button" id="btn-toggle-screen-keep-alive" class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition text-base" title="Keep Screen On During Navigation">
+                                        <span id="screen-keep-alive-icon" class="animate-pulse">🔋</span>
+                                    </button>
+
+                                    <!-- Screen On Indicator -->
+                                    <div class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-white/15 text-white transition text-base" title="Screen Stay-On: Mobile devices will not timeout while viewing">
+                                        <span id="screen-on-indicator" class="animate-pulse">📱</span>
+                                    </div>
+
                                     <!-- Fullscreen Toggle -->
                                     <button type="button" id="btn-toggle-fullscreen" class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition" title="Toggle Fullscreen Preview">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -387,6 +397,21 @@
                             </div>
                         @endif
 
+                        <!-- Examiner Sheets Download Section -->
+                        @php
+                            $canDownloadExaminer = !auth()->user()->is_admin && $remainingStarts > 0;
+                            $showExaminerSection = $canDownloadExaminer || auth()->user()->is_admin;
+                        @endphp
+
+                        @if($showExaminerSection)
+                            <div class="mt-5 pt-4 border-t border-slate-100">
+                                <span class="text-xs font-black uppercase text-slate-400 block mb-3">📋 Examiner Sheet</span>
+                                <a href="{{ route('download.examiner-sheet', $route->package_type) }}" target="_blank" class="w-full flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 py-2.5 px-3 text-xs sm:text-sm font-bold text-blue-700 shadow-sm transition">
+                                    📋 Download {{ strtoupper($route->package_type) }} Examiner Sheet
+                                </a>
+                            </div>
+                        @endif
+
                         @if($route->description)
                             <div class="mt-5 pt-4 border-t border-slate-100">
                                 <span class="text-xs font-black uppercase text-slate-400 block mb-1">Route Notes</span>
@@ -440,6 +465,152 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
+    // ===== SCREEN WAKE LOCK (PREVENT MOBILE SCREEN TIMEOUT) =====
+    let wakeLock = null;
+
+    async function requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('✅ Wake Lock acquired - screen will stay on during navigation');
+                
+                // Re-acquire wake lock if the page regains focus after sleep
+                document.addEventListener('visibilitychange', async () => {
+                    if (!document.hidden && !wakeLock) {
+                        try {
+                            wakeLock = await navigator.wakeLock.request('screen');
+                            console.log('✅ Wake Lock re-acquired after visibility change');
+                        } catch (err) {
+                            console.warn('⚠️ Failed to re-acquire wake lock:', err);
+                        }
+                    }
+                });
+                
+                return true;
+            } else {
+                console.log('⚠️ Wake Lock API not supported - using fallback methods');
+                return false;
+            }
+        } catch (err) {
+            console.warn('⚠️ Wake Lock request failed:', err);
+            return false;
+        }
+    }
+
+    // Aggressive fallback: Continuous screen activity
+    let screenKeepAliveInterval = null;
+    
+    function startScreenKeepAlive() {
+        if (screenKeepAliveInterval) clearInterval(screenKeepAliveInterval);
+        
+        // Simulate user activity every 10 seconds
+        screenKeepAliveInterval = setInterval(() => {
+            // Create and trigger a minimal user interaction
+            try {
+                // Trigger visibility change detection
+                if (document.hidden === false) {
+                    // Create a temporary invisible element to trigger reflow
+                    const el = document.createElement('div');
+                    el.style.display = 'none';
+                    document.body.appendChild(el);
+                    document.body.removeChild(el);
+                    
+                    // Dispatch a custom activity event
+                    window.dispatchEvent(new Event('userActivity'));
+                }
+            } catch (e) {
+                // Silent fallback
+            }
+        }, 10000); // Every 10 seconds
+        
+        console.log('📱 Screen keep-alive activity started');
+    }
+
+    // Alternative fallback: Silent video loop (more reliable on iOS)
+    function enableFallbackScreenKeepAlive() {
+        try {
+            // Create a minimal video element
+            let videoEl = document.getElementById('screen-keep-alive-video');
+            if (!videoEl) {
+                videoEl = document.createElement('video');
+                videoEl.id = 'screen-keep-alive-video';
+                videoEl.style.display = 'none';
+                videoEl.style.position = 'fixed';
+                videoEl.style.width = '1px';
+                videoEl.style.height = '1px';
+                videoEl.style.pointerEvents = 'none';
+                videoEl.style.opacity = '0';
+                videoEl.loop = true;
+                videoEl.muted = true;
+                videoEl.volume = 0;
+                videoEl.autoplay = true;
+                videoEl.playsInline = true;
+                
+                // Use a data URL with a minimal MP4 video
+                const base64Mp4 = 'AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAACJYbYnJ1dAAAABRnYXAAAAABgAAAQBYBf//3//t3gAAABxmd2R0bAABAAEAAQABAHhkbWRhAACAgNiQCAAQBv';
+                videoEl.src = 'data:video/mp4;base64,' + base64Mp4;
+                
+                document.body.appendChild(videoEl);
+                
+                // Force play with user gesture fallback
+                videoEl.play().then(() => {
+                    console.log('✅ Fallback video playback started');
+                }).catch(err => {
+                    console.warn('⚠️ Video playback requires user interaction:', err);
+                });
+            }
+        } catch (e) {
+            console.warn('⚠️ Video fallback error:', e);
+        }
+    }
+
+    function releaseWakeLock() {
+        if (wakeLock) {
+            wakeLock.release().then(() => {
+                wakeLock = null;
+                console.log('✅ Wake Lock released');
+            }).catch(err => {
+                console.warn('⚠️ Error releasing wake lock:', err);
+            });
+        }
+        
+        if (screenKeepAliveInterval) {
+            clearInterval(screenKeepAliveInterval);
+            screenKeepAliveInterval = null;
+            console.log('✅ Screen keep-alive activity stopped');
+        }
+        
+        const videoEl = document.getElementById('screen-keep-alive-video');
+        if (videoEl) {
+            videoEl.pause();
+            videoEl.remove();
+            console.log('✅ Fallback video removed');
+        }
+    }
+
+    // Initialize on page load
+    async function initScreenKeepAlive() {
+        const hasWakeLock = await requestWakeLock();
+        
+        // Always use fallback methods as backup
+        startScreenKeepAlive();
+        enableFallbackScreenKeepAlive();
+        
+        console.log('📱 Screen keep-alive initialized (Wake Lock: ' + (hasWakeLock ? 'supported' : 'fallback') + ')');
+    }
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        releaseWakeLock();
+    });
+
+    // Start keep-alive when page is interactive
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initScreenKeepAlive);
+    } else {
+        initScreenKeepAlive();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const pointsData = @json($mappedPoints);
         const googleMapsUrl = @json($route->google_maps_url);
@@ -463,10 +634,40 @@
         const btnRecenter = document.getElementById('btn-recenter');
         const btnVoice = document.getElementById('btn-toggle-voice');
         const voiceIcon = document.getElementById('voice-icon');
+        const btnScreenKeepAlive = document.getElementById('btn-toggle-screen-keep-alive');
+        const screenKeepAliveIcon = document.getElementById('screen-keep-alive-icon');
         const btnFullscreen = document.getElementById('btn-toggle-fullscreen');
         const mapWrapper = document.getElementById('map-wrapper');
         const stepTitle = document.getElementById('nav-step-title');
         const stepDistance = document.getElementById('nav-step-distance');
+
+        let screenKeepAliveEnabled = true;
+
+        if (btnScreenKeepAlive) {
+            btnScreenKeepAlive.addEventListener('click', () => {
+                screenKeepAliveEnabled = !screenKeepAliveEnabled;
+                
+                if (screenKeepAliveEnabled) {
+                    // Re-enable all keep-alive methods
+                    if (wakeLock === null) {
+                        requestWakeLock().then(success => {
+                            if (success) {
+                                console.log('✅ Wake Lock re-enabled');
+                            }
+                        });
+                    }
+                    startScreenKeepAlive();
+                    enableFallbackScreenKeepAlive();
+                    screenKeepAliveIcon.textContent = '🔋';
+                    screenKeepAliveIcon.classList.add('animate-pulse');
+                } else {
+                    // Disable keep-alive
+                    releaseWakeLock();
+                    screenKeepAliveIcon.textContent = '🔋';
+                    screenKeepAliveIcon.classList.remove('animate-pulse');
+                }
+            });
+        }
 
         const validPoints = pointsData.filter(p => p.lat !== null && p.lng !== null && !isNaN(p.lat) && !isNaN(p.lng));
         const startPoint = validPoints.length > 0 ? validPoints[0] : null;

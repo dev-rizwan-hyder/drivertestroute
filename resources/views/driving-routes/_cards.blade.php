@@ -125,6 +125,19 @@
                                 PDF
                             </a>
                         @endif
+
+                        {{-- Examiner sheet download button --}}
+                        @php
+                            $sheetType = $drivingRoute->package_type;
+                            $canDownloadExaminer = !auth()->user()?->is_admin && $remainingStarts > 0;
+                            $showExaminerButton = $canDownloadExaminer || auth()->user()?->is_admin;
+                        @endphp
+
+                        @if($showExaminerButton)
+                            <a href="{{ route('download.examiner-sheet', $sheetType) }}" target="_blank" class="routes-button routes-button-secondary text-xs px-2 py-1">
+                                📋 Sheet
+                            </a>
+                        @endif
                     </div>
                 </div>
             </article>
