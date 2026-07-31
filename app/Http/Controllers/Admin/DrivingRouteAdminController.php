@@ -8,6 +8,7 @@ use App\Models\DrivingRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class DrivingRouteAdminController extends Controller
@@ -42,10 +43,11 @@ class DrivingRouteAdminController extends Controller
         $attributes = $this->validatedAttributes($request);
 
         DB::transaction(function () use ($request, $attributes) {
-            if ($request->hasFile('preview_pdf')) {
-                $attributes['preview_pdf_path'] = $request
-                    ->file('preview_pdf')
-                    ->store('route-previews', 'public');
+            if ($request->hasFile('route_image')) {
+                $file = $request->file('route_image');
+                $fileName = time() . '_' . Str::slug($request->input('title', 'route')) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('route'), $fileName);
+                $attributes['route_image'] = 'route/' . $fileName;
             }
 
             $route = DrivingRoute::create($attributes);
@@ -82,14 +84,15 @@ class DrivingRouteAdminController extends Controller
         $attributes = $this->validatedAttributes($request);
 
         DB::transaction(function () use ($request, $drivingRoute, $attributes) {
-            if ($request->hasFile('preview_pdf')) {
-                if ($drivingRoute->preview_pdf_path) {
-                    Storage::disk('public')->delete($drivingRoute->preview_pdf_path);
+            if ($request->hasFile('route_image')) {
+                if ($drivingRoute->route_image && file_exists(public_path($drivingRoute->route_image))) {
+                    @unlink(public_path($drivingRoute->route_image));
                 }
 
-                $attributes['preview_pdf_path'] = $request
-                    ->file('preview_pdf')
-                    ->store('route-previews', 'public');
+                $file = $request->file('route_image');
+                $fileName = time() . '_' . Str::slug($request->input('title', 'route')) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('route'), $fileName);
+                $attributes['route_image'] = 'route/' . $fileName;
             }
 
             $drivingRoute->update($attributes);
@@ -104,6 +107,10 @@ class DrivingRouteAdminController extends Controller
     public function destroy(DrivingRoute $drivingRoute)
     {
         $this->authorizeAdmin();
+
+        if ($drivingRoute->route_image && file_exists(public_path($drivingRoute->route_image))) {
+            @unlink(public_path($drivingRoute->route_image));
+        }
 
         if ($drivingRoute->preview_pdf_path) {
             Storage::disk('public')->delete($drivingRoute->preview_pdf_path);
@@ -144,7 +151,7 @@ class DrivingRouteAdminController extends Controller
             'access_limit' => ['required', 'integer', 'min:1', 'max:1000'],
             'is_active' => ['sometimes', 'boolean'],
             'google_maps_url' => ['nullable', 'url', 'max:2000'],
-            'preview_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'route_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:5120'],
             'points' => ['nullable', 'array'],
             'points.*.sort_order' => ['required', 'integer', 'min:1'],
             'points.*.maneuver' => ['required', Rule::in(['continue', 'turn_left', 'turn_right'])],
@@ -154,7 +161,7 @@ class DrivingRouteAdminController extends Controller
             'points.*.distance_km' => ['nullable', 'numeric', 'min:0'],
             'points.*.duration' => ['nullable', 'string', 'max:50'],
         ], [
-            'preview_pdf.uploaded' => 'The preview pdf failed to upload. Please ensure the file is under 10MB.',
+            'route_image.uploaded' => 'The route picture failed to upload. Please ensure the file is under 5MB.',
         ]);
 
         $city = City::findOrFail($validated['city_id']);

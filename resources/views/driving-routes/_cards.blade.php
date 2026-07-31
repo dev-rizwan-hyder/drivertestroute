@@ -39,20 +39,27 @@
                 $cityAddress = $routeCity?->address;
             @endphp
             <article class="routes-glass routes-card flex min-h-[25rem] flex-col justify-between overflow-hidden">
-                <div class="routes-card-visual relative h-36">
-                    <svg class="h-full w-full" viewBox="0 0 420 180" fill="none" aria-hidden="true">
-                        <path d="M0 44H420M0 96H420M0 148H420M70 0V180M154 0V180M238 0V180M322 0V180" stroke="rgba(148,163,184,.12)" />
-                        <path d="M34 142 C96 68 156 110 210 54 C274 -12 322 62 386 30" stroke="url(#routeCard{{ $drivingRoute->id }})" stroke-width="7" stroke-linecap="round" />
-                        <circle cx="34" cy="142" r="9" fill="#38bdf8" />
-                        <circle cx="386" cy="30" r="9" fill="#2563eb" />
-                        <defs>
-                            <linearGradient id="routeCard{{ $drivingRoute->id }}" x1="34" x2="386" y1="142" y2="30">
-                                <stop stop-color="#1e3a8a" />
-                                <stop offset=".55" stop-color="#2563eb" />
-                                <stop offset="1" stop-color="#06b6d4" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
+                <div class="routes-card-visual relative h-48 w-full overflow-hidden bg-slate-900">
+                    @if($drivingRoute->route_image && file_exists(public_path($drivingRoute->route_image)))
+                        <img src="{{ asset($drivingRoute->route_image) }}"
+                             alt="{{ $drivingRoute->title }} - {{ $cityName }}, {{ $drivingRoute->province }} Drive Test Route Map"
+                             class="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                             loading="lazy">
+                    @else
+                        <svg class="h-full w-full" viewBox="0 0 420 180" fill="none" aria-hidden="true">
+                            <path d="M0 44H420M0 96H420M0 148H420M70 0V180M154 0V180M238 0V180M322 0V180" stroke="rgba(148,163,184,.12)" />
+                            <path d="M34 142 C96 68 156 110 210 54 C274 -12 322 62 386 30" stroke="url(#routeCard{{ $drivingRoute->id }})" stroke-width="7" stroke-linecap="round" />
+                            <circle cx="34" cy="142" r="9" fill="#38bdf8" />
+                            <circle cx="386" cy="30" r="9" fill="#2563eb" />
+                            <defs>
+                                <linearGradient id="routeCard{{ $drivingRoute->id }}" x1="34" x2="386" y1="142" y2="30">
+                                    <stop stop-color="#1e3a8a" />
+                                    <stop offset=".55" stop-color="#2563eb" />
+                                    <stop offset="1" stop-color="#06b6d4" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    @endif
                 </div>
 
                 <div class="flex flex-1 flex-col p-5">
@@ -99,6 +106,11 @@
                     </dl>
 
                     <div class="mt-auto flex flex-wrap items-center gap-2 pt-5">
+                        <!-- Route Details Button (Always visible, no login required) -->
+                        <a href="{{ route('driving-routes.details', $drivingRoute) }}" class="routes-button routes-button-secondary">
+                            Route details
+                        </a>
+
                         @if($canOpenMap)
                             <a href="{{ route('driving-routes.show', $drivingRoute) }}"
                                onclick="return confirmOpenMap(event, {{ $remainingStarts }});"
@@ -117,25 +129,6 @@
                         @else
                             <a href="{{ route('login') }}" class="routes-button routes-button-primary flex-1">
                                 Log In to Buy
-                            </a>
-                        @endif
-
-                        @if($drivingRoute->preview_pdf_path)
-                            <a href="{{ \Illuminate\Support\Facades\Storage::url($drivingRoute->preview_pdf_path) }}" target="_blank" class="routes-button routes-button-secondary">
-                                PDF
-                            </a>
-                        @endif
-
-                        {{-- Examiner sheet download button --}}
-                        @php
-                            $sheetType = $drivingRoute->package_type;
-                            $canDownloadExaminer = !auth()->user()?->is_admin && $remainingStarts > 0;
-                            $showExaminerButton = $canDownloadExaminer || auth()->user()?->is_admin;
-                        @endphp
-
-                        @if($showExaminerButton)
-                            <a href="{{ route('download.examiner-sheet', $sheetType) }}" target="_blank" class="routes-button routes-button-secondary text-xs px-2 py-1">
-                                📋 Sheet
                             </a>
                         @endif
                     </div>

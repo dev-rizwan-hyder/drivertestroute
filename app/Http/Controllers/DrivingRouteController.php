@@ -660,6 +660,33 @@ class DrivingRouteController extends Controller
         ]);
     }
 
+    public function details(DrivingRoute $drivingRoute)
+    {
+        abort_unless($drivingRoute->is_active || auth()->user()?->is_admin, 404);
+
+        $citySchemaReady = $this->citySchemaReady();
+        $relations = ['points'];
+
+        if ($citySchemaReady) {
+            $relations[] = 'cityModel';
+        }
+
+        $drivingRoute->load($relations);
+
+        $waypointsList = $drivingRoute->parsed_waypoints;
+
+        $isPurchased = false;
+        if (auth()->check()) {
+            $isPurchased = $drivingRoute->isPurchasedBy(auth()->user());
+        }
+
+        return view('driving-routes.details', [
+            'route' => $drivingRoute,
+            'waypointsList' => $waypointsList,
+            'isPurchased' => $isPurchased,
+        ]);
+    }
+
     private function citySchemaReady(): bool
     {
         return Schema::hasTable('cities') && Schema::hasColumn('driving_routes', 'city_id');

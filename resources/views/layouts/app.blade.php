@@ -759,8 +759,8 @@
                     @endforeach
 
                     <span class="public-nav-indicator" data-public-nav-indicator aria-hidden="true"></span>
-                </div>
-            </div>
+                        </div>
+                    </div>
 
             <div class="flex shrink-0 items-center justify-end gap-2">
                 @auth

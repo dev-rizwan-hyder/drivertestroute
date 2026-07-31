@@ -153,38 +153,23 @@
         </div>
     </section>
 
-    <!-- Additional Files & Description -->
+    <!-- Route Image & Additional Options -->
     <section class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
-        <h2 class="text-lg font-bold text-stone-950 mb-4">Preview PDF & Examiner Sheets</h2>
+        <h2 class="text-lg font-bold text-stone-950 mb-4">Route Image & Overview</h2>
 
         <div class="grid gap-5 md:grid-cols-3">
-            <label class="block">
-                <span class="text-sm font-semibold text-stone-700">Preview PDF File (Optional)</span>
-                <input type="file" name="preview_pdf" accept="application/pdf" class="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3.5 file:py-1.5 file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:outline-none transition">
-                @if($route->preview_pdf_path)
-                    <a href="{{ \Illuminate\Support\Facades\Storage::url($route->preview_pdf_path) }}" target="_blank" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-blue-700 hover:text-blue-800">
-                        📄 View current preview PDF
-                    </a>
-                @endif
-            </label>
-
-            <label class="block">
-                <span class="text-sm font-semibold text-stone-700">G1 Examiner Sheet (Optional)</span>
-                <input type="file" name="g1_examiner_sheet" accept="application/pdf" class="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-lg file:border-0 file:bg-green-50 file:px-3.5 file:py-1.5 file:font-semibold file:text-green-700 hover:file:bg-green-100 focus:outline-none transition">
-                @if($route->g1_examiner_sheet_path)
-                    <a href="{{ \Illuminate\Support\Facades\Storage::url($route->g1_examiner_sheet_path) }}" target="_blank" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-green-700 hover:text-green-800">
-                        📋 View current G1 sheet
-                    </a>
-                @endif
-            </label>
-
-            <label class="block">
-                <span class="text-sm font-semibold text-stone-700">G2 Examiner Sheet (Optional)</span>
-                <input type="file" name="g2_examiner_sheet" accept="application/pdf" class="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-lg file:border-0 file:bg-purple-50 file:px-3.5 file:py-1.5 file:font-semibold file:text-purple-700 hover:file:bg-purple-100 focus:outline-none transition">
-                @if($route->g2_examiner_sheet_path)
-                    <a href="{{ \Illuminate\Support\Facades\Storage::url($route->g2_examiner_sheet_path) }}" target="_blank" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-purple-700 hover:text-purple-800">
-                        📋 View current G2 sheet
-                    </a>
+            <label class="block md:col-span-3">
+                <span class="text-sm font-semibold text-stone-700">Route Picture (Optional)</span>
+                <p class="text-xs text-stone-500 mb-1.5">Upload a high-quality map route picture or screenshot (PNG, JPG, WEBP). Saved to <code>public/route/</code> and displayed on route cards & detail page overview.</p>
+                <input type="file" name="route_image" accept="image/*" class="mt-1 block w-full rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-700 shadow-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3.5 file:py-1.5 file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:outline-none transition">
+                @if($route->route_image && file_exists(public_path($route->route_image)))
+                    <div class="mt-3 flex items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 p-2.5">
+                        <img src="{{ asset($route->route_image) }}" alt="Current route picture" class="h-20 w-32 object-cover rounded-md border border-stone-300 shadow-sm">
+                        <div>
+                            <span class="text-xs font-bold text-stone-700 block">Current Route Picture</span>
+                            <span class="text-xs text-stone-500 font-mono">{{ $route->route_image }}</span>
+                        </div>
+                    </div>
                 @endif
             </label>
 

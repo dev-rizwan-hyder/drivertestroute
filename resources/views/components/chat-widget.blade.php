@@ -4,28 +4,30 @@
     <button
         id="chat-toggle-btn"
         type="button"
-        class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1 transition-all duration-200"
+        class="group relative flex h-[88px] w-[88px] items-center justify-center rounded-full bg-white p-1 border-[3px] border-blue-500/40 shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden"
         aria-label="Open chat"
         title="Ask a question"
     >
-        <svg class="h-6 w-6 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-        <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity">
-            <span class="inline-block h-2 w-2 rounded-full bg-white animate-pulse"></span>
+        <img src="{{ asset('images/chat_logo.jpeg') }}" alt="Chat Support" class="h-full w-full rounded-full object-cover scale-125 transform group-hover:scale-135 transition-transform duration-300">
+        <span class="absolute top-1 right-1 flex h-4.5 w-4.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-4.5 w-4.5 bg-emerald-500 border-2 border-white"></span>
         </span>
     </button>
 
     <!-- Chat Box -->
     <div
         id="chat-box"
-        class="absolute bottom-20 right-0 hidden w-96 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 bg-white shadow-2xl flex flex-col max-h-96 sm:max-h-[600px]"
+        class="absolute bottom-full mb-3 right-0 hidden w-96 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 bg-white shadow-2xl flex flex-col max-h-96 sm:max-h-[550px] z-50"
     >
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-slate-200 bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-4 rounded-t-2xl">
-            <div>
-                <h3 class="text-lg font-bold text-white">Help & FAQ</h3>
-                <p class="text-xs text-blue-100 mt-0.5">We're here to help</p>
+            <div class="flex items-center gap-3">
+                <img src="{{ asset('images/chat_logo.jpeg') }}" alt="Chat Logo" class="h-10 w-10 rounded-full border-2 border-white/40 object-cover shadow-sm shrink-0">
+                <div>
+                    <h3 class="text-lg font-bold text-white leading-snug">Help & FAQ</h3>
+                    <p class="text-xs text-blue-100">We're here to help</p>
+                </div>
             </div>
             <button
                 id="chat-close-btn"

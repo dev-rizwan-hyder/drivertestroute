@@ -46,6 +46,8 @@ Route::post('/logout', [AuthController::class, 'logout'])
 
 Route::get('/driving-routes', [DrivingRouteController::class, 'index'])->name('driving-routes.index');
 
+Route::get('/driving-routes/{drivingRoute}/details', [DrivingRouteController::class, 'details'])->name('driving-routes.details');
+
 Route::middleware('auth')->group(function () {
     Route::get('/my-routes', [DrivingRouteController::class, 'myRoutes'])->name('driving-routes.my');
     Route::get('/driving-routes/{drivingRoute}/checkout', [DrivingRouteController::class, 'checkout'])->name('driving-routes.checkout');

@@ -91,12 +91,6 @@
                                     Buy More Starts
                                 </a>
                             @endif
-
-                            @if($drivingRoute->preview_pdf_path)
-                                <a href="{{ \Illuminate\Support\Facades\Storage::url($drivingRoute->preview_pdf_path) }}" target="_blank" class="rounded-md border border-stone-300 px-4 py-2 font-semibold text-stone-700 hover:bg-stone-100">
-                                    PDF
-                                </a>
-                            @endif
                         </div>
                     </article>
                 @endforeach

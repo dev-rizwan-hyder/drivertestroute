@@ -389,26 +389,15 @@
                             </div>
                         </dl>
 
-                        @if($route->preview_pdf_path)
+                        @if($route->route_image && file_exists(public_path($route->route_image)))
                             <div class="mt-5 pt-4 border-t border-slate-100">
-                                <a href="{{ \Illuminate\Support\Facades\Storage::url($route->preview_pdf_path) }}" target="_blank" class="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 py-2.5 text-xs sm:text-sm font-bold text-slate-700 shadow-sm transition">
-                                    📄 Preview Route PDF
-                                </a>
-                            </div>
-                        @endif
-
-                        <!-- Examiner Sheets Download Section -->
-                        @php
-                            $canDownloadExaminer = !auth()->user()->is_admin && $remainingStarts > 0;
-                            $showExaminerSection = $canDownloadExaminer || auth()->user()->is_admin;
-                        @endphp
-
-                        @if($showExaminerSection)
-                            <div class="mt-5 pt-4 border-t border-slate-100">
-                                <span class="text-xs font-black uppercase text-slate-400 block mb-3">📋 Examiner Sheet</span>
-                                <a href="{{ route('download.examiner-sheet', $route->package_type) }}" target="_blank" class="w-full flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 py-2.5 px-3 text-xs sm:text-sm font-bold text-blue-700 shadow-sm transition">
-                                    📋 Download {{ strtoupper($route->package_type) }} Examiner Sheet
-                                </a>
+                                <span class="text-xs font-black uppercase text-slate-400 block mb-2">Route Picture</span>
+                                <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+                                    <img src="{{ asset($route->route_image) }}"
+                                         alt="{{ $route->title }} - {{ $cityName }}, {{ $route->province }} Drive Test Route Map"
+                                         class="w-full h-auto object-cover"
+                                         loading="lazy">
+                                </div>
                             </div>
                         @endif
 

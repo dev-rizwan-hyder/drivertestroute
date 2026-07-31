@@ -23,6 +23,7 @@ class DrivingRoute extends Model
         'end_lng',
         'price',
         'access_limit',
+        'route_image',
         'preview_pdf_path',
         'google_maps_url',
         'is_active',
