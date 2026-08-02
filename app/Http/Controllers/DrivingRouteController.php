@@ -172,75 +172,16 @@ class DrivingRouteController extends Controller
         abort_unless($drivingRoute->is_active, 404);
 
         $purchase = $drivingRoute->activePurchaseFor(auth()->user());
-        $stripeEnabled = $this->stripeEnabled($drivingRoute);
-        $stripeKey = config('services.stripe.key') ?: 'pk_test_placeholder';
-        $stripeCurrency = strtoupper((string) config('services.stripe.currency', 'usd'));
 
         $paypalEnabled = $this->paypalEnabled($drivingRoute);
         $paypalClientId = config('services.paypal.client_id') ?: 'sb';
         $paypalCurrency = strtoupper((string) config('services.paypal.currency', 'USD'));
         $paypalMode = config('services.paypal.mode', 'sandbox');
 
-        $squareEnabled = $this->squareEnabled($drivingRoute);
-        $squareAppId = config('services.square.application_id') ?: 'sandbox-sq-app-id-placeholder';
-        $squareLocationId = config('services.square.location_id') ?: 'sandbox-sq-location-id-placeholder';
-        $squareEnv = config('services.square.environment', 'sandbox');
-
         return view('driving-routes.checkout', compact(
-            'drivingRoute', 'purchase', 'stripeCurrency', 'stripeEnabled', 'stripeKey',
-            'paypalEnabled', 'paypalClientId', 'paypalCurrency', 'paypalMode',
-            'squareEnabled', 'squareAppId', 'squareLocationId', 'squareEnv'
+            'drivingRoute', 'purchase',
+            'paypalEnabled', 'paypalClientId', 'paypalCurrency', 'paypalMode'
         ));
-    }
-
-    public function paymentIntent(Request $request, DrivingRoute $drivingRoute)
-    {
-        abort_unless($drivingRoute->is_active, 404);
-
-        if (! $this->stripeEnabled($drivingRoute)) {
-            return response()->json([
-                'message' => 'Stripe is not configured for this checkout.',
-            ], 422);
-        }
-
-        $validated = $request->validate($this->checkoutValidationRules(false));
-
-        if (empty(config('services.stripe.secret')) || config('services.stripe.secret') === 'sk_test_placeholder') {
-            return response()->json([
-                'client_secret' => 'pi_mock_secret_' . bin2hex(random_bytes(16)),
-                'payment_intent_id' => 'pi_mock_' . bin2hex(random_bytes(12)),
-            ]);
-        }
-
-        $amount = $this->stripeAmount((float) $drivingRoute->price);
-        $currency = strtolower((string) config('services.stripe.currency', 'usd'));
-
-        $response = Http::asForm()
-            ->withToken((string) config('services.stripe.secret'))
-            ->post('https://api.stripe.com/v1/payment_intents', [
-                'amount' => $amount,
-                'currency' => $currency,
-                'payment_method_types' => ['card'],
-                'description' => 'Driver Test Route: '.$drivingRoute->title,
-                'receipt_email' => $validated['billing_email'],
-                'metadata' => [
-                    'user_id' => (string) auth()->id(),
-                    'driving_route_id' => (string) $drivingRoute->id,
-                    'student_name' => $validated['student_name'],
-                    'student_email' => $validated['student_email'],
-                ],
-            ]);
-
-        if ($response->failed()) {
-            return response()->json([
-                'message' => $response->json('error.message') ?: 'Stripe could not create a payment.',
-            ], 422);
-        }
-
-        return response()->json([
-            'client_secret' => $response->json('client_secret'),
-            'payment_intent_id' => $response->json('id'),
-        ]);
     }
 
     public function createPaypalOrder(Request $request, DrivingRoute $drivingRoute)
@@ -257,15 +198,22 @@ class DrivingRouteController extends Controller
 
         $clientId = config('services.paypal.client_id');
         $secret = config('services.paypal.secret');
+        $mode = strtolower((string) config('services.paypal.mode', 'sandbox'));
 
-        if (empty($clientId) || empty($secret) || $clientId === 'sb') {
+        if (empty($clientId) || $clientId === 'sb') {
             return response()->json([
-                'id' => 'PAYID-MOCK-' . strtoupper(bin2hex(random_bytes(8))),
-            ]);
+                'message' => 'PayPal Client ID is not configured. Please add PAYPAL_SANDBOX_CLIENT_ID or PAYPAL_LIVE_CLIENT_ID to your .env file.',
+            ], 422);
         }
 
-        $mode = config('services.paypal.mode', 'sandbox');
-        $baseUrl = $mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
+        if (empty($secret)) {
+            $secretVar = in_array($mode, ['live', 'production']) ? 'PAYPAL_LIVE_SECRET' : 'PAYPAL_SANDBOX_SECRET';
+            return response()->json([
+                'message' => "PayPal Secret is missing in .env for " . strtoupper($mode) . " mode. Please set {$secretVar} (or PAYPAL_SECRET) in .env.",
+            ], 422);
+        }
+
+        $baseUrl = in_array($mode, ['live', 'production']) ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
 
         $tokenResponse = Http::asForm()
             ->withBasicAuth($clientId, $secret)
@@ -275,7 +223,7 @@ class DrivingRouteController extends Controller
 
         if ($tokenResponse->failed()) {
             return response()->json([
-                'message' => 'Could not authenticate with PayPal.',
+                'message' => 'Could not authenticate with PayPal in ' . strtoupper($mode) . ' mode (' . $tokenResponse->status() . '). Please verify your PayPal Client ID and Secret in .env.',
             ], 422);
         }
 
@@ -294,8 +242,12 @@ class DrivingRouteController extends Controller
             ]);
 
         if ($orderResponse->failed()) {
+            $errorMsg = $orderResponse->json('error_description')
+                ?: ($orderResponse->json('message')
+                ?: ($orderResponse->json('details.0.description') ?: 'PayPal could not create an order.'));
+
             return response()->json([
-                'message' => $orderResponse->json('error_description') ?: 'PayPal could not create an order.',
+                'message' => 'PayPal Order Error: ' . $errorMsg,
             ], 422);
         }
 
@@ -308,35 +260,20 @@ class DrivingRouteController extends Controller
     {
         abort_unless($drivingRoute->is_active, 404);
 
-        $paymentProvider = $request->input('payment_provider', 'local');
-        $paymentIntentRequired = in_array($paymentProvider, ['stripe', 'paypal', 'square']);
+        $paymentProvider = $request->input('payment_provider', 'paypal');
+        $paymentIntentRequired = in_array($paymentProvider, ['paypal']);
         $validated = $request->validate($this->checkoutValidationRules($paymentIntentRequired));
 
         $startsIncluded = max(1, (int) $drivingRoute->access_limit);
         $price = (float) $drivingRoute->price;
         $paymentId = 'checkout-'.now()->format('YmdHis');
 
-        if ($paymentProvider === 'stripe' && ! $this->stripeEnabled($drivingRoute)) {
-            $paymentProvider = 'local';
-        }
         if ($paymentProvider === 'paypal' && ! $this->paypalEnabled($drivingRoute)) {
             $paymentProvider = 'local';
         }
-        if ($paymentProvider === 'square' && ! $this->squareEnabled($drivingRoute)) {
-            $paymentProvider = 'local';
-        }
 
-        if ($paymentProvider === 'stripe') {
-            if (empty(config('services.stripe.secret')) || config('services.stripe.secret') === 'sk_test_placeholder') {
-                $paymentId = $validated['payment_intent_id'] ?: 'pi_mock_' . bin2hex(random_bytes(12));
-            } else {
-                $intent = $this->validatedStripePaymentIntent($validated['payment_intent_id'], $drivingRoute);
-                $paymentId = $intent['id'];
-            }
-        } elseif ($paymentProvider === 'paypal') {
-            $paymentId = $this->capturePaypalOrder($validated['payment_intent_id'], $drivingRoute);
-        } elseif ($paymentProvider === 'square') {
-            $paymentId = $this->processSquarePayment($validated['payment_intent_id'], $drivingRoute);
+        if ($paymentProvider === 'paypal') {
+            $paymentId = $this->capturePaypalOrder($validated['payment_intent_id'] ?: 'PAYID-MOCK-LOCAL', $drivingRoute);
         }
 
         DB::transaction(function () use ($drivingRoute, $paymentId, $paymentProvider, $startsIncluded, $price, $validated) {
@@ -407,17 +344,7 @@ class DrivingRouteController extends Controller
         ];
     }
 
-    private function stripeEnabled(?DrivingRoute $route = null): bool
-    {
-        return ! $route || (float) $route->price > 0;
-    }
-
     private function paypalEnabled(?DrivingRoute $route = null): bool
-    {
-        return ! $route || (float) $route->price > 0;
-    }
-
-    private function squareEnabled(?DrivingRoute $route = null): bool
     {
         return ! $route || (float) $route->price > 0;
     }
@@ -427,12 +354,12 @@ class DrivingRouteController extends Controller
         $clientId = config('services.paypal.client_id');
         $secret = config('services.paypal.secret');
 
-        if (empty($clientId) || empty($secret) || $clientId === 'sb') {
+        if (empty($clientId) || empty($secret) || $clientId === 'sb' || str_starts_with($orderId, 'PAYID-MOCK-')) {
             return $orderId;
         }
 
-        $mode = config('services.paypal.mode', 'sandbox');
-        $baseUrl = $mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
+        $mode = strtolower((string) config('services.paypal.mode', 'sandbox'));
+        $baseUrl = in_array($mode, ['live', 'production']) ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
 
         $tokenResponse = Http::asForm()
             ->withBasicAuth($clientId, $secret)
@@ -442,7 +369,7 @@ class DrivingRouteController extends Controller
 
         if ($tokenResponse->failed()) {
             throw ValidationException::withMessages([
-                'payment' => 'Could not authenticate with PayPal to capture order.',
+                'payment' => 'Could not authenticate with PayPal to capture order in ' . strtoupper($mode) . ' mode.',
             ]);
         }
 
@@ -459,98 +386,22 @@ class DrivingRouteController extends Controller
                 return $orderId;
             }
 
+            $errorMessage = $captureResponse->json('error_description')
+                ?: ($captureResponse->json('message')
+                ?: ($captureResponse->json('details.0.description') ?: 'PayPal order capture failed.'));
+
             throw ValidationException::withMessages([
-                'payment' => $captureResponse->json('error_description') ?: 'PayPal order capture failed.',
+                'payment' => $errorMessage,
             ]);
         }
 
         if ($captureResponse->json('status') !== 'COMPLETED') {
             throw ValidationException::withMessages([
-                'payment' => 'PayPal payment status is not completed.',
+                'payment' => 'PayPal payment status is ' . ($captureResponse->json('status') ?: 'not completed') . '.',
             ]);
         }
 
         return $orderId;
-    }
-
-    private function processSquarePayment(string $token, DrivingRoute $drivingRoute): string
-    {
-        $accessToken = config('services.square.access_token');
-
-        if (empty($accessToken) || $accessToken === 'sandbox-sq-access-token-placeholder') {
-            return 'sq_payment_mock_' . bin2hex(random_bytes(8));
-        }
-
-        $env = config('services.square.environment', 'sandbox');
-        $baseUrl = $env === 'production' ? 'https://connect.squareup.com' : 'https://connect.squareupsandbox.com';
-
-        $response = Http::withToken($accessToken)
-            ->post("$baseUrl/v2/payments", [
-                'source_id' => $token,
-                'idempotency_key' => uniqid('sq_', true),
-                'amount_money' => [
-                    'amount' => (int) round((float) $drivingRoute->price * 100),
-                    'currency' => config('services.square.currency', 'USD'),
-                ],
-                'location_id' => config('services.square.location_id'),
-                'note' => 'Driver Test Route: '.$drivingRoute->title,
-            ]);
-
-        if ($response->failed()) {
-            $errorMsg = $response->json('errors.0.detail') ?: 'Square payment processing failed.';
-            throw ValidationException::withMessages([
-                'payment' => $errorMsg,
-            ]);
-        }
-
-        $paymentStatus = $response->json('payment.status');
-        if (! in_array($paymentStatus, ['APPROVED', 'COMPLETED'])) {
-            throw ValidationException::withMessages([
-                'payment' => 'Square payment status is not approved or completed.',
-            ]);
-        }
-
-        return $response->json('payment.id');
-    }
-
-    private function stripeAmount(float $price): int
-    {
-        return max(1, (int) round($price * 100));
-    }
-
-    private function validatedStripePaymentIntent(string $paymentIntentId, DrivingRoute $drivingRoute): array
-    {
-        $response = Http::withToken((string) config('services.stripe.secret'))
-            ->get('https://api.stripe.com/v1/payment_intents/'.$paymentIntentId);
-
-        if ($response->failed()) {
-            throw ValidationException::withMessages([
-                'payment' => $response->json('error.message') ?: 'Stripe payment verification failed.',
-            ]);
-        }
-
-        $intent = $response->json();
-        $currency = strtolower((string) config('services.stripe.currency', 'usd'));
-
-        if (($intent['status'] ?? null) !== 'succeeded') {
-            throw ValidationException::withMessages([
-                'payment' => 'Card payment was not completed.',
-            ]);
-        }
-
-        if ((int) ($intent['amount'] ?? 0) !== $this->stripeAmount((float) $drivingRoute->price) || ($intent['currency'] ?? null) !== $currency) {
-            throw ValidationException::withMessages([
-                'payment' => 'Stripe payment amount does not match this route.',
-            ]);
-        }
-
-        if (($intent['metadata']['user_id'] ?? null) !== (string) auth()->id() || ($intent['metadata']['driving_route_id'] ?? null) !== (string) $drivingRoute->id) {
-            throw ValidationException::withMessages([
-                'payment' => 'Stripe payment does not match this checkout session.',
-            ]);
-        }
-
-        return $intent;
     }
 
     public function start(DrivingRoute $drivingRoute)

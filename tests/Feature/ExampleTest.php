@@ -18,7 +18,7 @@ class ExampleTest extends TestCase
         $this->assertTrue(Route::has('driving-routes.index'));
         $this->assertTrue(Route::has('driving-routes.my'));
         $this->assertTrue(Route::has('driving-routes.checkout'));
-        $this->assertTrue(Route::has('driving-routes.payment-intent'));
+        $this->assertTrue(Route::has('driving-routes.paypal.create-order'));
         $this->assertTrue(Route::has('driving-routes.start'));
         $this->assertTrue(Route::has('admin.dashboard'));
         $this->assertTrue(Route::has('admin.purchases.index'));

@@ -4,7 +4,7 @@
     <button
         id="chat-toggle-btn"
         type="button"
-        class="group relative flex h-[88px] w-[88px] items-center justify-center rounded-full bg-white p-1 border-[3px] border-blue-500/40 shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden"
+        class="group relative flex h-16 w-16 sm:h-[88px] sm:w-[88px] items-center justify-center rounded-full bg-white p-1 border-[3px] border-blue-500/40 shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden"
         aria-label="Open chat"
         title="Ask a question"
     >
@@ -57,16 +57,16 @@
                         <!-- Question -->
                         <button
                             type="button"
-                            class="chat-question-btn w-full text-left rounded-lg border border-slate-200 bg-white p-3 hover:border-blue-300 hover:bg-blue-50 transition duration-200 cursor-pointer"
+                            class="chat-question-btn group w-full flex items-center justify-between gap-3 text-left rounded-lg border border-slate-200 bg-white p-3 hover:border-blue-300 hover:bg-blue-50 transition duration-200 cursor-pointer"
                         >
-                            <p class="text-sm font-semibold text-slate-900">{{ $question->question }}</p>
-                            <svg class="h-4 w-4 text-slate-400 mt-2 inline-block float-right transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <span class="text-sm font-semibold text-slate-900 leading-snug">{{ $question->question }}</span>
+                            <svg class="h-4 w-4 text-slate-400 shrink-0 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
 
                         <!-- Answer (Hidden by default) -->
-                        <div class="chat-answer hidden mt-2 pl-4 border-l-2 border-blue-500 bg-blue-50 rounded-lg p-3">
+                        <div class="chat-answer hidden mt-2 border-l-2 border-blue-500 bg-blue-50 rounded-r-lg p-3">
                             <p class="text-sm text-slate-700 leading-relaxed">{{ $question->answer }}</p>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
 
         #chat-box {
             width: calc(100vw - 2rem);
-            max-width: 100%;
+            max-width: 384px;
             max-height: calc(100vh - 120px);
         }
     }

@@ -139,7 +139,7 @@
             </div>
             <span class="inline-flex w-fit items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1.5 text-xs font-bold text-blue-700">
                 <span class="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
-                Stripe Card Payment
+                PayPal Gateway ({{ in_array(strtolower($paypalMode), ['live', 'production']) ? 'Production Mode' : 'Sandbox Mode' }})
             </span>
         </div>
 
@@ -184,7 +184,7 @@
                 <form id="checkout-form" method="POST" action="{{ route('driving-routes.checkout.store', $drivingRoute) }}" class="space-y-6">
                     @csrf
                     <input id="payment-intent-id" type="hidden" name="payment_intent_id" value="{{ old('payment_intent_id') }}">
-                    <input id="payment-provider" type="hidden" name="payment_provider" value="stripe">
+                    <input id="payment-provider" type="hidden" name="payment_provider" value="paypal">
 
                     <!-- Student Details -->
                     <section class="premium-card p-6 sm:p-8 border-l-4 border-l-blue-600">
@@ -247,14 +247,13 @@
                             </label>
                         </div>
 
-                        <!-- Stripe Card Container -->
-                        <div id="stripe-payment-container" class="payment-details-container mt-6">
-                            <label class="block">
-                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 block mb-1.5">Card Details</span>
-                                <div id="card-element" style="padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 0.5rem; background-color: #ffffff; min-height: 44px;"></div>
+                        <!-- PayPal Container -->
+                        <div id="paypal-payment-container" class="payment-details-container mt-6">
+                            <label class="block mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 block mb-1.5">Express PayPal Checkout</span>
                             </label>
+                            <div id="paypal-button-container" class="w-full min-h-[50px]"></div>
                             <p id="card-errors" class="mt-3 hidden rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-bold text-red-700"></p>
-                            <p class="mt-3 text-xxs leading-relaxed text-zinc-400">For testing purposes, you can use the card number <span class="font-bold text-zinc-500">4242 4242 4242 4242</span> with any future expiration date and any CVC code.</p>
                         </div>
                     </section>
                 </form>
@@ -274,7 +273,7 @@
                         </div>
                         <div class="flex items-center justify-between gap-4">
                             <dt class="text-zinc-500 font-medium">Currency</dt>
-                            <dd class="font-extrabold text-zinc-950">{{ $stripeCurrency }}</dd>
+                            <dd class="font-extrabold text-zinc-950">{{ $paypalCurrency }}</dd>
                         </div>
                         <div class="flex items-center justify-between gap-4">
                             <dt class="text-zinc-500 font-medium">Map Starts Included</dt>
@@ -430,7 +429,7 @@
     </div>
 
     <!-- Payment SDKs -->
-    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency={{ $paypalCurrency }}"></script>
 
     <script>
         function openTermsModal() {
@@ -466,108 +465,105 @@
                 if (cardErrors) target = cardErrors;
             }
             
+            if (!message) {
+                target.classList.add('hidden');
+                return;
+            }
+
             target.textContent = message;
             target.classList.remove('hidden');
             
             if (!error) {
-                document.getElementById('card-errors').classList.add('hidden');
+                const cardErrors = document.getElementById('card-errors');
+                if (cardErrors) cardErrors.classList.add('hidden');
             }
         }
 
-        function setCheckoutLoading(loading) {
-            checkoutButton.disabled = loading;
-            checkoutButton.textContent = loading ? 'Processing payment...' : 'Pay ${{ number_format((float) $drivingRoute->price, 2) }} & Unlock Route';
-        }
+        // Render PayPal Smart Payment Buttons
+        if (typeof paypal !== 'undefined') {
+            paypal.Buttons({
+                style: {
+                    layout: 'vertical',
+                    color: 'gold',
+                    shape: 'rect',
+                    label: 'paypal',
+                    height: 48
+                },
+                onClick: function(data, actions) {
+                    if (!checkoutForm.reportValidity()) {
+                        setCheckoutMessage('Please fill in all required student details and accept the terms.', true);
+                        return actions.reject();
+                    }
+                    setCheckoutMessage('');
+                },
+                createOrder: async function(data, actions) {
+                    if ("{{ $paypalClientId }}" === 'sb') {
+                        return actions.order.create({
+                            purchase_units: [{
+                                amount: {
+                                    currency_code: "{{ $paypalCurrency }}",
+                                    value: "{{ number_format((float) $drivingRoute->price, 2, '.', '') }}"
+                                },
+                                description: "{{ 'Driver Test Route: '.$drivingRoute->title }}"
+                            }]
+                        });
+                    }
 
-        // Initialize Stripe
-        const cardErrors = document.getElementById('card-errors');
-        const stripe = Stripe(@json($stripeKey));
-        const elements = stripe.elements();
-        const card = elements.create('card', {
-            style: {
-                base: {
-                    color: '#000000',
-                    backgroundColor: '#ffffff',
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-                    fontSize: '14px',
-                    fontSmoothing: 'antialiased',
-                    fontWeight: '500',
-                    lineHeight: '1.5',
-                    letterSpacing: '0.5px',
-                    '::placeholder': { 
-                        color: '#999999',
-                        fontWeight: '400'
+                    setCheckoutMessage('Creating secure PayPal order...');
+                    const formData = new FormData(checkoutForm);
+                    
+                    try {
+                        const response = await fetch("{{ route('driving-routes.paypal.create-order', $drivingRoute) }}", {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                            },
+                            credentials: 'same-origin',
+                            body: formData,
+                        });
+                        
+                        const payload = await response.json();
+                        if (!response.ok) {
+                            const errorMsg = payload.errors ? Object.values(payload.errors).flat()[0] : (payload.message || 'PayPal order creation failed.');
+                            throw new Error(errorMsg);
+                        }
+                        
+                        return payload.id;
+                    } catch (err) {
+                        throw err;
                     }
                 },
-                invalid: { 
-                    color: '#fa755a',
-                    iconColor: '#fa755a'
+                onApprove: async function(data, actions) {
+                    setCheckoutMessage('Payment authorized! Unlocking your route access...');
+                    paymentIntentInput.value = data.orderID;
+                    providerInput.value = 'paypal';
+                    checkoutForm.submit();
                 },
-                complete: {
-                    color: '#11a34a'
+                onCancel: function(data) {
+                    setCheckoutMessage('PayPal payment was cancelled.', true);
+                },
+                onError: function(err) {
+                    console.error('PayPal SDK Error:', err);
+                    const errorText = err && err.message ? err.message : 'An error occurred during PayPal processing. Please check your credentials in .env.';
+                    setCheckoutMessage(errorText, true);
                 }
-            },
-        });
-        card.mount('#card-element');
+            }).render('#paypal-button-container');
+        } else {
+            setCheckoutMessage('PayPal SDK could not be loaded. Please check your credentials.', true);
+        }
 
-        // Form Submit Handler
-        checkoutForm.addEventListener('submit', async (event) => {
+        // Standard Form Submit Fallback Handler
+        checkoutForm.addEventListener('submit', (event) => {
             if (paymentIntentInput.value) {
-                return; // Payment already authorized, allow form submission
+                return; // Payment completed via PayPal popup, allow submit
             }
 
             event.preventDefault();
-
             if (!checkoutForm.reportValidity()) {
                 return;
             }
-
-            setCheckoutLoading(true);
-            setCheckoutMessage('Creating secure payment...');
-            
-            try {
-                const formData = new FormData(checkoutForm);
-                const intentResponse = await fetch(@json(route('driving-routes.payment-intent', $drivingRoute)), {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': @json(csrf_token()),
-                    },
-                    credentials: 'same-origin',
-                    body: formData,
-                });
-
-                const intentPayload = await intentResponse.json();
-
-                if (!intentResponse.ok) {
-                    const firstError = intentPayload.errors ? Object.values(intentPayload.errors).flat()[0] : intentPayload.message;
-                    throw new Error(firstError || 'Payment could not be started.');
-                }
-
-                setCheckoutMessage('Confirming card payment...');
-
-                const result = await stripe.confirmCardPayment(intentPayload.client_secret, {
-                    payment_method: {
-                        card,
-                        billing_details: {
-                            name: checkoutForm.billing_name.value,
-                            email: checkoutForm.billing_email.value,
-                            phone: checkoutForm.student_phone.value,
-                        },
-                    },
-                });
-
-                if (result.error) {
-                    throw new Error(result.error.message || 'Card payment failed.');
-                }
-
-                paymentIntentInput.value = result.paymentIntent.id;
-                setCheckoutMessage('Payment confirmed. Unlocking your route...');
-                checkoutForm.submit();
-            } catch (error) {
-                setCheckoutMessage(error.message, true);
-                setCheckoutLoading(false);
-            }
+            setCheckoutMessage('Please complete payment using the PayPal button above.', true);
         });
     </script>
 @endsection

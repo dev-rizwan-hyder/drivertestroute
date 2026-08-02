@@ -46,9 +46,13 @@ return [
     ],
 
     'paypal' => [
-        'client_id' => env('PAYPAL_CLIENT_ID'),
-        'secret' => env('PAYPAL_SECRET'),
         'mode' => env('PAYPAL_MODE', 'sandbox'),
+        'client_id' => in_array(strtolower((string) env('PAYPAL_MODE', 'sandbox')), ['live', 'production'])
+            ? (env('PAYPAL_LIVE_CLIENT_ID') ?: env('PAYPAL_CLIENT_ID'))
+            : (env('PAYPAL_SANDBOX_CLIENT_ID') ?: env('PAYPAL_CLIENT_ID')),
+        'secret' => in_array(strtolower((string) env('PAYPAL_MODE', 'sandbox')), ['live', 'production'])
+            ? (env('PAYPAL_LIVE_SECRET') ?: env('PAYPAL_SECRET'))
+            : (env('PAYPAL_SANDBOX_SECRET') ?: env('PAYPAL_SECRET')),
         'currency' => env('PAYPAL_CURRENCY', 'USD'),
     ],
 
